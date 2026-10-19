@@ -556,3 +556,22 @@
 - `npm run test`      : **Lulus** (10 test files, 104 tests passed, 0 failed)
 - `npm run typecheck` : **Lulus** (0 error)
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
+
+---
+
+### F2 — Endpoint API Laporan Finansial (GET /api/reports/pnl) ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/app/api/reports/pnl/route.ts` — Endpoint `GET` agregasi laporan laba rugi, HPP, arus kas, dan performa cabang:
+  - Proteksi sesi autentikasi organisasi dan isolasi multi-tenant (`org_id`).
+  - Pembatasan hak akses berbasis peran (*role-based branch constraint*): Kasir dibatasi ke cabang bertugas, sedangkan OWNER dapat melihat konsolidasi seluruh cabang (`ALL`) atau cabang spesifik.
+  - Parameter filter fleksibel: `period` (`today`, `yesterday`, `this_week`, `this_month`, `last_month`, `custom`) dan `branch_id`.
+  - Penarikan terpadu transaksi POS beserta detail snapshot item (`transaction_items`), HPP modal, dan biaya operasional (`expenses`).
+  - Pengolahan otomatis menggunakan mesin `calculateFinancialReport` menyajikan metrik inti (Omzet, HPP, Laba Kotor, Beban Biaya, Laba Bersih, Margin %), rasio arus kas, breakdown kategori biaya, metode pembayaran, performa cabang terhadap target harian, tren harian kontinu, dan peringkat produk terlaris.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (10 test files, 104 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
