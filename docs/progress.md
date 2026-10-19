@@ -239,3 +239,18 @@
 - `npm run test`      : **Lulus** (5 test files, 51 tests passed, 0 failed)
 - `npm run typecheck` : **Lulus** (0 error)
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
+
+---
+
+### C2 — POS & Transaksi Penjualan ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/app/api/transactions/route.ts` — Endpoint `POST` (memanggil RPC `create_sale` Supabase dengan validasi item Zod, idempotency `client_tx_id`, kalkulasi uang diterima dan kembalian, serta mengembalikan data transaksi lengkap dengan rincian item) & Endpoint `GET` (daftar riwayat transaksi dengan filter cabang, tanggal bisnis, status, dan pagination)
+- `frontend/src/app/(app)/pos/page.tsx` — UI antarmuka kasir modern: selector cabang aktif, pencarian produk real-time, tab filter kategori, kartu katalog produk dengan status stok habis/menipis, panel keranjang dinamis dengan stepper kuantitas dan guard stok maksimum, modal pembayaran Tunai dengan tombol saran pecahan uang pas dan kalkulasi kembalian otomatis, modal QRIS simulasi dengan auto-confirm countdown, serta modal cetak struk/nota sah transaksi berhasil
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (51 tests passed)
+- `npm run build`     : **Lulus** (26 static & dynamic routes compiled)
