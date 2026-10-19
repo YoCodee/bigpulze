@@ -77,8 +77,33 @@
 - `npm run test`      : Lulus (Vitest exit code 0)
 - `npm run build`     : Lulus (Next.js build sukses dengan middleware terdaftar)
 
-### A5 — Layout & Halaman Kosong
-**Status:** Belum dimulai
+### A5 — Layout & Halaman Kosong ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/app/(auth)/layout.tsx` — Layout khusus halaman autentikasi
+- `frontend/src/app/(auth)/login/page.tsx` — Halaman login placeholder (lengkap dengan tombol quick demo 1-klik untuk juri)
+- `frontend/src/app/(auth)/register/page.tsx` — Halaman pendaftaran owner placeholder
+- `frontend/src/app/(app)/layout.tsx` — Layout utama aplikasi dengan sidebar desktop dan mobile drawer navigasi responsif
+- 11 Halaman aplikasi grup `(app)`:
+  - `dashboard/page.tsx` (3 Pertanyaan Pagi)
+  - `pos/page.tsx` (Kasir / Smart Voice POS)
+  - `transactions/page.tsx` (Riwayat Transaksi)
+  - `expenses/page.tsx` (Pengeluaran Cabang)
+  - `products/page.tsx` (Katalog Produk & Stok)
+  - `stock/page.tsx` (Mutasi Stok & Log Pergerakan)
+  - `reports/page.tsx` (Laba-Rugi Auto-Ledger)
+  - `import/page.tsx` (Impor CSV/Excel)
+  - `branches/page.tsx` (Kelola Cabang)
+  - `staff/page.tsx` (Kelola Kasir)
+  - `demo-guide/page.tsx` (Panduan 6 Skenario Juri)
+- `frontend/src/app/page.tsx` — Landing page BizPulse terhubung ke login dan dashboard
+
+**Hasil verifikasi:**
+- `npm run typecheck` : Lulus (0 error)
+- `npm run lint`      : Lulus (0 warning, 0 error)
+- `npm run test`      : Lulus (Vitest exit code 0)
+- `npm run build`     : Lulus (18 routes statis sukses dihasilkan)
 
 ### A6 — Unit Test Awal
 **Status:** Belum dimulai
