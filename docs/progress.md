@@ -309,3 +309,20 @@
 - `npm run build`     : **Lulus** (31 static & dynamic routes compiled)
 
 **Status Tahap C:** Selesai (Transaksi Inti 100% siap)
+
+---
+
+## Tahap D: Smart Voice POS & AI Parser (28–31 Okt)
+
+### D1 — Voice Recognition Hook & UI Recorder ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/lib/voice/speech-recognition.ts` — Custom hook `useVoiceRecognition` berbasis Web Speech API dengan locale `id-ID` (Bahasa Indonesia), penanganan izin mikrofon, status perekaman (`isListening`), transkrip final & interim bertahap (`interimTranscript`), dan error handling ramah pengguna
+- `frontend/src/components/voice-mic-button.tsx` — Komponen tombol mikrofon interaktif dengan animasi gelombang suara (*audio sound wave visualizer*), transkrip mengambang *floating caption* saat kasir berbicara, serta modal simulator input suara manual bagi browser/perangkat yang tidak memiliki mikrofon aktif
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (51 tests passed)
+- `npm run build`     : **Lulus** (31 static & dynamic routes compiled)
