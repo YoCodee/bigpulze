@@ -394,3 +394,29 @@
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
 - `npm run test`      : **Lulus** (7 test files, 77 tests passed, 0 failed)
 - `npm run build`     : **Lulus** (31 static & dynamic routes compiled)
+
+---
+
+### D5 — Panduan Uji Juri & Simulator Suara Interaktif 1-Klik ✅
+**Selesai:** 2026-10-19
+
+**Dibuat / Dimodifikasi:**
+- `frontend/src/app/(app)/demo-guide/page.tsx` — Transformasi total halaman panduan kompetisi GTNIC 2026:
+  - **Tab 1: Simulator Suara Interaktif (Smart Voice POS & Expense Tester)**:
+    - Tester kalimat suara bebas (*Live Voice AI Parser Tester*) dengan input teks, tombol mikrofon Web Speech API, dan tombol *Text-to-Speech (TTS)* Bahasa Indonesia agar juri dapat mendengarkan pelafalan audio.
+    - Analisis NLP instan: deteksi otomatis jenis intensi (Pesanan POS vs Pengeluaran Biaya), skor akurasi / keyakinan, breakdown entitas (produk, kuantitas, subtotal, metode bayar / kategori biaya, nominal), serta tombol eksekusi 1-klik menuju halaman terkait.
+    - Katalog 8 skenario terpandu siap uji juri (pesanan multi-item, bilangan gaul "setengah lusin", singkatan alias kedai "kopsu", biaya galon air, token listrik, kresek 25rb, gaji harian barista, servis mesin espresso).
+  - **Tab 2: 6 Skenario Pengujian Alur Penuh (PRD §11.2)**:
+    - Panduan terstruktur langkah demi langkah bagi juri (Autentikasi Multi-Role, Master Data Multi-Cabang, Transaksi Kasir POS & QRIS, Smart Voice AI, Deteksi Anomali Inventaris, dan Keputusan Finansial Dashboard 3 Pagi).
+  - **Tab 3: Benchmarking Kecepatan & Nilai Inovasi UMKM**:
+    - Perbandingan waktu kuantitatif: Manual typing (25–45 dtk) vs BizPulse Voice AI (2–3 dtk) = penghematan waktu ~90%.
+    - Penjelasan keunggulan arsitektur: Client-Side Rule-Based NLP hemat biaya Rp 0 token API per transaksi, latensi 0 ms, dan privasi 100% lokal.
+- `frontend/src/app/(app)/pos/page.tsx` & `frontend/src/app/(app)/expenses/page.tsx` — Dukungan auto-trigger `?voice_sample=...` dari Demo Guide, sehingga juri yang mengklik simulasi dari panduan langsung disambut dengan modal konfirmasi terisi otomatis di halaman tujuan.
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (7 test files, 77 tests passed, 0 failed)
+- `npm run build`     : **Lulus** (31 static & dynamic routes compiled)
+
+**Status Tahap D:** Selesai (Smart Voice POS & AI Parser 100% siap)

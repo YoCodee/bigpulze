@@ -316,6 +316,19 @@ export default function ExpensesPage() {
     setIsVoiceModalOpen(true);
   };
 
+  // Auto-trigger voice sample from URL if present (e.g. from Demo Guide)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && branches.length > 0) {
+      const params = new URLSearchParams(window.location.search);
+      const voiceSample = params.get('voice_sample');
+      if (voiceSample) {
+        handleVoiceTranscript(decodeURIComponent(voiceSample));
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [branches]);
+
   // Submit Voice Expense
   const handleVoiceExpenseSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

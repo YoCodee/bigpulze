@@ -264,6 +264,19 @@ export default function PosPage() {
     setIsVoiceModalOpen(true);
   };
 
+  // Auto-trigger voice sample from URL if present (e.g. from Demo Guide)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && products.length > 0) {
+      const params = new URLSearchParams(window.location.search);
+      const voiceSample = params.get('voice_sample');
+      if (voiceSample) {
+        handleVoiceTranscript(decodeURIComponent(voiceSample));
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products]);
+
   const updateVoiceItemQty = (productId: string, delta: number) => {
     setVoiceItems((prev) =>
       prev
