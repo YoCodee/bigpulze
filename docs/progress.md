@@ -44,8 +44,23 @@
 - `npm run test`      : Lulus (Vitest exit code 0)
 - `npm run build`     : Lulus (produksi build Next.js sukses)
 
-### A3 — Supabase Client Helpers
-**Status:** Belum dimulai
+### A3 — Supabase Client Helpers ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/lib/supabase/client.ts` — Browser client via `@supabase/ssr` `createBrowserClient`
+- `frontend/src/lib/supabase/server.ts` — Server client via `@supabase/ssr` `createServerClient` dengan Next.js cookie integration
+- `frontend/src/lib/supabase/admin.ts` — Server-only admin client via `@supabase/supabase-js` dengan `SUPABASE_SERVICE_ROLE_KEY` dan runtime guard
+- `frontend/src/lib/supabase/middleware.ts` — Helper refresh session untuk Next.js middleware
+
+**Hasil verifikasi:**
+- `npm run typecheck` : Lulus (0 error)
+- `npm run lint`      : Lulus (0 warning, 0 error)
+- `npm run test`      : Lulus (Vitest exit code 0)
+- `npm run build`     : Lulus (Next.js build sukses)
+
+**Belum teruji:**
+- Koneksi nyata ke Supabase live (DITUNDA, menunggu URL & key diisi)
 
 ### A4 — Utility & Helper Libraries
 **Status:** Belum dimulai
