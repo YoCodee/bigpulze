@@ -286,3 +286,26 @@
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
 - `npm run test`      : **Lulus** (51 tests passed)
 - `npm run build`     : **Lulus** (27 static & dynamic routes compiled)
+
+---
+
+### C5 — Mutasi Stok & Riwayat Pergerakan ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/app/api/stock/restock/route.ts` — Endpoint `POST` penambahan stok barang masuk via RPC `restock_product(p_product_id, p_qty, p_unit_cost, p_note)` dengan validasi `restockProductSchema`
+- `frontend/src/app/api/stock/adjust/route.ts` — Endpoint `POST` penyesuaian stok opname fisik via RPC `adjust_stock(p_product_id, p_new_stock, p_reason)` dengan validasi `adjustStockSchema`
+- `frontend/src/app/api/stock/transfer/route.ts` — Endpoint `POST` transfer mutasi stok antarcabang via RPC `transfer_stock(p_from_product_id, p_to_product_id, p_qty, p_recommendation_id)` dengan validasi `transferStockSchema`
+- `frontend/src/app/api/stock/movements/route.ts` — Endpoint `GET` audit log riwayat mutasi stok (`stock_movements`) dengan relasi tabel produk, filter cabang, jenis pergerakan, dan batas limit
+- `frontend/src/app/(app)/stock/page.tsx` — UI komprehensif mutasi stok dengan 3 Tab navigasi:
+  1. *Inventaris & Aksi Cepat:* Ringkasan metrik (total produk, stok menipis, stok habis), pencarian dan filter cabang, tabel stok, tombol modal cepat Restock Barang Masuk, dan modal Opname Fisik dengan kalkulasi selisih otomatis.
+  2. *Transfer Antarcabang:* Form mutasi cabang pengirim ke cabang penerima, seleksi produk dengan SKU sepadan, kalkulasi instan sisa stok cabang asal & stok akhir cabang tujuan.
+  3. *Log Riwayat Kartu Stok:* Audit trail `stock_movements` lengkap (Sale, Void Return, Restock, Opname, Transfer Out, Transfer In, Import), kuantitas perubahan bertanda (+ / -), sisa stok akhir, dan catatan transaksi.
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (51 tests passed)
+- `npm run build`     : **Lulus** (31 static & dynamic routes compiled)
+
+**Status Tahap C:** Selesai (Transaksi Inti 100% siap)
