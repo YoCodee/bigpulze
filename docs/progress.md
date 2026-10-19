@@ -221,3 +221,21 @@
 - `npm run build`     : **Lulus** (25 static & dynamic routes compiled)
 
 **Status Tahap B:** Selesai (Autentikasi & Master Data 100% siap)
+
+---
+
+## Tahap C: Transaksi Inti (25–28 Okt)
+
+### C1 — Skema Validasi Zod (Transaksi, Keranjang, Restock, Adjust, Transfer, Pengeluaran) ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/lib/validators/transactions.ts` — Skema validasi item transaksi (`quantity >= 1`), create sale (`branch_id`, array `items`, `payment_method` CASH/QRIS_SIM, `input_method`, `client_tx_id` UUIDv4 idempotency, `cash_tendered`), dan void sale (`reason` min 3 karakter)
+- `frontend/src/lib/validators/stock.ts` — Skema validasi restock (`quantity > 0`, `unit_cost >= 0`, `note`), adjust stock opname (`new_stock >= 0`, `reason`), dan transfer antarcabang (`from_product_id != to_product_id`, `quantity > 0`)
+- `frontend/src/lib/validators/expenses.ts` — Skema validasi pengeluaran operasional cabang (`branch_id`, 8 kategori standar PRD, `amount > 0`, `expense_date` YYYY-MM-DD, `description`) dan skema update
+- `frontend/tests/lib/validators-transactions.test.ts` — 15 unit test komprehensif menguji skema transaksi, mutasi stok, dan pengeluaran
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (5 test files, 51 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
