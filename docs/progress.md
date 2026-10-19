@@ -254,3 +254,19 @@
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
 - `npm run test`      : **Lulus** (51 tests passed)
 - `npm run build`     : **Lulus** (26 static & dynamic routes compiled)
+
+---
+
+### C3 — Riwayat Transaksi & Filter ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/app/api/transactions/[id]/void/route.ts` — Endpoint `POST` pembatalan transaksi oleh Owner: validasi `voidSaleSchema`, eksekusi RPC `void_sale` di Supabase, dan pengembalian stok seluruh produk ke inventaris cabang
+- `frontend/src/app/(app)/transactions/page.tsx` — UI riwayat transaksi lengkap: ringkasan metrik (transaksi selesai, total omzet, transaksi void), filter cabang, filter tanggal bisnis (WIB), filter metode pembayaran, filter status, tabel transaksi dengan pagination 20 baris per halaman, modal rincian nota transaksi (item, harga satuan, subtotal, HPP & gross profit bagi Owner, serta transkrip voice jika ada), dan modal konfirmasi void transaksi dengan alasan wajib
+- Integrasi tombol cetak ulang nota (`window.print()`) dan badge metode input (Manual, Voice, Import, Demo)
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (51 tests passed)
+- `npm run build`     : **Lulus** (26 static & dynamic routes compiled)
