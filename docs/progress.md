@@ -190,5 +190,21 @@
 
 ---
 
-### B4 — CRUD Cabang (Branch Management)
+### B4 — CRUD Cabang (Branch Management) ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/app/api/branches/route.ts` — Endpoint GET (daftar cabang aktif) dan POST (tambah cabang dengan validasi Zod & guard 5 cabang per org)
+- `frontend/src/app/api/branches/[id]/route.ts` — Endpoint PATCH (edit nama, lokasi, target omzet) dan DELETE (soft-delete is_active = false per PRD D9)
+- `frontend/src/app/(app)/branches/page.tsx` — UI antarmuka lengkap kelola cabang (kartu cabang, target harian format Rupiah, modal tambah/edit, modal konfirmasi nonaktifkan, counter X/5 cabang aktif)
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (36 tests passed)
+- `npm run build`     : **Lulus** (24 static & dynamic routes compiled)
+
+---
+
+### B5 — CRUD Produk per Cabang
 **Status:** Belum dimulai
