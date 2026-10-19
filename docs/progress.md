@@ -153,5 +153,25 @@
 
 ---
 
-### B2 — Autentikasi & Multi-Role
+### B2 — Autentikasi & Multi-Role ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/app/api/auth/register/route.ts` — Endpoint registrasi owner: pembuatan akun auth auto-confirm, organisasi usaha (tenant), dan profile owner
+- `frontend/src/app/api/auth/login/route.ts` — Endpoint login kredensial email & password berbasis cookie session + fetch data profile/org
+- `frontend/src/app/api/auth/logout/route.ts` — Endpoint logout (pembersihan cookie auth)
+- `frontend/src/app/api/auth/me/route.ts` — Endpoint session check current user profile & org
+- `frontend/src/app/(auth)/login/page.tsx` — UI login interaktif dengan tombol quick demo 1-klik untuk Owner Demo & Kasir Demo serta redirect sesuai role
+- `frontend/src/app/(auth)/register/page.tsx` — UI pendaftaran pemilik usaha interaktif dengan auto-login ke dashboard
+- `frontend/scripts/create-demo-users.ts` — Skrip inisialisasi user demo ("Kopi Senja", 3 cabang, akun Owner Demo & Kasir Demo)
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (36 tests passed)
+- `npm run build`     : **Lulus** (22 routes static & dynamic compiled)
+
+---
+
+### B3 — Role Guard & Layout Filter
 **Status:** Belum dimulai
