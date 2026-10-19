@@ -270,3 +270,19 @@
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
 - `npm run test`      : **Lulus** (51 tests passed)
 - `npm run build`     : **Lulus** (26 static & dynamic routes compiled)
+
+---
+
+### C4 — Pencatatan Pengeluaran / Expenses ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/app/api/expenses/route.ts` — Endpoint `GET` (daftar pengeluaran dengan filter cabang, kategori, bulan `YYYY-MM`, atau rentang tanggal) & `POST` (tambah pengeluaran cabang baru dengan validasi `createExpenseSchema`, 8 kategori standar PRD, verifikasi hak akses cabang untuk Kasir, dan tanggal default WIB)
+- `frontend/src/app/api/expenses/[id]/route.ts` — Endpoint `PATCH` (edit rincian pengeluaran dengan validasi `updateExpenseSchema`) & `DELETE` (hapus pengeluaran operasional)
+- `frontend/src/app/(app)/expenses/page.tsx` — UI antarmuka manajemen pengeluaran: ringkasan metrik (total pengeluaran bulan ini dalam format Rupiah, kategori pengeluaran terbesar, total transaksi pengeluaran), filter cabang, pemilih bulan `YYYY-MM`, filter kategori biaya, tabel biaya operasional dengan badge status anomali dan metode input, modal tambah/edit pengeluaran dengan helper konversi teks nominal Rupiah, serta modal konfirmasi hapus data
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (51 tests passed)
+- `npm run build`     : **Lulus** (27 static & dynamic routes compiled)
