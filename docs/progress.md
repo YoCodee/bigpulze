@@ -136,4 +136,22 @@
 ---
 
 ## Tahap B: Auth dan Master Data (22–25 Okt)
-**Status:** Belum dimulai (Menunggu persetujuan)
+
+### B1 — Skema Validasi Zod (Master Data & Auth) ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/lib/validators/auth.ts` — Skema registrasi owner & login
+- `frontend/src/lib/validators/branches.ts` — Skema create & update cabang (`daily_target >= 0`, soft-delete)
+- `frontend/src/lib/validators/products.ts` — Skema create & update produk (`cost_price >= 0`, `selling_price >= 0`, `aliases`, `min_stock_alert`)
+- `frontend/tests/lib/validators.test.ts` — 9 unit test pengujian skema validasi
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (4 test files, 36 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+
+---
+
+### B2 — Autentikasi & Multi-Role
+**Status:** Belum dimulai
