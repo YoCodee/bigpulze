@@ -440,3 +440,26 @@
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
 - `npm run test`      : **Lulus** (8 test files, 91 tests passed, 0 failed)
 - `npm run build`     : **Lulus** (31 static & dynamic routes compiled)
+
+---
+
+### E2 — Endpoint API Anomali & Resolusi Tindakan ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/app/api/anomalies/route.ts` — Endpoint `GET` agregasi dan deteksi anomali real-time:
+  - Menggabungkan anomali tersimpan dari tabel `ml_recommendations` (`rec_type in ('ANOMALY_EXPENSE', 'REVENUE_DROP')`) dengan mesin deteksi *live anomaly* (lonjakan biaya 30 hari, fluktuasi omzet harian dengan Z-Score, dan transaksi ganda \(\le 60\) detik).
+  - Mendukung filter dinamis: `branch_id`, `severity` (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`, `ALL`), dan status resolusi (`OPEN`, `RESOLVED`, `ALL`).
+  - Pengurutan prioritas otomatis berdasarkan tingkat keparahan (*severity weighting*: CRITICAL > HIGH > MEDIUM > LOW) dan kronologis deteksi terbaru.
+  - Ringkasan metrik instan: total anomali terbuka (*total_open*), jumlah kritis, tinggi, dan menengah.
+  - Mekanisme cache status resolusi in-memory untuk anomali live run-time.
+- `frontend/src/app/api/anomalies/[id]/route.ts` — Endpoint `PATCH` resolusi anomali:
+  - Proteksi role-based: hanya pemilik usaha (OWNER) yang dapat menandai anomali sebagai `RESOLVED` atau `DISMISSED`.
+  - Menerima catatan penanganan (*resolution_note*) dan mencatat cap waktu `resolved_at`.
+  - Sinkronisasi status dua arah baik untuk ID tersimpan di database `ml_recommendations` maupun ID anomali live pengeluaran (`expenses.is_anomaly = false`).
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (8 test files, 91 tests passed, 0 failed)
+- `npm run build`     : **Lulus** (32 static & dynamic routes compiled)
