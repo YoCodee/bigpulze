@@ -417,6 +417,26 @@
 - `npm run typecheck` : **Lulus** (0 error)
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
 - `npm run test`      : **Lulus** (7 test files, 77 tests passed, 0 failed)
-- `npm run build`     : **Lulus** (31 static & dynamic routes compiled)
-
 **Status Tahap D:** Selesai (Smart Voice POS & AI Parser 100% siap)
+
+---
+
+## Tahap E: Deteksi Anomali & Rekomendasi Mutasi Antarcabang (31 Okt – 3 Nov)
+
+### E1 — Algoritma Deteksi Anomali Statistik & Heuristik UMKM ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/lib/anomaly/anomaly-detector.ts` — Modul pendeteksi anomali operasional dan finansial UMKM:
+  - Fungsi utilitas matematika statistik: kalkulasi mean aritmatika (`calculateMean`), deviasi standar sampel N-1 (`calculateStdDev`), dan skor standar Z-score (`calculateZScore`).
+  - *Heuristik 1 (Expense Spike):* Deteksi lonjakan pengeluaran kategori > 3x mean 30 hari terakhir (`detectExpenseSpike`) dengan ambang batas bawah proteksi nominal (Rp 50.000) untuk mencegah alarm palsu (*false positive*) pada pengeluaran bernilai kecil.
+  - *Statistik 2 (Revenue Drop & Surge):* Deteksi penurunan omzet drastis \(Z \le -2.0\) dan lonjakan penjualan luar biasa \(Z \ge 2.5\) dengan pendekatan baseline *leave-one-out* agar outlier tidak mendistorsi deviasi standarnya sendiri.
+  - *Heuristik 3 (Duplicate Transaction):* Deteksi transaksi ganda berulang dalam jendela waktu \( \le 60 \) detik dengan nominal dan metode pembayaran identik di cabang yang sama.
+  - *Heuristik 4 (Cash Discrepancy):* Rekonsiliasi selisih kas fisik register vs saldo sistem di luar batas toleransi (\(>\) 2% atau \(>\) Rp 10.000).
+- `frontend/tests/lib/anomaly-detector.test.ts` — 14 unit test komprehensif menguji fungsi statistik, deteksi lonjakan biaya, deteksi fluktuasi omzet harian, transaksi kembar, dan ketidaksesuaian kas fisik.
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (8 test files, 91 tests passed, 0 failed)
+- `npm run build`     : **Lulus** (31 static & dynamic routes compiled)
