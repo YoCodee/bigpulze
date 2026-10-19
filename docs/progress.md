@@ -105,8 +105,18 @@
 - `npm run test`      : Lulus (Vitest exit code 0)
 - `npm run build`     : Lulus (18 routes statis sukses dihasilkan)
 
-### A6 — Unit Test Awal
-**Status:** Belum dimulai
+### A6 — Unit Test Awal ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/tests/lib/format.test.ts` — 9 pengujian format Rupiah utuh (D4), persen, bilangan bulat, dan null/undefined/NaN handling
+- `frontend/tests/lib/date.test.ts` — 10 pengujian tanggal bisnis zona WIB `Asia/Jakarta` (D5), batas pergantian hari UTC, D-30 s/d D+6, dan format lokal ID
+- `frontend/tests/lib/api-response.test.ts` — 8 pengujian struktur response JSON standar dan pemetaan kode error exception RPC PostgreSQL ke status HTTP (PRD §12.1)
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (3 test files, 27 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
 
 ### A7 — Verifikasi & Deploy
 **Status:** Belum dimulai
