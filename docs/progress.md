@@ -345,3 +345,29 @@
 - `npm run typecheck` : **Lulus** (0 error)
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
 - `npm run test`      : **Lulus** (6 test files, 64 tests passed, 0 failed)
+
+---
+
+### D3 — Integrasi Voice-to-Cart & Modal Konfirmasi POS ✅
+**Selesai:** 2026-10-19
+
+**Dibuat / Dimodifikasi:**
+- `frontend/src/app/(app)/pos/page.tsx` — Integrasi fitur Voice POS:
+  - Pemasangan `VoiceMicButton` langsung di samping bilah pencarian katalog produk POS
+  - Integrasi real-time dengan modul NLP `parseVoiceOrder`
+  - Modal Interaktif Konfirmasi Pesanan Suara (*Voice Order Confirmation Modal*):
+    - Tampilan transkrip asli yang diucapkan kasir
+    - Indikator akurasi & skor keyakinan (*Confidence Score Badge*: Hijau jika >= 80%, Kuning jika < 80%)
+    - Daftar produk yang berhasil dikenali beserta harga satuan & subtotal
+    - Kontrol stepper kuantitas (+ / -) dan tombol hapus item sebelum dimasukkan ke keranjang
+    - Peringatan frasa yang tidak cocok (*Unmatched Phrases Alert*) agar kasir sadar jika ada ucapan yang terlewat
+    - Otomatis memilih metode pembayaran (Tunai vs QRIS) berdasarkan deteksi suara
+    - Tombol "Masukkan ke Keranjang & Selesaikan" untuk checkout 1-klik langsung dari suara
+  - Tanda visual badge aktif "Pesanan Suara Aktif" di header keranjang belanja POS
+  - Pengiriman audit metadata `input_method: 'VOICE'` dan `voice_transcript` ke endpoint API `/api/transactions` untuk pelaporan
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (6 test files, 64 tests passed, 0 failed)
+- `npm run build`     : **Lulus** (31 static & dynamic routes compiled)
