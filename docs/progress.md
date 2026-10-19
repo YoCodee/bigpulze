@@ -463,3 +463,23 @@
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
 - `npm run test`      : **Lulus** (8 test files, 91 tests passed, 0 failed)
 - `npm run build`     : **Lulus** (32 static & dynamic routes compiled)
+
+---
+
+### E3 — Algoritma Rekomendasi Mutasi Stok Antarcabang ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/lib/stock/transfer-recommender.ts` — Modul kalkulasi mutasi stok cerdas antarcabang (*Smart Stock Balancing*):
+  - Kalkulasi hari kecukupan stok (`calculateDaysOfSupply`): rasio stok fisik terhadap rata-rata laju penjualan harian (*daily sales velocity*).
+  - Identifikasi Cabang Kritis (*Recipient*): cabang dengan stok \(\le\) `min_stock_alert` atau diproyeksikan habis dalam \(\le 3\) hari.
+  - Seleksi Cabang Pendonor (*Donor*): mencari cabang lain dengan SKU identik yang memiliki surplus stok di atas cadangan aman (\(\ge 1.5\times\) `min_stock_alert` dan \(\ge 5\) hari pasokan mandiri).
+  - Optimasi Kuantitas Mutasi: menghitung defisit stok untuk mencapai target kecukupan 7 hari tanpa menghabiskan stok cabang pendonor.
+  - Kelayakan Finansial Berkelanjutan: memperhitungkan biaya logistik kurir flat (Rp 15.000) dan hanya merekomendasikan mutasi bila laba kotor yang terselamatkan menghasilkan *Net Financial Benefit* \(> 0\).
+- `frontend/tests/lib/transfer-recommender.test.ts` — 6 unit test komprehensif memvalidasi kalkulasi days of supply, pembentukan rekomendasi mutasi, eliminasi transfer merugikan (net benefit negatif), preservasi cadangan aman donor, seleksi donor dengan surplus terbesar, dan pemisahan SKU berbeda.
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (9 test files, 97 tests passed, 0 failed)
+- `npm run build`     : **Lulus** (32 static & dynamic routes compiled)
