@@ -596,3 +596,21 @@
 - `npm run typecheck` : **Lulus** (0 error)
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+---
+
+### F4 — Generator Ekspor Laporan Finansial (PDF Siap Lampiran Bank & Excel/CSV) ✅
+**Selesai:** 2026-10-19
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/lib/finance/report-exporter.ts` — Modul generator ekspor multi-format resmi:
+  - **Generator CSV Excel:** `generateFinancialReportCsv` dan `downloadFinancialReportCsv` menghasilkan berkas spreadsheet berstandar UTF-8 BOM (`\uFEFF`) sehingga langsung terbuka sempurna di Microsoft Excel tanpa masalah *character encoding*. Berkas mencakup kop nama usaha, ikhtisar eksekutif laba rugi, rincian biaya operasional per kategori, kanal pembayaran, klasemen performa cabang, kontribusi produk terlaris, dan timeline harian.
+  - **Generator Dokumen PDF Bank:** `generatePrintableReportHtml` dan `openPrintableReportPdf` menghasilkan format dokumen cetak resmi A4 *bank-ready* dengan kop surat bisnis resmi, tabel laporan laba rugi komprehensif (*Income Statement*), HPP, tabel arus kas operasional (*Cashflow*), klausul legalitas sistem (*Bank Submission Disclaimer Notice*), verifikasi hash digital, serta blok tanda tangan & stempel pemilik usaha untuk pengajuan pinjaman perbankan (KUR) atau investor.
+- `frontend/src/app/(app)/reports/page.tsx` — Menghubungkan tombol *"Ekspor PDF Bank"* dan *"Ekspor Excel (.csv)"* pada header halaman laporan ke mesin ekspor terintegrasi.
+- `frontend/tests/lib/report-exporter.test.ts` — 2 unit test memvalidasi integritas struktur berkas CSV UTF-8 BOM dan kelengkapan elemen dokumen PDF legal bank.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)

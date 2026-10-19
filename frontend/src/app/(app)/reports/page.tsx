@@ -6,6 +6,10 @@ import { formatRupiah } from '@/lib/format';
 import { formatDateId, getBusinessDate, getRelativeBusinessDate } from '@/lib/date';
 import { FinancialReportSummary } from '@/lib/finance/auto-ledger';
 import {
+  downloadFinancialReportCsv,
+  openPrintableReportPdf,
+} from '@/lib/finance/report-exporter';
+import {
   TrendingDown,
   Wallet,
   Store,
@@ -106,6 +110,31 @@ export default function ReportsPage() {
     return Math.max(maxRev, maxExp, 1);
   }, [report?.daily_timeline]);
 
+  // Export handlers
+  const handleExportCsv = () => {
+    if (!report) {
+      alert('Data laporan belum siap diekspor.');
+      return;
+    }
+    const currentBranchName =
+      selectedBranchId === 'ALL'
+        ? 'Konsolidasi Seluruh Cabang'
+        : branches.find((b) => b.id === selectedBranchId)?.name || 'Cabang';
+    downloadFinancialReportCsv(report, `BizPulse - ${currentBranchName}`);
+  };
+
+  const handleExportPdf = () => {
+    if (!report) {
+      alert('Data laporan belum siap dicetak.');
+      return;
+    }
+    const currentBranchName =
+      selectedBranchId === 'ALL'
+        ? 'Konsolidasi Seluruh Cabang'
+        : branches.find((b) => b.id === selectedBranchId)?.name || 'Cabang';
+    openPrintableReportPdf(report, 'BizPulse UMKM', currentBranchName);
+  };
+
   return (
     <RoleGuard allowedRoles={['OWNER']}>
       <div className="space-y-6 pb-12">
@@ -125,23 +154,25 @@ export default function ReportsPage() {
             </p>
           </div>
 
-          {/* Quick Actions (Ready for F4 Export) */}
+          {/* Quick Actions (F4 Export Handlers) */}
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => alert('Fitur Ekspor PDF resmi siap digunakan pada sub-modul F4!')}
-              className="px-3.5 py-2 text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-1.5 transition-all shadow-xs"
+              disabled={!report || loading}
+              onClick={handleExportPdf}
+              className="px-3.5 py-2 text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 disabled:bg-slate-100 disabled:text-slate-400 border border-slate-200 rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
             >
               <FileText className="w-3.5 h-3.5 text-rose-600" />
               <span>Ekspor PDF Bank</span>
             </button>
             <button
               type="button"
-              onClick={() => alert('Fitur Ekspor Excel resmi siap digunakan pada sub-modul F4!')}
-              className="px-3.5 py-2 text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-1.5 transition-all shadow-xs"
+              disabled={!report || loading}
+              onClick={handleExportCsv}
+              className="px-3.5 py-2 text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 disabled:bg-slate-100 disabled:text-slate-400 border border-slate-200 rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Ekspor Excel (.xlsx)</span>
+              <span>Ekspor Excel (.csv)</span>
             </button>
           </div>
         </div>
