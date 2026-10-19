@@ -530,3 +530,29 @@
 - `npm run build`     : **Lulus** (33 static & dynamic routes compiled)
 
 **Status Tahap E:** Selesai 100% (Mesin Anomaly Detection & Inter-Branch Stock Balancing siap produksi)
+
+---
+
+## Tahap F: Financial Engine, Auto-Ledger, Laporan Laba Rugi, & Ekspor PDF/Excel (27–31 Okt)
+
+### F1 — Mesin Kalkulasi Auto-Ledger & Aggregator Laba Rugi ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/lib/finance/auto-ledger.ts` — Mesin kalkulasi buku besar otomatis dan aggregator finansial komprehensif:
+  - Kalkulasi laba kotor (*Gross Profit* = Total Omzet - Total HPP/COGS) dan margin kotor (%).
+  - Kalkulasi laba operasional bersih (*Net Operating Profit* = Laba Kotor - Total Beban Biaya) dan margin bersih (%).
+  - Isolasi transaksi dibatalkan (*VOID*): otomatis mengecualikan transaksi berstatus VOID dari omzet dan COGS, namun tetap mencatat metrik audit (`void_count` & `void_total_revenue`) demi pencegahan *fraud*.
+  - Analisis arus kas (*Cashflow Analysis*): penerimaan kas masuk (*cash in*), pengeluaran kas keluar (*cash out*), dan arus kas bersih (*net cashflow*).
+  - Agregasi beban biaya berdasarkan kategori (`aggregateExpensesByCategory`) dengan porsi persentase biaya terurut menurun.
+  - Agregasi metode pembayaran (`aggregateRevenueByPaymentMethod`): CASH vs QRIS_SIM.
+  - Agregasi performa finansial antarcabang (`aggregateBranchPerformance`): omzet, HPP, beban operasional, laba bersih, dan capaian target omzet (*target_achievement_pct*).
+  - Garis waktu tren finansial harian berkelanjutan (`aggregateDailyFinancialTimeline`).
+  - Peringkat produk terlaris (`aggregateProductSalesPerformance`) berdasarkan kuantitas, omzet, dan margin laba.
+  - Standarisasi nilai Rupiah berupa bilangan bulat non-negatif (`BIGINT` / `Math.round`) dan pencegahan *division by zero* pada kondisi omzet nol.
+- `frontend/tests/lib/auto-ledger.test.ts` — 7 unit test komprehensif memvalidasi kalkulasi metrik finansial inti, pengecualian transaksi void, penanganan omzet nol / data kosong, breakdown kategori biaya, rasio metode pembayaran, performa cabang dengan target, timeline harian, dan perangkingan produk terlaris.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (10 test files, 104 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
