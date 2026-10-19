@@ -173,5 +173,22 @@
 
 ---
 
-### B3 — Role Guard & Layout Filter
+### B3 — Role Guard & Layout Filter ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/app/(app)/forbidden/page.tsx` — Halaman ramah 403 Akses Ditolak untuk kasir yang mencoba mengakses URL owner secara langsung
+- `frontend/src/components/role-guard.tsx` — Komponen Client RoleGuard untuk memproteksi halaman privat owner
+- `frontend/src/app/(app)/layout.tsx` — Filter menu dinamis (Kasir hanya melihat POS, Transaksi, Pengeluaran, Stok, Demo Guide), badge role, profile info, banner "Mode Demo", dan tombol logout
+- Pemasangan `<RoleGuard allowedRoles={['OWNER']}>` pada 6 halaman khusus owner: `dashboard`, `reports`, `branches`, `staff`, `import`, `stock`
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (36 tests passed)
+- `npm run build`     : **Lulus** (23 static & dynamic routes compiled)
+
+---
+
+### B4 — CRUD Cabang (Branch Management)
 **Status:** Belum dimulai
