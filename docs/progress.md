@@ -27,8 +27,22 @@
 
 ---
 
-### A2 — Inisialisasi Next.js + Dependencies
-**Status:** Belum dimulai
+### A2 — Inisialisasi Next.js + Dependencies ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- Inisialisasi Next.js 14 App Router di folder `frontend/` (TypeScript strict, Tailwind CSS, ESLint)
+- Instalasi dependencies terkunci PRD D13: `@supabase/ssr`, `@supabase/supabase-js`, `zod`, `react-hook-form`, `recharts`, `papaparse`, `date-fns`, `date-fns-tz`, `jspdf`, `jspdf-autotable`, `exceljs`, `clsx`, `tailwind-merge`, `lucide-react`
+- Setup testing tools: Vitest (`vitest.config.ts`), `@testing-library/react`, `@testing-library/jest-dom`
+- Konfigurasi `package.json` dengan script: `dev`, `build`, `start`, `lint`, `typecheck`, `test`
+- Setup shadcn/ui base: `components.json`, `src/lib/utils.ts` (`cn` helper)
+- Template environment variables `frontend/.env.example`
+
+**Hasil verifikasi:**
+- `npm run typecheck` : Lulus (0 error)
+- `npm run lint`      : Lulus (0 warning, 0 error)
+- `npm run test`      : Lulus (Vitest exit code 0)
+- `npm run build`     : Lulus (produksi build Next.js sukses)
 
 ### A3 — Supabase Client Helpers
 **Status:** Belum dimulai
