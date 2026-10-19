@@ -371,3 +371,26 @@
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
 - `npm run test`      : **Lulus** (6 test files, 64 tests passed, 0 failed)
 - `npm run build`     : **Lulus** (31 static & dynamic routes compiled)
+
+---
+
+### D4 — Parser Pengeluaran Berbasis Suara & Integrasi Halaman Pengeluaran ✅
+**Selesai:** 2026-10-19
+
+**Dibuat / Dimodifikasi:**
+- `frontend/src/lib/voice/expense-voice-parser.ts` — Modul NLP khusus pencatatan pengeluaran berbahasa Indonesia:
+  - Ekstraksi nominal Rupiah lisan (`extractExpenseAmount`): mendukung angka langsung, singkatan pasar (`50k`, `25rb`, `1.5jt`), serta frasa kata bilangan majemuk (`dua puluh lima ribu`, `seratus lima puluh ribu`, `satu juta lima ratus ribu`, `setengah juta`).
+  - Klasifikasi cerdas ke 8 kategori pengeluaran PRD (`categorizeExpense`): mendeteksi perintah langsung (*"kategori perawatan"*) dan kata kunci kontekstual spesifik UMKM (utilitas, gaji, sewa, transportasi, pemasaran, perawatan, perlengkapan operasional, lainnya).
+  - Pembersihan keterangan pengeluaran (`cleanExpenseDescription`) dari awalan ucapan lisan (*"catat beli..."*, *"tolong masukkan..."*) dan nominal yang terdeteksi.
+  - Perhitungan skor akurasi / keyakinan (*confidence score*) dan penjelas ramah pengguna.
+- `frontend/tests/lib/expense-voice-parser.test.ts` — 13 unit test komprehensif menguji ekstraksi nominal, penentuan kategori keyword vs eksplisit, pembersihan deskripsi, dan end-to-end voice parsing.
+- `frontend/src/app/(app)/expenses/page.tsx` — Integrasi UI Voice Expense:
+  - Pemasangan `VoiceMicButton` interaktif di header halaman pengeluaran berdampingan dengan tombol pencatatan manual.
+  - Baris kartu pill simulasi suara 1-klik (*"catat beli galon air dua puluh ribu"*, *"bayar listrik seratus lima puluh ribu"*, *"beli kresek dan sedotan 25rb"*, dsb.) untuk memudahkan demo dan pengujian.
+  - Modal Interaktif Konfirmasi Pengeluaran Suara (*Voice Expense Confirmation Modal*): menampilkan transkrip asli, badge akurasi AI Voice, pemilihan cabang & tanggal, pemilihan kategori dengan indikator kata kunci pencocokan, input nominal dengan live format Rupiah, dan tombol simpan langsung dengan `input_method: 'VOICE'` serta `voice_transcript`.
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (7 test files, 77 tests passed, 0 failed)
+- `npm run build`     : **Lulus** (31 static & dynamic routes compiled)
