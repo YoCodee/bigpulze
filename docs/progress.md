@@ -206,5 +206,18 @@
 
 ---
 
-### B5 — CRUD Produk per Cabang
-**Status:** Belum dimulai
+### B5 — CRUD Produk per Cabang ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/app/api/products/route.ts` — Endpoint GET (daftar produk aktif dengan filter `branch_id`, pencarian nama/SKU `q`, kategori) dan POST (tambah produk dengan validasi Zod, inisialisasi `stock = 0`, validasi duplikasi SKU per cabang)
+- `frontend/src/app/api/products/[id]/route.ts` — Endpoint PATCH (edit field non-stock: nama, SKU, kategori, harga modal/jual, aliases, status aktif; `stock` dilarang diubah langsung sesuai aturan proteksi stok) dan DELETE (soft-delete `is_active = false`)
+- `frontend/src/app/(app)/products/page.tsx` — UI katalog produk komprehensif: pemilih cabang, tab kategori, pencarian real-time, tabel produk interaktif, modal tambah/edit produk dengan input multi-alias tag, modal konfirmasi hapus (soft delete), serta warning proteksi HPP > Harga Jual dan badge indikator stok tipis
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (4 test files, 36 tests passed, 0 failed)
+- `npm run build`     : **Lulus** (25 static & dynamic routes compiled)
+
+**Status Tahap B:** Selesai (Autentikasi & Master Data 100% siap)
