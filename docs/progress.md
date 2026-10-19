@@ -483,3 +483,26 @@
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
 - `npm run test`      : **Lulus** (9 test files, 97 tests passed, 0 failed)
 - `npm run build`     : **Lulus** (32 static & dynamic routes compiled)
+
+---
+
+### E4 — Endpoint API Rekomendasi Mutasi & Eksekusi Cepat Antarcabang ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/app/api/stock/recommendations/route.ts` — Endpoint `GET` penghasil rekomendasi mutasi stok otomatis:
+  - Mengambil seluruh katalog produk aktif antarcabang organisasi.
+  - Menghitung rata-rata laju penjualan harian (*daily velocity*) produk dari data transaksi riil 14 hari terakhir.
+  - Menjalankan algoritma `generateStockTransferRecommendations` untuk mendeteksi cabang defisit vs donor surplus dengan net benefit positif setelah ongkir.
+  - Menggabungkan saran live dengan rekomendasi mutasi tersimpan di tabel `ml_recommendations`.
+  - Menyajikan ringkasan metrik instan: total rekomendasi, total unit yang disarankan dimutasi, estimasi net benefit rupiah, dan jumlah item berkategori kritis.
+- `frontend/src/app/api/stock/recommendations/[id]/execute/route.ts` — Endpoint `POST` eksekusi mutasi transfer 1-klik:
+  - Proteksi wewenang: hanya pemilik usaha (OWNER) yang dapat memicu eksekusi pemindahan stok.
+  - Memanggil fungsi transaksi RPC `transfer_stock` dengan mekanisme *two-phase row-level locking* untuk mencegah *race condition* / *deadlock*.
+  - Otomatis mencatat kartu mutasi ganda (`TRANSFER_OUT` di cabang asal dan `TRANSFER_IN` di cabang tujuan), memperbarui stok kedua produk, dan menandai status rekomendasi sebagai terselesaikan (`is_resolved = true`).
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (9 test files, 97 tests passed, 0 failed)
+- `npm run build`     : **Lulus** (33 static & dynamic routes compiled)
