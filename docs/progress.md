@@ -326,3 +326,22 @@
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
 - `npm run test`      : **Lulus** (51 tests passed)
 - `npm run build`     : **Lulus** (31 static & dynamic routes compiled)
+
+---
+
+### D2 — Parser Bahasa Alami Indonesia & Fuzzy Alias Matching ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/lib/voice/voice-parser.ts` — Modul pemrosesan bahasa alami (NLP) Bahasa Indonesia untuk kasir POS:
+  - Kamus konversi kata bilangan lokal (`parseIndonesianNumber`): menangani angka digit, kata satuan, belasan, puluhan, ratusan, hingga frasa bahasa pasar seperti "setengah lusin" (6), "selusin" (12), "segelas/seporsi" (1)
+  - Ekstraksi metode pembayaran (`extractPaymentMethod`): mendeteksi frasa "bayar tunai" / "cash" -> CASH, dan "bayar qris" / "scan qris" -> QRIS_SIM
+  - Pemecah klausa kalimat majemuk kasir berdasarkan kata hubung ("dan", "sama", "lalu", "terus", tanda koma)
+  - Pencocokan entitas produk (`matchProductInClause`): multi-tingkat melalui nama persis, SKU, daftar alias produk (misal "kopsu" -> "Es Kopi Susu"), serta pencocokan token overlap (fuzzy)
+  - Kalkulasi skor keyakinan (*confidence score*) dan penampungan frasa yang tidak dikenali (*unmatched phrases*) untuk konfirmasi kasir
+- `frontend/tests/lib/voice-parser.test.ts` — 13 unit test komprehensif menguji normalisasi angka, frasa bayar, urutan nama-jumlah dan jumlah-nama, pencocokan alias, serta pesanan majemuk
+
+**Hasil verifikasi:**
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run test`      : **Lulus** (6 test files, 64 tests passed, 0 failed)
