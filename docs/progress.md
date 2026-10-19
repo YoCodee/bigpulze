@@ -62,8 +62,20 @@
 **Belum teruji:**
 - Koneksi nyata ke Supabase live (DITUNDA, menunggu URL & key diisi)
 
-### A4 — Utility & Helper Libraries
-**Status:** Belum dimulai
+### A4 — Utility & Helper Libraries ✅
+**Selesai:** 2026-10-19
+
+**Dibuat:**
+- `frontend/src/lib/api-response.ts` — Helper standar JSON response (`apiSuccess`, `apiError`) dan mapper kode error RPC PostgreSQL per PRD §12.1
+- `frontend/src/lib/format.ts` — Helper formatting Rupiah utuh (`formatRupiah`), persen (`formatPercent`), dan angka per PRD D4
+- `frontend/src/lib/date.ts` — Helper kalkulasi tanggal bisnis zona WIB `Asia/Jakarta` (`getBusinessDate`, `getYesterday`, `formatDateId`) per PRD D5
+- `frontend/src/middleware.ts` — Root Next.js middleware penjaga sesi auth Supabase
+
+**Hasil verifikasi:**
+- `npm run typecheck` : Lulus (0 error)
+- `npm run lint`      : Lulus (0 warning, 0 error)
+- `npm run test`      : Lulus (Vitest exit code 0)
+- `npm run build`     : Lulus (Next.js build sukses dengan middleware terdaftar)
 
 ### A5 — Layout & Halaman Kosong
 **Status:** Belum dimulai
