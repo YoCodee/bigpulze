@@ -575,3 +575,24 @@
 - `npm run typecheck` : **Lulus** (0 error)
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+---
+
+### F3 — UI Laporan Finansial Interaktif (/reports) ✅
+**Selesai:** 2026-10-19
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/reports/page.tsx` — Antarmuka komprehensif laporan laba rugi dan pembukuan otomatis multi-cabang:
+  - **Bilah Filter Dinamis:** Pemilihan cabang tunggal atau konsolidasi seluruh cabang, serta pilihan rentang waktu fleksibel (`Hari Ini`, `Kemarin`, `7 Hari`, `30 Hari`, `Bulan Lalu`, dan rentang tanggal `Kustom`).
+  - **Ringkasan Eksekutif 6 Metrik Utama:** Total Omzet (dengan rata-rata nilai tiket), Total HPP Modal (% terhadap omzet), Laba Kotor (dengan Margin Kotor %), Beban Operasional, Laba Operasional Bersih (dengan Margin Bersih %), dan Arus Kas Bersih (*Net Cashflow*).
+  - **Tab 1 (Ikhtisar & Tren Finansial):** Grafik visual batang interaktif harian (Omzet vs Beban) dengan tooltip rincian laba per tanggal, rasio metode pembayaran (Tunai vs QRIS), dan kartu kaskade arus nilai tambah (*Value Flow Cascade*).
+  - **Tab 2 (Struktur Beban Biaya):** Pemetaan proporsi beban operasional per kategori (Utilitas, Gaji, Sewa, Transportasi, Pemasaran, Perawatan, dll.) lengkap dengan bilah persentase visual dan frekuensi transaksi pengeluaran.
+  - **Tab 3 (Klasemen Antarcabang):** Tabel komparasi performa cabang (Omzet, HPP, Margin Kotor, Beban Biaya, Laba Bersih, dan bilah pencapaian target penjualan harian).
+  - **Tab 4 (Peringkat Margin Produk):** Tabel kontribusi omzet produk terlaris, total kuantitas terjual, HPP modal, laba kotor, dan rasio margin kotor menu.
+  - Tombol aksi ekspor berkas disiapkan pada header (siap dihubungkan pada modul F4).
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (10 test files, 104 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
