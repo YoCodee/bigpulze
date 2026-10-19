@@ -19,7 +19,12 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   Filter,
+  Sparkles,
+  PackageCheck,
+  Check,
+  ArrowRight,
 } from 'lucide-react';
+import { StockTransferRecommendation } from '@/lib/stock/transfer-recommender';
 
 interface Branch {
   id: string;
@@ -93,6 +98,11 @@ export default function StockPage() {
   const [transferQty, setTransferQty] = useState<number | ''>('');
   const [transferSubmitting, setTransferSubmitting] = useState(false);
 
+  // Smart Recommendations State
+  const [recommendations, setRecommendations] = useState<StockTransferRecommendation[]>([]);
+  const [recsLoading, setRecsLoading] = useState(false);
+  const [executingRecId, setExecutingRecId] = useState<string | null>(null);
+
   // Movements History State
   const [movements, setMovements] = useState<StockMovement[]>([]);
   const [historyBranchId, setHistoryBranchId] = useState<string>('ALL');
@@ -154,6 +164,22 @@ export default function StockPage() {
     }
   }, [historyBranchId, historyType]);
 
+  // Fetch Smart Stock Transfer Recommendations
+  const fetchRecommendations = useCallback(async () => {
+    try {
+      setRecsLoading(true);
+      const res = await fetch('/api/stock/recommendations');
+      const json = await res.json();
+      if (res.ok && json.data) {
+        setRecommendations(json.data.recommendations || []);
+      }
+    } catch {
+      // Fallback
+    } finally {
+      setRecsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchBranches();
     fetchProducts();
@@ -162,8 +188,10 @@ export default function StockPage() {
   useEffect(() => {
     if (activeTab === 'history') {
       fetchMovements();
+    } else if (activeTab === 'transfer') {
+      fetchRecommendations();
     }
-  }, [activeTab, fetchMovements]);
+  }, [activeTab, fetchMovements, fetchRecommendations]);
 
   // Branch map
   const branchMap = useMemo(() => {
@@ -347,6 +375,44 @@ export default function StockPage() {
     } finally {
       setTransferSubmitting(false);
     }
+  };
+
+  // 1-Click Execute Stock Transfer from Recommendation
+  const handleExecuteRecommendation = async (rec: StockTransferRecommendation) => {
+    try {
+      setExecutingRecId(rec.id || 'executing');
+      const res = await fetch(`/api/stock/recommendations/${rec.id}/execute`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from_product_id: rec.from_product_id,
+          to_product_id: rec.to_product_id,
+          quantity: rec.transfer_qty,
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Gagal mengeksekusi mutasi stok');
+
+      alert(
+        `Sukses! ${rec.transfer_qty} unit ${rec.product_name} berhasil dimutasi dari ${rec.from_branch_name} ke ${rec.to_branch_name}.`
+      );
+      fetchProducts();
+      fetchRecommendations();
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : 'Terjadi kesalahan saat mengeksekusi transfer');
+    } finally {
+      setExecutingRecId(null);
+    }
+  };
+
+  // Prefill Manual Form with Recommendation Details
+  const handlePrefillTransfer = (rec: StockTransferRecommendation) => {
+    setFromBranchId(rec.from_branch_id);
+    setToBranchId(rec.to_branch_id);
+    setFromProductId(rec.from_product_id);
+    setToProductId(rec.to_product_id);
+    setTransferQty(rec.transfer_qty);
   };
 
   // Movement badge formatter
@@ -658,15 +724,150 @@ export default function StockPage() {
 
         {/* TAB 2: INTER-BRANCH STOCK TRANSFER */}
         {activeTab === 'transfer' && (
-          <div className="max-w-2xl mx-auto bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-            <div>
-              <h2 className="text-base font-bold text-slate-900">Transfer Stok Antarcabang</h2>
-              <p className="text-xs text-slate-500">
-                Pindahkan stok barang dengan SKU yang sama dari satu cabang ke cabang lainnya secara instan dan atomik.
-              </p>
+          <div className="max-w-4xl mx-auto space-y-6">
+            {/* Smart Balancing Recommendations Section */}
+            <div className="bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-slate-50 border border-blue-200/80 rounded-2xl p-5 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                      Rekomendasi Mutasi Antarcabang Otomatis
+                      {recommendations.length > 0 && (
+                        <span className="px-2 py-0.5 text-[10px] font-extrabold bg-blue-600 text-white rounded-full">
+                          {recommendations.length} Saran
+                        </span>
+                      )}
+                    </h2>
+                    <p className="text-xs text-slate-500">
+                      Algoritma cerdas mendeteksi surplus &amp; defisit stok antarcabang dengan perhitungan margin layak.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={fetchRecommendations}
+                  disabled={recsLoading}
+                  className="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-1.5 transition-all shadow-xs w-fit"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${recsLoading ? 'animate-spin' : ''}`} />
+                  Refresh Analisis
+                </button>
+              </div>
+
+              {recsLoading ? (
+                <div className="py-8 flex flex-col items-center justify-center text-slate-400 gap-2">
+                  <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+                  <span className="text-xs font-medium">Menganalisis pergerakan stok seluruh cabang...</span>
+                </div>
+              ) : recommendations.length === 0 ? (
+                <div className="bg-white/80 border border-slate-200/80 rounded-xl p-4 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <PackageCheck className="w-4 h-4" />
+                  </div>
+                  <div className="text-xs">
+                    <span className="font-bold text-slate-800">Persediaan Seluruh Cabang Seimbang &amp; Optimal.</span>
+                    <p className="text-slate-500 mt-0.5">
+                      Tidak ditemukan cabang kritis yang defisit stok sementara cabang lain memiliki surplus berlebih.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                  {recommendations.map((rec) => (
+                    <div
+                      key={rec.id}
+                      className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs hover:border-blue-300 transition-all flex flex-col justify-between gap-3"
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <span
+                            className={`px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase ${
+                              rec.urgency === 'CRITICAL'
+                                ? 'bg-rose-100 text-rose-700 border border-rose-200'
+                                : 'bg-amber-100 text-amber-700 border border-amber-200'
+                            }`}
+                          >
+                            {rec.urgency === 'CRITICAL' ? 'Kritis / Habis' : 'Disarankan'}
+                          </span>
+                          <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                            Net: +{formatRupiah(rec.net_benefit)}
+                          </span>
+                        </div>
+
+                        <div>
+                          <h3 className="text-xs font-bold text-slate-900">{rec.product_name}</h3>
+                          <p className="text-[11px] text-slate-500 font-mono mt-0.5">SKU: {rec.sku}</p>
+                        </div>
+
+                        {/* Route Transfer */}
+                        <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between text-xs">
+                          <div className="text-left">
+                            <span className="text-[10px] text-slate-400 block font-medium">Asal (Surplus)</span>
+                            <span className="font-bold text-slate-700">{rec.from_branch_name}</span>
+                          </div>
+                          <div className="flex flex-col items-center px-2">
+                            <span className="text-[10px] font-extrabold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded">
+                              {rec.transfer_qty} unit
+                            </span>
+                            <ArrowRight className="w-3.5 h-3.5 text-slate-400 my-0.5" />
+                          </div>
+                          <div className="text-right">
+                            <span className="text-[10px] text-slate-400 block font-medium">Tujuan (Kritis)</span>
+                            <span className="font-bold text-slate-700">{rec.to_branch_name}</span>
+                          </div>
+                        </div>
+
+                        <p className="text-[11px] text-slate-600 italic bg-amber-50/50 p-2 rounded border border-amber-100/60">
+                          {rec.reason}
+                        </p>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handlePrefillTransfer(rec)}
+                          className="px-2.5 py-1.5 text-[11px] font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                        >
+                          Isi Form Manual
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleExecuteRecommendation(rec)}
+                          disabled={executingRecId === rec.id}
+                          className="px-3 py-1.5 text-[11px] font-bold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:bg-blue-300 rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
+                        >
+                          {executingRecId === rec.id ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              Memutasi...
+                            </>
+                          ) : (
+                            <>
+                              <Check className="w-3.5 h-3.5" />
+                              Eksekusi 1-Klik
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <form onSubmit={handleTransferSubmit} className="space-y-5">
+            {/* Manual Transfer Form */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+              <div>
+                <h2 className="text-base font-bold text-slate-900">Form Transfer Manual Antarcabang</h2>
+                <p className="text-xs text-slate-500">
+                  Pindahkan stok barang dengan SKU yang sama dari satu cabang ke cabang lainnya secara instan dan atomik.
+                </p>
+              </div>
+
+              <form onSubmit={handleTransferSubmit} className="space-y-5">
               {/* Branch Source & Target Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Source Branch */}
@@ -858,6 +1059,7 @@ export default function StockPage() {
                 </button>
               </div>
             </form>
+          </div>
           </div>
         )}
 

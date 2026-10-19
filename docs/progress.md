@@ -506,3 +506,27 @@
 - `npm run lint`      : **Lulus** (0 warning, 0 error)
 - `npm run test`      : **Lulus** (9 test files, 97 tests passed, 0 failed)
 - `npm run build`     : **Lulus** (33 static & dynamic routes compiled)
+
+---
+
+### E5 — UI Anomaly Review & 1-Click Stock Transfer Action ✅
+**Selesai:** 2026-10-19
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/dashboard/page.tsx` — Peningkatan Dashboard Utama mengadopsi struktur *3 Pertanyaan Pagi* (PRD §10.1):
+  - **Pilar 1 (Kemarin untung atau rugi?):** Metrik ringkasan omzet harian, beban biaya operasional, rasio efisiensi, dan estimasi laba bersih.
+  - **Pilar 2 (Ada masalah apa?):** Kartu pemantauan anomali aktif real-time (Z-Score fluktuasi omzet, lonjakan beban biaya operasional, dan potensi duplikasi transaksi POS) dengan lencana tingkat keparahan (*severity badge*), rincian deviasi statistik Z, dan tombol *"Tinjau & Selesaikan"*.
+  - **Pilar 3 (Apa yang harus dilakukan?):** Kartu rekomendasi mutasi stok antarcabang dengan rute perpindahan surplus \(\rightarrow\) defisit, estimasi net benefit rupiah terselamatkan, alasan kelayakan, dan tombol *"Eksekusi Mutasi Stok 1-Klik"*.
+  - **Modal Interaktif Resolusi Anomali:** Form dialog modal untuk OWNER meninjau detail anomali, memasukkan catatan tindak lanjut, dan menandai anomali sebagai `RESOLVED` atau `DISMISSED`.
+- `frontend/src/app/(app)/stock/page.tsx` — Integrasi UI Rekomendasi Mutasi Cerdas pada Tab 2 (*Transfer Antarcabang*):
+  - Banner dinamis rekomendasi mutasi cerdas lengkap dengan lencana urgensi (`CRITICAL` vs `DISARANKAN`), rute cabang asal & tujuan, kuantitas mutasi optimal, dan potensi keuntungan bersih setelah ongkir kurir.
+  - Opsi tindakan fleksibel: tombol *"Eksekusi 1-Klik"* untuk mutasi langsung instan atau *"Isi Form Manual"* untuk mengisi parameter form transfer antarcabang secara otomatis dengan data rekomendasi.
+  - Status seimbang (*optimal state banner*) jika seluruh cabang tidak memiliki ketimpangan stok yang perlu dimutasi.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (9 test files, 97 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (33 static & dynamic routes compiled)
+
+**Status Tahap E:** Selesai 100% (Mesin Anomaly Detection & Inter-Branch Stock Balancing siap produksi)
