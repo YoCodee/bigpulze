@@ -1115,3 +1115,35 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R6.4:** Selesai 100% (Manajemen Stok & Mutasi Antarcabang Siap)
+
+### R6.5 — Katalog Produk & Pengaturan HPP (`frontend/src/app/(app)/products/page.tsx`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/products/page.tsx` — Peremajaan menyeluruh halaman master katalog produk dan kalkulasi HPP mengadopsi tema **Light SaaS Enterprise** modern:
+  - **Top Header:**
+    - Judul halaman *Katalog Produk & Pengaturan HPP* dengan badge *Multi-Cabang* dan tombol *Tambah Produk Baru* (`<Button variant="primary">`) khusus OWNER.
+  - **Strip Terpadu 4 Metrik Produk (`<MetricStrip />`):**
+    1. *Total SKU Produk:* Total produk aktif di cabang terpilih.
+    2. *Rata-rata Margin Kotor:* Persentase rata-rata laba kotor terhadap omzet dengan badge oranye `Margin`.
+    3. *Produk Stok Menipis:* Jumlah produk di bawah batas minimum alert dengan badge dinamis merah `Perhatian` atau hijau `Aman`.
+    4. *Peringatan Rugi (Di Bawah HPP):* Deteksi harga jual lebih rendah dari HPP modal dengan badge merah `Rugi` atau hijau `Optimal`.
+  - **Toolbar Filter Cabang & Pencarian:**
+    - Dropdown Cabang terpadu (otomatis dikunci untuk kasir per otorisasi role) dan pencarian real-time nama produk, SKU, atau alias suara dengan tombol hapus instan.
+    - Deretan tombol kapsul filter kategori (*Semua Kategori*, dll.) dengan styling enterprise aktif.
+  - **Tabel Katalog Produk Densitas Tinggi:**
+    - Border 1px `#E5E7EB` dengan kolom: SKU & Nama Produk (nama bold + SKU font-mono), Kategori (Badge neutral), HPP Modal (formatRupiah font-mono), Harga Jual & Margin (badge `+XX% Margin` atau `Di bawah HPP` warning), Stok Fisik (badge alert minimum), Alias Suara (pill tags dengan ikon Mic), dan Aksi (Ubah & Nonaktifkan).
+    - Terintegrasi dengan `<EmptyState />` saat filter tidak menemukan data.
+  - **Modal Tambah & Ubah Master Produk:**
+    - Dialog modern dengan input SKU, Kategori, Nama Produk, HPP/Modal, Harga Jual, Batas Stok Minimum, dan Manajemen Alias Suara kasir.
+    - Kalkulasi live margin laba kotor (+XX% dan nominal laba) serta banner peringatan real-time jika harga jual berada di bawah HPP modal.
+  - **Modal Nonaktifkan Produk (Soft Delete):**
+    - Dialog konfirmasi aman menjelaskan bahwa produk dinonaktifkan dari kasir aktif POS sementara seluruh riwayat transaksi lama tetap tersimpan utuh (PRD D9).
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R6.5:** Selesai 100% (Katalog Produk & Pengaturan HPP Siap)
