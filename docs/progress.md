@@ -1147,3 +1147,33 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R6.5:** Selesai 100% (Katalog Produk & Pengaturan HPP Siap)
+
+### R6.6 — Laporan Laba Rugi Auto-Ledger & Ekspor Bank KUR (`frontend/src/app/(app)/reports/page.tsx`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/reports/page.tsx` — Peremajaan menyeluruh halaman pembukuan otomatis multi-cabang (Auto-Ledger P&L) dan ekspor resmi perbankan KUR mengadopsi tema **Light SaaS Enterprise** modern:
+  - **Top Header & Ekspor Cepat:**
+    - Judul halaman *Laporan Laba Rugi & Auto-Ledger* dengan badge *Auto-Ledger* dan *Bank Ready*.
+    - Tombol aksi ekspor resmi: *Ekspor PDF Bank* (jspdf autotable) dan *Ekspor Excel (.csv)* siap pakai untuk audit pengajuan KUR.
+  - **Toolbar Filter Terpadu:**
+    - Dropdown filter cabang (Konsolidasi seluruh gerai atau per gerai individu).
+    - Segmented period switcher: *Hari Ini*, *Kemarin*, *7 Hari*, *30 Hari*, *Bulan Lalu*, *Kustom* (dengan pemilih rentang tanggal WIB).
+  - **Strip Terpadu 4 Metrik Laba Rugi (`<MetricStrip />`):**
+    1. *Total Omzet (Penjualan):* Format Rupiah dengan rata-rata ticket size per transaksi.
+    2. *Total HPP (Modal Pokok):* COGS dengan persentase proporsi terhadap omzet.
+    3. *Beban Biaya Operasional:* Total pengeluaran dengan jumlah kategori beban aktif.
+    4. *Laba Bersih Operasional:* Laba bersih riil dengan margin bersih % serta status badge dinamis hijau `Surplus` atau merah `Defisit`.
+  - **Navigasi 4-View Tab Tersegmen (Segmented Control):**
+    1. *Ikhtisar & Tren Finansial:* Visualizer barchart tren harian omzet vs beban operasional dengan tooltip detail laba harian, kartu distribusi metode pembayaran (Cash vs QRIS), dan waterfall card *Arus Nilai Tambah (Value Flow)* bergaya dark slate-950.
+    2. *Struktur Beban Biaya:* Grid kartu distribusi beban per kategori operasional dengan progress bar, nominal Rupiah, dan persentase biaya.
+    3. *Klasemen Antarcabang:* Tabel densitas tinggi perbandingan performa gerai (omzet, HPP, laba kotor, beban, laba bersih, dan progress bar capaian target harian).
+    4. *Peringkat Margin Produk:* Tabel peringkat kontribusi menu/barang dengan kuantitas terjual, omzet, HPP, laba kotor, dan badge gross margin %.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R6.6:** Selesai 100% (Laporan Laba Rugi Auto-Ledger & Ekspor Bank KUR Siap)
