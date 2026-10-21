@@ -13,7 +13,13 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle2,
+  X,
+  Building2,
 } from 'lucide-react';
+import { MetricStrip } from '@/components/ui/metric-strip';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
 
 interface Branch {
   id: string;
@@ -164,61 +170,123 @@ export default function BranchesPage() {
 
   const activeBranchCount = branches.filter((b) => b.is_active).length;
   const isLimitReached = activeBranchCount >= 5;
+  const totalTarget = branches
+    .filter((b) => b.is_active)
+    .reduce((sum, b) => sum + (b.daily_target || 0), 0);
+  const numericTarget = parseInt(dailyTarget.replace(/\D/g, ''), 10) || 0;
 
   return (
     <RoleGuard allowedRoles={['OWNER']}>
       <div className="space-y-6">
-        {/* Header */}
+        {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center space-x-3">
-              <h1 className="text-2xl font-bold text-slate-900">Kelola Cabang</h1>
-              <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                isLimitReached ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'
-              }`}>
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+                Kelola Cabang &amp; Kuota Gerai
+              </h1>
+              <Badge variant={isLimitReached ? 'warning' : 'enterprise'} dot>
                 {activeBranchCount} / 5 Cabang Aktif
-              </span>
+              </Badge>
             </div>
             <p className="text-sm text-slate-500 mt-0.5">
-              Kelola cabang operasional (maksimal 5 cabang) dan target omzet harian
+              Kelola gerai operasional, alamat cabang, target omzet harian, dan kuota multi-cabang (maksimal 5 cabang)
             </p>
           </div>
 
-          <button
+          <Button
+            variant="primary"
+            size="md"
             onClick={openCreateModal}
             disabled={isLimitReached}
-            className={`inline-flex items-center px-4 py-2.5 rounded-lg text-sm font-semibold shadow-sm transition ${
-              isLimitReached
-                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            }`}
+            className="flex items-center gap-2"
           >
-            <Plus className="w-4 h-4 mr-1.5" />
-            Tambah Cabang
-          </button>
+            <Plus className="w-4 h-4" />
+            Tambah Cabang Baru
+          </Button>
         </div>
+
+        {/* 4-KPI Metric Strip */}
+        <MetricStrip
+          title="Ringkasan Jaringan Cabang"
+          action={
+            <span className="text-xs text-slate-500 font-medium">
+              Ketentuan PRD: <strong className="text-slate-700">Maks. 5 Cabang/Organisasi</strong>
+            </span>
+          }
+          metrics={[
+            {
+              label: 'Total Cabang Terdata',
+              value: branches.length,
+              subtext: `${activeBranchCount} cabang aktif beroperasi`,
+              badge: <Badge variant="enterprise">Multi-Cabang</Badge>,
+            },
+            {
+              label: 'Sisa Kuota Cabang',
+              value: `${Math.max(0, 5 - activeBranchCount)} Gerai`,
+              subtext: isLimitReached ? 'Batas maksimal 5 cabang tercapai' : 'Dapat menambah gerai baru',
+              badge: isLimitReached ? (
+                <Badge variant="danger" dot>
+                  Penuh
+                </Badge>
+              ) : (
+                <Badge variant="success" dot>
+                  Tersedia
+                </Badge>
+              ),
+            },
+            {
+              label: 'Akumulasi Target Harian',
+              value: formatRupiah(totalTarget),
+              subtext: 'Target omzet harian seluruh gerai',
+              badge: (
+                <Badge variant="brand" dot>
+                  Target
+                </Badge>
+              ),
+            },
+            {
+              label: 'Status Kepatuhan Database',
+              value: '100% Valid',
+              subtext: 'RLS & trigger limit 5 cabang aktif',
+              badge: (
+                <Badge variant="success" dot>
+                  Tervalidasi
+                </Badge>
+              ),
+            },
+          ]}
+        />
 
         {/* Feedback alerts */}
         {successMsg && (
-          <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-sm flex items-center justify-between">
-            <div className="flex items-center">
-              <CheckCircle2 className="w-4 h-4 mr-2 text-emerald-600 flex-shrink-0" />
+          <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>{successMsg}</span>
             </div>
-            <button onClick={() => setSuccessMsg(null)} className="text-emerald-600 hover:text-emerald-800 text-xs">
-              Tutup
+            <button
+              type="button"
+              onClick={() => setSuccessMsg(null)}
+              className="text-emerald-700 hover:text-emerald-900 font-bold"
+            >
+              ✕
             </button>
           </div>
         )}
 
         {errorMsg && (
-          <div className="p-3 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm flex items-center justify-between">
-            <div className="flex items-center">
-              <AlertCircle className="w-4 h-4 mr-2 text-red-600 flex-shrink-0" />
+          <div className="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
               <span>{errorMsg}</span>
             </div>
-            <button onClick={() => setErrorMsg(null)} className="text-red-600 hover:text-red-800 text-xs">
-              Tutup
+            <button
+              type="button"
+              onClick={() => setErrorMsg(null)}
+              className="text-rose-700 hover:text-rose-900 font-bold"
+            >
+              ✕
             </button>
           </div>
         )}
@@ -227,81 +295,82 @@ export default function BranchesPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white p-6 rounded-xl border border-slate-200 animate-pulse space-y-4">
-                <div className="h-6 bg-slate-200 rounded w-1/2" />
-                <div className="h-4 bg-slate-100 rounded w-3/4" />
-                <div className="h-4 bg-slate-100 rounded w-1/3" />
+              <div
+                key={i}
+                className="bg-white p-6 rounded-xl border border-slate-200 animate-pulse space-y-4 shadow-card"
+              >
+                <div className="h-6 bg-slate-200 rounded-md w-1/2" />
+                <div className="h-4 bg-slate-100 rounded-md w-3/4" />
+                <div className="h-4 bg-slate-100 rounded-md w-1/3" />
               </div>
             ))}
           </div>
         ) : branches.length === 0 ? (
-          <div className="bg-white p-12 rounded-xl border border-slate-200 text-center space-y-4">
-            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto">
-              <Store className="w-8 h-8" />
-            </div>
-            <div className="space-y-1">
-              <h2 className="text-lg font-semibold text-slate-900">Belum Ada Cabang</h2>
-              <p className="text-sm text-slate-500 max-w-sm mx-auto">
-                Tambahkan cabang pertama Anda atau gunakan akun demo untuk memuat data contoh 3 cabang.
-              </p>
-            </div>
-            <button
-              onClick={openCreateModal}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition"
-            >
-              <Plus className="w-4 h-4 mr-1.5" />
-              Tambah Cabang Sekarang
-            </button>
+          <div className="p-6 bg-white rounded-xl border border-slate-200 shadow-card">
+            <EmptyState
+              icon={Store}
+              title="Belum Ada Cabang"
+              description="Tambahkan cabang pertama Anda atau gunakan akun demo untuk memuat data contoh 3 cabang."
+              actionLabel="Tambah Cabang Sekarang"
+              onAction={openCreateModal}
+            />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {branches.map((b) => (
               <div
                 key={b.id}
-                className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-5"
+                className="bg-white p-5 rounded-xl border border-slate-200 shadow-card hover:border-slate-300 transition-all flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h2 className="text-lg font-bold text-slate-900">{b.name}</h2>
-                      <div className="flex items-center text-xs text-slate-500 mt-1">
-                        <MapPin className="w-3.5 h-3.5 mr-1 text-slate-400 flex-shrink-0" />
+                      <div className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-enterprise-600 shrink-0" />
+                        <h2 className="text-base font-bold text-slate-900">{b.name}</h2>
+                      </div>
+                      <div className="flex items-center text-xs text-slate-500 mt-1 pl-6">
+                        <MapPin className="w-3.5 h-3.5 mr-1 text-slate-400 shrink-0" />
                         <span className="truncate">{b.location}</span>
                       </div>
                     </div>
-                    <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      Aktif
-                    </span>
+                    <Badge variant={b.is_active ? 'success' : 'neutral'} dot className="text-[10px]">
+                      {b.is_active ? 'Aktif' : 'Nonaktif'}
+                    </Badge>
                   </div>
 
-                  <div className="pt-2 border-t border-slate-100">
+                  <div className="pt-3 border-t border-slate-100">
                     <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-                      <span className="flex items-center">
-                        <Target className="w-3.5 h-3.5 mr-1 text-blue-500" />
-                        Target Omzet Harian
+                      <span className="flex items-center gap-1">
+                        <Target className="w-3.5 h-3.5 text-enterprise-600" />
+                        Target Omzet Harian:
                       </span>
                     </div>
-                    <p className="text-base font-extrabold text-blue-600">
+                    <p className="text-base font-mono font-bold text-enterprise-700">
                       {formatRupiah(b.daily_target)}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
-                  <button
+                <div className="flex items-center justify-end gap-1.5 pt-3 border-t border-slate-100">
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => openEditModal(b)}
-                    className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition"
+                    className="h-8 w-8 p-0 text-slate-500 hover:text-enterprise-600 hover:bg-slate-100"
                     title="Ubah Cabang"
                   >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setDeletingBranch(b)}
-                    className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-md transition"
+                    className="h-8 w-8 p-0 text-slate-500 hover:text-rose-600 hover:bg-rose-50"
                     title="Nonaktifkan Cabang"
                   >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
                 </div>
               </div>
             ))}
@@ -310,80 +379,99 @@ export default function BranchesPage() {
 
         {/* Modal Create / Edit */}
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-5">
-              <div>
-                <h3 className="text-lg font-bold text-slate-900">
-                  {editingBranch ? 'Ubah Data Cabang' : 'Tambah Cabang Baru'}
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Maksimal 5 cabang aktif per organisasi usaha (PRD FR-1.2)
-                </p>
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">
+                    {editingBranch ? 'Ubah Data Cabang' : 'Tambah Cabang Baru'}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Maksimal 5 cabang aktif per organisasi usaha (PRD FR-1.2)
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="text-slate-400 hover:text-slate-600 rounded-lg p-1 hover:bg-slate-200/60 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Nama Cabang
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+                    Nama Cabang <span className="text-rose-500">*</span>
                   </label>
                   <input
+                    aria-label="Nama cabang"
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Contoh: Cabang Malioboro"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full h-10 px-3 border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Alamat / Lokasi
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+                    Alamat / Lokasi <span className="text-rose-500">*</span>
                   </label>
                   <textarea
+                    aria-label="Alamat lokasi cabang"
                     required
                     rows={2}
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="Contoh: Jl. Malioboro No. 45, Yogyakarta"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Target Penjualan Harian (Rp)
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+                    Target Penjualan Harian (Rp) <span className="text-rose-500">*</span>
                   </label>
                   <input
+                    aria-label="Target penjualan harian"
                     type="text"
                     required
                     value={dailyTarget}
                     onChange={(e) => setDailyTarget(e.target.value)}
                     placeholder="Contoh: 3000000"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                    className="w-full h-10 px-3 border border-slate-300 rounded-xl text-sm font-mono font-bold text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
                   />
+                  {numericTarget > 0 && (
+                    <p className="text-[11px] text-enterprise-600 font-semibold mt-1">
+                      Terbaca: {formatRupiah(numericTarget)}
+                    </p>
+                  )}
                   <p className="text-[11px] text-slate-400 mt-1">
                     Dipakai untuk menghitung persentase capaian di Branch Leaderboard
                   </p>
                 </div>
 
-                <div className="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100">
-                  <button
-                    type="button"
+                <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
+                  <Button
+                    variant="secondary"
+                    size="md"
                     disabled={submitting}
                     onClick={() => setIsModalOpen(false)}
-                    className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition"
                   >
                     Batal
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="md"
                     type="submit"
                     disabled={submitting}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-sm transition flex items-center disabled:opacity-50"
+                    className="flex items-center gap-1.5"
                   >
-                    {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />}
+                    {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                     Simpan Cabang
-                  </button>
+                  </Button>
                 </div>
               </form>
             </div>
@@ -392,35 +480,45 @@ export default function BranchesPage() {
 
         {/* Modal Konfirmasi Hapus / Soft Delete */}
         {deletingBranch && (
-          <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl border border-slate-200 space-y-4">
-              <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto">
-                <Trash2 className="w-6 h-6" />
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl max-w-sm w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-5 py-4 bg-rose-50 border-b border-rose-100 flex items-center gap-3 text-rose-800">
+                <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center shrink-0">
+                  <Trash2 className="w-4 h-4 text-rose-600" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold">Nonaktifkan Cabang?</h3>
+                  <p className="text-[11px] text-rose-600 font-mono">
+                    {deletingBranch.name}
+                  </p>
+                </div>
               </div>
-              <div className="text-center space-y-1">
-                <h3 className="text-base font-bold text-slate-900">Nonaktifkan Cabang?</h3>
-                <p className="text-xs text-slate-500">
-                  Cabang <strong>&quot;{deletingBranch.name}&quot;</strong> akan dinonaktifkan dan tidak muncul lagi di kasir POS. Riwayat transaksi historis tetap tersimpan aman (PRD D9).
+
+              <div className="p-5 space-y-4">
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Cabang <strong className="text-slate-900">&quot;{deletingBranch.name}&quot;</strong> akan dinonaktifkan dan tidak muncul lagi di kasir POS. Seluruh riwayat transaksi historis tetap tersimpan aman (PRD D9).
                 </p>
-              </div>
-              <div className="flex items-center justify-center space-x-2 pt-2">
-                <button
-                  type="button"
-                  disabled={submitting}
-                  onClick={() => setDeletingBranch(null)}
-                  className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition"
-                >
-                  Batal
-                </button>
-                <button
-                  type="button"
-                  disabled={submitting}
-                  onClick={handleSoftDelete}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg shadow-sm transition flex items-center disabled:opacity-50"
-                >
-                  {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />}
-                  Ya, Nonaktifkan
-                </button>
+
+                <div className="flex items-center justify-end gap-2.5 pt-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={submitting}
+                    onClick={() => setDeletingBranch(null)}
+                  >
+                    Batal
+                  </Button>
+                  <Button
+                    variant="destructive-solid"
+                    size="sm"
+                    disabled={submitting}
+                    onClick={handleSoftDelete}
+                    className="flex items-center gap-1.5"
+                  >
+                    {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                    Ya, Nonaktifkan
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

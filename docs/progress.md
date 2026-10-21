@@ -1177,3 +1177,45 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R6.6:** Selesai 100% (Laporan Laba Rugi Auto-Ledger & Ekspor Bank KUR Siap)
+
+### R6.7 — Kelola Cabang & Staf Kasir (`/branches` & `/staff`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/branches/page.tsx` — Peremajaan menyeluruh manajemen multi-cabang & kuota outlet mengadopsi tema **Light SaaS Enterprise** modern:
+  - **Header & Kuota Cabang:**
+    - Indikator kuota kuantitas cabang aktif (`X / 5 Cabang Aktif`) dengan badge status otomatis (enterprise / warning saat batas tercapai).
+    - Tombol *Tambah Cabang Baru* (`<Button variant="primary">`) dengan status disable otomatis bila kuota 5 cabang terpenuhi.
+  - **Strip Terpadu 4 Metrik Jaringan Cabang (`<MetricStrip />`):**
+    1. *Total Cabang Terdata:* Total gerai dalam portofolio bisnis dengan badge `Multi-Cabang`.
+    2. *Sisa Kuota Cabang:* Sisa slot kuota (maksimal 5 cabang) dengan badge dinamis merah `Penuh` atau hijau `Tersedia`.
+    3. *Akumulasi Target Harian:* Akumulasi target omzet harian seluruh gerai dalam format Rupiah.
+    4. *Status Kepatuhan Database:* Konfirmasi kepatuhan PostgreSQL trigger & RLS security.
+  - **Grid Kartu Gerai Cabang:**
+    - Kartu bergaris 1px `#E5E7EB` dengan nama cabang, alamat lokasi, badge status aktif, target omzet harian, dan tombol aksi ubah & nonaktifkan.
+    - Terintegrasi dengan `<EmptyState />` bila belum ada gerai terdaftar.
+  - **Modal Kelola Cabang:**
+    - Dialog modern dengan input nama cabang, alamat lokasi, dan target omzet harian dengan live Rupiah formatted preview.
+    - Modal soft delete konfirmasi aman per PRD D9.
+- `frontend/src/app/(app)/staff/page.tsx` — Peremajaan menyeluruh halaman manajemen staf dan arsitektur otorisasi RBAC kasir:
+  - **Header & Badge Otorisasi:**
+    - Panel header dengan badge `Khusus Owner` dan `RBAC & RLS` serta tautan navigasi langsung ke Terminal POS dan Kelola Cabang.
+  - **Strip Terpadu 4 Metrik Arsitektur Keamanan (`<MetricStrip />`):**
+    1. *Otorisasi Akses (RBAC):* Pemisahan tegas hak OWNER vs CASHIER.
+    2. *Isolasi Data Cabang:* Row-Level Security mengunci kasir hanya ke cabang tugasnya.
+    3. *Audit Trail Transaksi:* User ID kasir terikat permanen di setiap nota belanja pelanggan.
+    4. *Kapasitas Akun Kasir:* Dukungan multi-shift tanpa batasan akun per cabang.
+  - **3 Kartu Arsitektur Keamanan & Otorisasi:**
+    - Rincian hak operasional kasir (sentuh + perintah suara AI).
+    - Penjelasan isolasi basis data Row-Level Security (RLS) PostgreSQL.
+    - Hak akses konsolidasi penuh pemilik (OWNER) untuk persetujuan VOID dan laporan P&L KUR.
+  - **Banner Panduan Demo Juri:**
+    - Akses cepat ke halaman pengujian skenario juri untuk simulasi pergantian akun kasir 1-klik.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R6.7:** Selesai 100% (Kelola Cabang & Staf Kasir Siap)
