@@ -718,3 +718,27 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R3:** Selesai (App Shell 100% siap)
+
+### R4.1 — Landing Page: Navbar & Hero Section (`redesign/home/hero.png`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/page.tsx` — Transformasi tahap pertama Landing Page:
+  - **Dark Canvas Foundation (`#0A0A0C`):** Mengadopsi estetika tema gelap kontras tinggi ala Cloudflare.
+  - **Top Navbar:** Logo pulse BizPulse beraksen oranye `#F6821F`, lencana GTNIC 2026, navigasi bersih (Fitur, Solusi UMKM, Multi-Cabang, Paket), akses cepat Panduan Juri, dan tombol pill "Masuk / Demo" & "Dashboard".
+  - **Hero Container Oranye Melengkung (`hero.png`):**
+    - Sudut lengkung besar `rounded-3xl` dengan gradien oranye menyala (`#F6821F` ke `#E65A00`).
+    - Tekstur *halftone dot-grid* murni CSS (`.bg-dot-grid`) dan efek *glow* halus di bagian bawah.
+    - Pill badge pengumuman berpanah: *"GTNIC 2026 • Asisten Keputusan & Smart Voice POS UMKM →"*.
+    - Headline display masif dengan tipografi tegas: *"Semua Jawaban untuk Mengelola Multi-Cabang UMKM—Otomatis Setiap Pagi"*.
+    - Subtitle terstruktur solusi 3 Pertanyaan Pagi dan Voice POS.
+    - Tombol aksi primer pill putih *"Mulai Demo 1-Klik"* dan tombol sekunder transparan *"Buka Dashboard Owner"*.
+    - Ticker 3 keunggulan teknis di dasar hero: 100% Client-Side Voice NLP (Rp 0 API), Dokumen PDF Standar Bank KUR, dan Sinkronisasi Multi-Cabang 0 ms.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R4.1:** Selesai (Navbar & Hero Section 100% siap)
