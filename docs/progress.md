@@ -1048,3 +1048,38 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R6.2:** Selesai 100% (Riwayat Transaksi & Detail Struk Siap)
+
+### R6.3 — Pengeluaran & Beban Operasional (`frontend/src/app/(app)/expenses/page.tsx`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/expenses/page.tsx` — Peremajaan menyeluruh halaman pencatatan pengeluaran & beban operasional mengadopsi tema **Light SaaS Enterprise** modern:
+  - **Top Header:**
+    - Judul halaman *Pengeluaran & Beban Operasional* dengan badge *Auto-Ledger*.
+    - Tombol Smart Voice input terpadu dan tombol *Catat Pengeluaran* (`<Button variant="primary">`).
+  - **Strip Terpadu 4 Metrik Beban Operasional (`<MetricStrip />`):**
+    1. *Total Beban Bulan Ini:* Format Rupiah dengan badge oranye `Beban` dan jumlah transaksi operasional.
+    2. *Rata-rata Harian:* Beban harian rata-rata per hari aktif pencatatan.
+    3. *Kategori Terbesar:* Kategori beban paling dominan beserta nominalnya.
+    4. *Deteksi Anomali Z-score:* Jumlah beban tidak wajar dengan badge dinamis merah `Perhatian` atau hijau `Normal`.
+  - **Banner Simulasi Voice Input AI:**
+    - Panel simulasi interaktif contoh ucapan voice command operasional ("catat beli galon air dua puluh ribu", "bayar listrik seratus lima puluh ribu", dll.) yang langsung membuka dialog konfirmasi suara saat diklik.
+  - **Toolbar Filter Terpadu:**
+    - Filter Cabang, Periode Bulan (`input type="month"`), dan Kategori Biaya dengan tombol Reset Filter cepat.
+  - **Tabel Beban Densitas Tinggi:**
+    - Border 1px `#E5E7EB` dengan kolom: Tanggal (WIB, font-mono), Cabang, Kategori (Badge per kategori), Deskripsi (tooltip truncate), Metode Input (Badge Voice/Import/Demo/Manual), Nominal (font-mono bold), Status Anomali (Badge Z-score warning), dan Aksi (Edit & Hapus).
+    - Terintegrasi dengan `<EmptyState />` saat filter tidak menemukan data transaksi.
+  - **Modal Catat & Edit Pengeluaran:**
+    - Dialog modern dengan input cabang, tanggal, kategori, deskripsi, dan nominal biaya dengan live preview teks Rupiah terformat.
+  - **Modal Konfirmasi Suara AI (AI Voice):**
+    - Dialog verifikasi hasil transkripsi suara dengan confidence accuracy score badge, penjelasan keyword matching, serta input koreksi sebelum disimpan.
+  - **Modal Hapus Pengeluaran:**
+    - Dialog konfirmasi aman dengan detail pengeluaran yang akan dihapus.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R6.3:** Selesai 100% (Pengeluaran & Beban Operasional Siap)

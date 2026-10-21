@@ -20,13 +20,17 @@ import {
   Mic,
   MousePointer,
   Sparkles,
-  TrendingDown,
-  PieChart,
-  CheckCircle2,
   Volume2,
+  RotateCcw,
+  CheckCircle2,
+  X,
 } from 'lucide-react';
 import { VoiceMicButton } from '@/components/voice-mic-button';
 import { parseVoiceExpense, ParsedVoiceExpense } from '@/lib/voice/expense-voice-parser';
+import { MetricStrip } from '@/components/ui/metric-strip';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
 
 interface Branch {
   id: string;
@@ -77,7 +81,7 @@ export default function ExpensesPage() {
   const [formCategory, setFormCategory] = useState<ExpenseCategory>('Utilitas');
   const [formDescription, setFormDescription] = useState<string>('');
   const [formAmount, setFormAmount] = useState<number | ''>('');
- 
+
   // Voice Expense Modal State
   const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
   const [voiceExpenseData, setVoiceExpenseData] = useState<ParsedVoiceExpense | null>(null);
@@ -180,12 +184,16 @@ export default function ExpensesPage() {
   // Summary Metrics
   const summaryMetrics = useMemo(() => {
     let total = 0;
+    let anomalyCount = 0;
     const catMap: Record<string, number> = {};
+    const dateSet = new Set<string>();
 
     expenses.forEach((e) => {
       const amt = Number(e.amount || 0);
       total += amt;
       catMap[e.category] = (catMap[e.category] || 0) + amt;
+      if (e.is_anomaly) anomalyCount += 1;
+      if (e.expense_date) dateSet.add(e.expense_date);
     });
 
     let topCategory = '-';
@@ -197,11 +205,16 @@ export default function ExpensesPage() {
       }
     });
 
+    const activeDays = dateSet.size || 1;
+    const dailyAverage = Math.round(total / activeDays);
+
     return {
       totalAmount: total,
       count: expenses.length,
       topCategory,
       topCategoryAmount,
+      anomalyCount,
+      dailyAverage,
     };
   }, [expenses]);
 
@@ -403,157 +416,249 @@ export default function ExpensesPage() {
     switch (method) {
       case 'VOICE':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
-            <Mic className="w-2.5 h-2.5" /> Voice
-          </span>
+          <Badge variant="enterprise" className="text-[10px] py-0.5">
+            <Mic className="w-2.5 h-2.5 mr-0.5" /> Suara
+          </Badge>
         );
       case 'IMPORT':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
-            <FileSpreadsheet className="w-2.5 h-2.5" /> Import
-          </span>
+          <Badge variant="neutral" className="text-[10px] py-0.5">
+            <FileSpreadsheet className="w-2.5 h-2.5 mr-0.5" /> Import
+          </Badge>
         );
       case 'DEMO':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-            <Sparkles className="w-2.5 h-2.5" /> Demo
-          </span>
+          <Badge variant="brand" className="text-[10px] py-0.5">
+            <Sparkles className="w-2.5 h-2.5 mr-0.5" /> Demo
+          </Badge>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">
-            <MousePointer className="w-2.5 h-2.5" /> Manual
-          </span>
+          <Badge variant="neutral" className="text-[10px] py-0.5">
+            <MousePointer className="w-2.5 h-2.5 mr-0.5" /> Manual
+          </Badge>
         );
     }
   };
 
+  // Category badge
+  const renderCategoryBadge = (category: ExpenseCategory) => {
+    let variant: 'neutral' | 'success' | 'warning' | 'danger' | 'brand' | 'enterprise' = 'neutral';
+    switch (category) {
+      case 'Perlengkapan Operasional':
+        variant = 'brand';
+        break;
+      case 'Gaji':
+        variant = 'enterprise';
+        break;
+      case 'Utilitas':
+        variant = 'warning';
+        break;
+      case 'Pemasaran':
+        variant = 'enterprise';
+        break;
+      case 'Perawatan':
+        variant = 'warning';
+        break;
+      case 'Transportasi':
+        variant = 'neutral';
+        break;
+      case 'Sewa':
+        variant = 'enterprise';
+        break;
+      default:
+        variant = 'neutral';
+    }
+    return (
+      <Badge variant={variant} className="text-[10px]">
+        {category}
+      </Badge>
+    );
+  };
+
+  const isFilterActive =
+    selectedBranchId !== 'ALL' ||
+    selectedCategory !== 'ALL' ||
+    selectedMonth !== currentMonth;
+
   return (
     <div className="space-y-6">
-      {/* Title & Action */}
+      {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Pencatatan Pengeluaran</h1>
-          <p className="text-sm text-slate-500">
-            Pencatatan biaya operasional harian cabang dan audit pengeluaran
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              Pengeluaran &amp; Beban Operasional
+            </h1>
+            <Badge variant="neutral">Auto-Ledger</Badge>
+          </div>
+          <p className="text-sm text-slate-500 mt-0.5">
+            Pencatatan biaya operasional harian cabang, integrasi voice AI, dan audit anomali Z-score
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 bg-purple-50 border border-purple-200 rounded-xl px-3 py-1.5 shadow-xs">
+
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 rounded-xl border border-indigo-100 bg-indigo-50/60 px-3 py-1.5 shadow-2xs">
             <VoiceMicButton onTranscriptComplete={handleVoiceTranscript} disabled={loading} />
             <div className="text-left hidden sm:block">
-              <div className="text-[10px] font-bold text-purple-700 uppercase tracking-wider flex items-center gap-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 flex items-center gap-1">
                 <Sparkles className="w-2.5 h-2.5" /> Smart Voice
               </div>
-              <div className="text-[9px] text-purple-600">Bicara untuk catat biaya</div>
+              <div className="text-[10px] text-indigo-600">Bicara catat biaya</div>
             </div>
           </div>
-          <button
-            type="button"
+
+          <Button
+            variant="primary"
+            size="md"
             onClick={handleOpenAdd}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 transition-all"
+            className="flex items-center gap-2"
           >
-            <Plus className="w-4 h-4" /> Catat Pengeluaran Baru
-          </button>
+            <Plus className="w-4 h-4" /> Catat Pengeluaran
+          </Button>
         </div>
       </div>
 
-      {/* Quick Voice Simulation Pills */}
-      <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 border border-purple-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs">
-        <div className="flex items-center gap-2">
-          <span className="p-1.5 rounded-lg bg-purple-600 text-white flex-shrink-0">
-            <Volume2 className="w-3.5 h-3.5" />
+      {/* 4-KPI Metric Strip */}
+      <MetricStrip
+        title="Ringkasan Beban Operasional"
+        action={
+          <span className="text-xs text-slate-500 font-medium">
+            Periode: <span className="font-semibold text-slate-700 font-mono">{selectedMonth}</span>
           </span>
-          <div>
-            <span className="text-xs font-bold text-purple-900">Simulasi Suara Pengeluaran:</span>
-            <span className="text-[11px] text-purple-700 ml-1.5 hidden md:inline">
-              Klik contoh kalimat untuk simulasi pencatatan suara otomatis:
-            </span>
+        }
+        metrics={[
+          {
+            label: 'Total Beban Bulan Ini',
+            value: formatRupiah(summaryMetrics.totalAmount),
+            subtext: `${summaryMetrics.count} transaksi operasional`,
+            badge: (
+              <Badge variant="brand" dot>
+                Beban
+              </Badge>
+            ),
+          },
+          {
+            label: 'Rata-rata Harian',
+            value: formatRupiah(summaryMetrics.dailyAverage),
+            subtext: 'Berdasarkan hari aktif pencatatan',
+            badge: <Badge variant="neutral">Rata-rata</Badge>,
+          },
+          {
+            label: 'Kategori Terbesar',
+            value: summaryMetrics.topCategory,
+            subtext:
+              summaryMetrics.topCategoryAmount > 0
+                ? formatRupiah(summaryMetrics.topCategoryAmount)
+                : 'Belum ada data',
+            badge: <Badge variant="enterprise">Dominan</Badge>,
+          },
+          {
+            label: 'Deteksi Anomali Z-score',
+            value: `${summaryMetrics.anomalyCount} Anomali`,
+            subtext:
+              summaryMetrics.anomalyCount > 0
+                ? 'Perlu evaluasi pemilik cabang'
+                : 'Semua transaksi dalam batas wajar',
+            badge:
+              summaryMetrics.anomalyCount > 0 ? (
+                <Badge variant="danger" dot>
+                  Perhatian
+                </Badge>
+              ) : (
+                <Badge variant="success" dot>
+                  Normal
+                </Badge>
+              ),
+          },
+        ]}
+      />
+
+      {/* Quick Voice Simulation Banner */}
+      <div className="rounded-xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 via-purple-50/50 to-blue-50/40 p-3.5 shadow-2xs">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-2xs">
+              <Volume2 className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold text-slate-900">Simulasi Voice Input AI:</span>
+                <span className="text-[11px] text-slate-500 hidden sm:inline">
+                  Klik kalimat untuk simulasi pencatatan otomatis
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-1.5">
-          {[
-            'catat beli galon air dua puluh ribu',
-            'bayar listrik seratus lima puluh ribu',
-            'beli kresek dan sedotan 25rb',
-            'gaji harian barista seratus ribu',
-            'servis mesin espresso 350 ribu',
-          ].map((sample) => (
-            <button
-              key={sample}
-              type="button"
-              onClick={() => handleVoiceTranscript(sample)}
-              className="px-2.5 py-1 bg-white hover:bg-purple-100 text-purple-800 border border-purple-200 rounded-lg text-[11px] font-medium transition-all shadow-xs cursor-pointer"
-            >
-              &ldquo;{sample}&rdquo;
-            </button>
-          ))}
+          <div className="flex flex-wrap items-center gap-1.5">
+            {[
+              'catat beli galon air dua puluh ribu',
+              'bayar listrik seratus lima puluh ribu',
+              'beli kresek dan sedotan 25rb',
+              'gaji harian barista seratus ribu',
+              'servis mesin espresso 350 ribu',
+            ].map((sample) => (
+              <button
+                key={sample}
+                type="button"
+                onClick={() => handleVoiceTranscript(sample)}
+                className="rounded-lg border border-indigo-200/80 bg-white px-2.5 py-1 text-[11px] font-medium text-indigo-900 shadow-2xs hover:bg-indigo-50 hover:border-indigo-300 transition-colors cursor-pointer"
+              >
+                &ldquo;{sample}&rdquo;
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-xs font-medium text-slate-500">Total Pengeluaran Bulan Ini</p>
-            <p className="text-2xl font-bold text-slate-900 mt-1">
-              {formatRupiah(summaryMetrics.totalAmount)}
-            </p>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-            <Wallet className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-xs font-medium text-slate-500">Kategori Terbesar</p>
-            <p className="text-xl font-bold text-slate-900 mt-1">
-              {summaryMetrics.topCategory}
-            </p>
-            {summaryMetrics.topCategoryAmount > 0 && (
-              <p className="text-[11px] text-slate-500 mt-0.5">
-                {formatRupiah(summaryMetrics.topCategoryAmount)}
-              </p>
+      {/* Filters Toolbar */}
+      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-enterprise-600" />
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+              Filter Beban Operasional
+            </span>
+            {isFilterActive && (
+              <Badge variant="brand" className="text-[10px]">
+                Filter Aktif
+              </Badge>
             )}
           </div>
-          <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-            <PieChart className="w-5 h-5" />
-          </div>
+          {isFilterActive && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                if (currentUserRole === 'OWNER') setSelectedBranchId('ALL');
+                setSelectedCategory('ALL');
+                setSelectedMonth(currentMonth);
+              }}
+              className="h-7 text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1"
+            >
+              <RotateCcw className="h-3 w-3" /> Reset Filter
+            </Button>
+          )}
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-xs font-medium text-slate-500">Total Transaksi Biaya</p>
-            <p className="text-2xl font-bold text-slate-900 mt-1">{summaryMetrics.count}</p>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-            <TrendingDown className="w-5 h-5" />
-          </div>
-        </div>
-      </div>
-
-      {/* Filters Bar */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase">
-          <Filter className="w-4 h-4 text-blue-600" />
-          Filter Pengeluaran
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3">
           {/* Branch Filter */}
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Cabang</label>
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+              Cabang
+            </label>
             <div className="relative">
-              <Store className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Store className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <select
                 aria-label="Pilih cabang"
                 disabled={currentUserRole !== 'OWNER'}
                 value={selectedBranchId}
                 onChange={(e) => setSelectedBranchId(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 disabled:opacity-75"
+                className="w-full h-9 pl-9 pr-8 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-900 focus:bg-white focus:border-enterprise-500 focus:ring-2 focus:ring-enterprise-500/20 disabled:opacity-60 transition-colors cursor-pointer"
               >
-                {currentUserRole === 'OWNER' && <option value="ALL">Semua Cabang</option>}
+                {currentUserRole === 'OWNER' && (
+                  <option value="ALL">Semua Cabang (Konsolidasi)</option>
+                )}
                 {branches.map((b) => (
                   <option key={b.id} value={b.id}>
                     {b.name}
@@ -565,29 +670,33 @@ export default function ExpensesPage() {
 
           {/* Month Filter */}
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Periode Bulan</label>
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+              Periode Bulan
+            </label>
             <div className="relative">
-              <Calendar className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Calendar className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 aria-label="Pilih periode bulan"
                 type="month"
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500"
+                className="w-full h-9 pl-9 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-900 focus:bg-white focus:border-enterprise-500 focus:ring-2 focus:ring-enterprise-500/20 transition-colors"
               />
             </div>
           </div>
 
           {/* Category Filter */}
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Kategori Biaya</label>
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+              Kategori Biaya
+            </label>
             <div className="relative">
-              <Tag className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Tag className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <select
                 aria-label="Pilih kategori biaya"
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500"
+                className="w-full h-9 pl-9 pr-8 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-900 focus:bg-white focus:border-enterprise-500 focus:ring-2 focus:ring-enterprise-500/20 transition-colors cursor-pointer"
               >
                 <option value="ALL">Semua Kategori</option>
                 {EXPENSE_CATEGORIES.map((cat) => (
@@ -603,15 +712,15 @@ export default function ExpensesPage() {
 
       {/* Error Message */}
       {errorMsg && (
-        <div className="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-xl flex items-center justify-between text-xs">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-rose-800 flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
             <span>{errorMsg}</span>
           </div>
           <button
             type="button"
             onClick={() => setErrorMsg(null)}
-            className="text-rose-600 font-bold ml-2"
+            className="text-rose-600 font-bold ml-2 hover:text-rose-800"
           >
             ✕
           </button>
@@ -619,25 +728,27 @@ export default function ExpensesPage() {
       )}
 
       {/* Expenses Table */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-slate-200 bg-white shadow-card overflow-hidden">
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center text-slate-400">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-2" />
+            <Loader2 className="w-8 h-8 animate-spin text-enterprise-600 mb-2" />
             <p className="text-sm font-medium text-slate-600">Memuat data pengeluaran...</p>
           </div>
         ) : expenses.length === 0 ? (
-          <div className="py-16 text-center text-slate-500">
-            <Wallet className="w-12 h-12 mx-auto text-slate-300 mb-2" />
-            <p className="font-semibold text-slate-700">Tidak ada pengeluaran pada periode ini</p>
-            <p className="text-xs text-slate-400 mt-1">
-              Gunakan tombol &quot;Catat Pengeluaran Baru&quot; di atas untuk memasukkan biaya operasional.
-            </p>
+          <div className="p-6">
+            <EmptyState
+              icon={Wallet}
+              title="Tidak ada pengeluaran pada periode ini"
+              description="Belum ada transaksi beban operasional yang dicatat untuk filter saat ini. Gunakan tombol 'Catat Pengeluaran' atau voice AI untuk menambah pengeluaran."
+              actionLabel="Catat Pengeluaran Baru"
+              onAction={handleOpenAdd}
+            />
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
                   <th className="py-3 px-4">Tanggal (WIB)</th>
                   <th className="py-3 px-4">Cabang</th>
                   <th className="py-3 px-4">Kategori</th>
@@ -650,57 +761,59 @@ export default function ExpensesPage() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {expenses.map((exp) => (
-                  <tr key={exp.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-medium text-slate-700">
+                  <tr key={exp.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="py-3.5 px-4 font-mono font-medium text-slate-700 whitespace-nowrap">
                       {formatDateId(exp.expense_date)}
                     </td>
-                    <td className="py-3.5 px-4 font-medium text-slate-800">
+                    <td className="py-3.5 px-4 font-medium text-slate-800 whitespace-nowrap">
                       {branchMap.get(exp.branch_id) || 'Cabang'}
                     </td>
-                    <td className="py-3.5 px-4">
-                      <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                        {exp.category}
-                      </span>
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      {renderCategoryBadge(exp.category)}
                     </td>
                     <td className="py-3.5 px-4 text-slate-700 max-w-xs truncate" title={exp.description}>
                       {exp.description}
                     </td>
-                    <td className="py-3.5 px-4">{renderInputBadge(exp.input_method)}</td>
-                    <td className="py-3.5 px-4 text-right font-bold text-slate-900">
+                    <td className="py-3.5 px-4 whitespace-nowrap">{renderInputBadge(exp.input_method)}</td>
+                    <td className="py-3.5 px-4 text-right font-mono font-bold text-slate-900 whitespace-nowrap">
                       {formatRupiah(exp.amount)}
                     </td>
-                    <td className="py-3.5 px-4 text-center">
+                    <td className="py-3.5 px-4 text-center whitespace-nowrap">
                       {exp.is_anomaly ? (
-                        <span
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200"
-                          title={exp.anomaly_reason || 'Pengeluaran tidak wajar'}
+                        <Badge
+                          variant="danger"
+                          dot
+                          className="text-[10px]"
+                          title={exp.anomaly_reason || 'Pengeluaran terdeteksi anomali (Z-score > 2.5)'}
                         >
-                          <AlertTriangle className="w-3 h-3 text-amber-600" /> Anomali
-                        </span>
+                          <AlertTriangle className="w-3 h-3 mr-0.5" /> Anomali
+                        </Badge>
                       ) : (
-                        <span className="inline-block px-2 py-0.5 rounded text-[10px] font-medium text-slate-500">
+                        <Badge variant="success" dot className="text-[10px]">
                           Wajar
-                        </span>
+                        </Badge>
                       )}
                     </td>
-                    <td className="py-3.5 px-4 text-center">
-                      <div className="flex items-center justify-center gap-1.5">
-                        <button
-                          type="button"
+                    <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleOpenEdit(exp)}
-                          className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="Edit Pengeluaran"
+                          className="h-7 w-7 p-0 text-slate-500 hover:text-enterprise-600 hover:bg-slate-100"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => setDeletingExpense(exp)}
-                          className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
                           title="Hapus Pengeluaran"
+                          className="h-7 w-7 p-0 text-slate-500 hover:text-rose-600 hover:bg-rose-50"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -713,30 +826,30 @@ export default function ExpensesPage() {
 
       {/* ADD / EDIT MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <div>
                 <h3 className="text-base font-bold text-slate-900">
                   {editingExpense ? 'Edit Pengeluaran' : 'Catat Pengeluaran Baru'}
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Masukkan rincian biaya operasional cabang
+                  Rincian biaya operasional untuk jurnal otomatis
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-sm font-bold p-1"
+                className="text-slate-400 hover:text-slate-600 rounded-lg p-1 hover:bg-slate-200/60 transition-colors"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleModalSubmit} className="p-6 space-y-4">
               {/* Branch */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Cabang <span className="text-rose-500">*</span>
                 </label>
                 <select
@@ -744,7 +857,7 @@ export default function ExpensesPage() {
                   disabled={!!editingExpense || currentUserRole !== 'OWNER'}
                   value={formBranchId}
                   onChange={(e) => setFormBranchId(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100"
+                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 disabled:bg-slate-100 transition-colors"
                 >
                   {branches.map((b) => (
                     <option key={b.id} value={b.id}>
@@ -756,7 +869,7 @@ export default function ExpensesPage() {
 
               {/* Date */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Tanggal Pengeluaran <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -765,20 +878,20 @@ export default function ExpensesPage() {
                   required
                   value={formDate}
                   onChange={(e) => setFormDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500"
+                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
                 />
               </div>
 
               {/* Category */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Kategori Pengeluaran <span className="text-rose-500">*</span>
                 </label>
                 <select
                   aria-label="Pilih kategori pengeluaran"
                   value={formCategory}
                   onChange={(e) => setFormCategory(e.target.value as ExpenseCategory)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500"
+                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
                 >
                   {EXPENSE_CATEGORIES.map((cat) => (
                     <option key={cat} value={cat}>
@@ -790,7 +903,7 @@ export default function ExpensesPage() {
 
               {/* Description */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Deskripsi / Keterangan <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -800,13 +913,13 @@ export default function ExpensesPage() {
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
                   placeholder="Contoh: Beli token listrik PLN, Beli gula & susu..."
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-blue-500"
+                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
                 />
               </div>
 
               {/* Amount */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Nominal Biaya (Rp) <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -819,29 +932,31 @@ export default function ExpensesPage() {
                     setFormAmount(e.target.value === '' ? '' : parseInt(e.target.value, 10))
                   }
                   placeholder="50000"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-blue-500"
+                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
                 />
                 {typeof formAmount === 'number' && formAmount > 0 && (
-                  <p className="text-[11px] text-blue-600 font-medium mt-1">
+                  <p className="text-[11px] text-enterprise-600 font-semibold mt-1">
                     Terbaca: {formatRupiah(formAmount)}
                   </p>
                 )}
               </div>
 
               {/* Modal Actions */}
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-                <button
-                  type="button"
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
+                <Button
+                  variant="secondary"
+                  size="md"
                   disabled={modalSubmitting}
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold"
                 >
                   Batal
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="primary"
+                  size="md"
                   type="submit"
                   disabled={modalSubmitting}
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white text-xs font-bold shadow-md shadow-blue-500/20 flex items-center gap-1.5 transition-all"
+                  className="flex items-center gap-1.5"
                 >
                   {modalSubmitting ? (
                     <>
@@ -851,7 +966,7 @@ export default function ExpensesPage() {
                   ) : (
                     'Simpan Pengeluaran'
                   )}
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -860,11 +975,11 @@ export default function ExpensesPage() {
 
       {/* VOICE EXPENSE CONFIRMATION MODAL */}
       {isVoiceModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
-            <div className="p-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
+            <div className="px-6 py-4 bg-gradient-to-r from-indigo-600 to-enterprise-600 text-white flex items-center justify-between">
+              <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center">
                   <Mic className="w-5 h-5 text-white" />
                 </div>
@@ -875,7 +990,7 @@ export default function ExpensesPage() {
                       AI Voice
                     </span>
                   </h3>
-                  <p className="text-[11px] text-purple-100 italic line-clamp-1">
+                  <p className="text-[11px] text-white/80 italic line-clamp-1">
                     &ldquo;{voiceTranscript}&rdquo;
                   </p>
                 </div>
@@ -885,18 +1000,18 @@ export default function ExpensesPage() {
                 onClick={() => setIsVoiceModalOpen(false)}
                 className="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* AI Parsing Explanation & Confidence */}
             {voiceExpenseData && (
-              <div className="px-5 pt-4 pb-2">
-                <div className="p-3 bg-purple-50/70 border border-purple-200 rounded-xl flex items-start gap-2.5">
-                  <Sparkles className="w-4 h-4 text-purple-600 flex-shrink-0 mt-0.5" />
+              <div className="px-6 pt-4 pb-1">
+                <div className="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl flex items-start gap-2.5">
+                  <Sparkles className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
                   <div className="flex-1 text-xs">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="font-bold text-purple-900">Hasil Analisis Suara</span>
+                      <span className="font-bold text-indigo-950">Hasil Analisis Suara</span>
                       <span
                         className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                           voiceExpenseData.confidence >= 0.8
@@ -907,7 +1022,7 @@ export default function ExpensesPage() {
                         Akurasi {Math.round(voiceExpenseData.confidence * 100)}%
                       </span>
                     </div>
-                    <p className="text-purple-800 text-[11px] leading-relaxed">
+                    <p className="text-indigo-900 text-[11px] leading-relaxed">
                       {voiceExpenseData.explanation}
                     </p>
                   </div>
@@ -916,11 +1031,11 @@ export default function ExpensesPage() {
             )}
 
             {/* Edit / Confirmation Form */}
-            <form onSubmit={handleVoiceExpenseSubmit} className="p-5 space-y-4">
+            <form onSubmit={handleVoiceExpenseSubmit} className="p-6 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Branch */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Cabang <span className="text-rose-500">*</span>
                   </label>
                   <select
@@ -928,7 +1043,7 @@ export default function ExpensesPage() {
                     disabled={currentUserRole !== 'OWNER'}
                     value={voiceBranchId}
                     onChange={(e) => setVoiceBranchId(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-purple-500 disabled:bg-slate-100"
+                    className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 disabled:bg-slate-100 transition-colors"
                   >
                     {branches.map((b) => (
                       <option key={b.id} value={b.id}>
@@ -940,7 +1055,7 @@ export default function ExpensesPage() {
 
                 {/* Date */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Tanggal Pengeluaran <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -949,19 +1064,19 @@ export default function ExpensesPage() {
                     required
                     value={voiceDate}
                     onChange={(e) => setVoiceDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-purple-500"
+                    className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
                   />
                 </div>
               </div>
 
               {/* Category */}
               <div>
-                <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-xs font-semibold text-slate-700">
                     Kategori Pengeluaran <span className="text-rose-500">*</span>
                   </label>
                   {voiceExpenseData?.matched_keyword && (
-                    <span className="text-[10px] text-purple-600 font-medium">
+                    <span className="text-[10px] text-indigo-600 font-medium">
                       Kata kunci: &ldquo;{voiceExpenseData.matched_keyword}&rdquo;
                     </span>
                   )}
@@ -970,7 +1085,7 @@ export default function ExpensesPage() {
                   aria-label="Pilih kategori pengeluaran suara"
                   value={voiceCategory}
                   onChange={(e) => setVoiceCategory(e.target.value as ExpenseCategory)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-purple-500 font-medium"
+                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 font-medium transition-colors"
                 >
                   {EXPENSE_CATEGORIES.map((cat) => (
                     <option key={cat} value={cat}>
@@ -982,7 +1097,7 @@ export default function ExpensesPage() {
 
               {/* Description */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Keterangan / Deskripsi <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -992,13 +1107,13 @@ export default function ExpensesPage() {
                   value={voiceDescription}
                   onChange={(e) => setVoiceDescription(e.target.value)}
                   placeholder="Contoh: Beli galon air..."
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-purple-500"
+                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
                 />
               </div>
 
               {/* Amount */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Nominal Biaya (Rp) <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -1011,29 +1126,31 @@ export default function ExpensesPage() {
                     setVoiceAmount(e.target.value === '' ? '' : parseInt(e.target.value, 10))
                   }
                   placeholder="50000"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-purple-500"
+                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
                 />
                 {typeof voiceAmount === 'number' && voiceAmount > 0 && (
-                  <p className="text-[11px] text-purple-600 font-semibold mt-1">
+                  <p className="text-[11px] text-indigo-600 font-semibold mt-1">
                     Terbaca: {formatRupiah(voiceAmount)}
                   </p>
                 )}
               </div>
 
               {/* Modal Actions */}
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-                <button
-                  type="button"
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
+                <Button
+                  variant="secondary"
+                  size="md"
                   disabled={voiceModalSubmitting}
                   onClick={() => setIsVoiceModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold"
                 >
                   Batal
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="primary"
+                  size="md"
                   type="submit"
                   disabled={voiceModalSubmitting}
-                  className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white text-xs font-bold shadow-md shadow-purple-500/20 flex items-center gap-1.5 transition-all"
+                  className="flex items-center gap-1.5"
                 >
                   {voiceModalSubmitting ? (
                     <>
@@ -1046,7 +1163,7 @@ export default function ExpensesPage() {
                       Simpan Pengeluaran Suara
                     </>
                   )}
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -1055,10 +1172,10 @@ export default function ExpensesPage() {
 
       {/* DELETE CONFIRMATION MODAL */}
       {deletingExpense && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-4 bg-rose-50 border-b border-rose-100 flex items-center gap-2.5 text-rose-800">
-              <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center flex-shrink-0">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-5 py-4 bg-rose-50 border-b border-rose-100 flex items-center gap-3 text-rose-800">
+              <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center shrink-0">
                 <Trash2 className="w-4 h-4 text-rose-600" />
               </div>
               <div>
@@ -1071,25 +1188,26 @@ export default function ExpensesPage() {
 
             <div className="p-5 space-y-4">
               <p className="text-xs text-slate-600 leading-relaxed">
-                Apakah Anda yakin ingin menghapus data pengeluaran:{' '}
+                Apakah Anda yakin ingin menghapus catatan biaya:{' '}
                 <strong className="text-slate-900">&quot;{deletingExpense.description}&quot;</strong>?
                 Data yang dihapus tidak dapat dipulihkan.
               </p>
 
-              <div className="flex items-center justify-end gap-2 pt-2">
-                <button
-                  type="button"
+              <div className="flex items-center justify-end gap-2.5 pt-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
                   disabled={deleteSubmitting}
                   onClick={() => setDeletingExpense(null)}
-                  className="px-3.5 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold"
                 >
                   Batal
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
+                  variant="destructive-solid"
+                  size="sm"
                   disabled={deleteSubmitting}
                   onClick={handleDeleteSubmit}
-                  className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 text-white text-xs font-bold shadow-md shadow-rose-500/20 flex items-center gap-1.5 transition-all"
+                  className="flex items-center gap-1.5"
                 >
                   {deleteSubmitting ? (
                     <>
@@ -1099,7 +1217,7 @@ export default function ExpensesPage() {
                   ) : (
                     'Hapus Sekarang'
                   )}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
