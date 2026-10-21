@@ -700,3 +700,21 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R2:** Selesai (Komponen Dasar 100% siap)
+
+### R3 — App Shell (Sidebar, Topbar, Layout per Role, Navigasi Mobile) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/layout.tsx` — Transformasi total struktur pembungkus aplikasi (App Shell):
+  - **Sidebar Desktop (256px / `w-64`):** Mengadopsi tata letak `sidebar (1).png` dengan header pemilih organisasi setinggi 52px, ikon logo pulse BizPulse beraksen oranye, bilah *Quick search...* dengan shortcut keyboard `Ctrl K`, navigasi 4 kelompok terstruktur (Utama, Operasional, Finansial & Data, Kelola & Bantuan), indikator aktif abu-abu lembut (`bg-slate-100/90 text-slate-900 font-semibold`), dan chevron navigasi halus `›`.
+  - **Topbar Desktop (52px / `h-[52px]`):** Mengadopsi tata letak `topbar.png` dengan indikator breadcrumb halaman aktif, tombol akses cepat panduan demo juri berikon sparkles, status chip role (Owner/Kasir), nama pengguna, dan tombol keluar (*logout*).
+  - **Navigasi Mobile Responsif:** Bar atas mobile 52px dengan hamburger menu, drawer transisi rapi, dan preservasi 100% proteksi wewenang role kasir vs owner.
+  - **Banner Mode Demo:** Menjaga kejelasan banner indikator evaluasi data contoh Kopi Senja untuk juri GTNIC 2026.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R3:** Selesai (App Shell 100% siap)
