@@ -10,12 +10,10 @@ import {
   History,
   Plus,
   RefreshCw,
-  AlertTriangle,
   AlertCircle,
   Loader2,
   Store,
   Search,
-  Package,
   ArrowUpRight,
   ArrowDownLeft,
   Filter,
@@ -23,8 +21,13 @@ import {
   PackageCheck,
   Check,
   ArrowRight,
+  X,
 } from 'lucide-react';
 import { StockTransferRecommendation } from '@/lib/stock/transfer-recommender';
+import { MetricStrip } from '@/components/ui/metric-strip';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
 
 interface Branch {
   id: string;
@@ -217,9 +220,17 @@ export default function StockPage() {
   // Summary Metrics
   const summaryMetrics = useMemo(() => {
     const totalItems = filteredProducts.length;
-    const outOfStock = filteredProducts.filter((p) => p.stock <= 0).length;
-    const lowStock = filteredProducts.filter((p) => p.stock > 0 && p.stock <= p.min_stock_alert).length;
-    return { totalItems, outOfStock, lowStock };
+    let outOfStock = 0;
+    let lowStock = 0;
+    let totalAssetValue = 0;
+
+    filteredProducts.forEach((p) => {
+      if (p.stock <= 0) outOfStock += 1;
+      else if (p.stock <= p.min_stock_alert) lowStock += 1;
+      totalAssetValue += (p.stock > 0 ? p.stock : 0) * (p.cost_price || 0);
+    });
+
+    return { totalItems, outOfStock, lowStock, totalAssetValue };
   }, [filteredProducts]);
 
   // Restock Submit
@@ -417,45 +428,45 @@ export default function StockPage() {
 
   // Movement badge formatter
   const renderMovementBadge = (type: string, change: number) => {
-    let color = 'bg-slate-100 text-slate-700';
+    let variant: 'neutral' | 'success' | 'warning' | 'danger' | 'brand' | 'enterprise' = 'neutral';
     let label = type;
 
     switch (type) {
       case 'SALE':
-        color = 'bg-blue-50 text-blue-700 border border-blue-200';
+        variant = 'enterprise';
         label = 'Penjualan';
         break;
       case 'VOID_RETURN':
-        color = 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+        variant = 'warning';
         label = 'Void (Kembali)';
         break;
       case 'RESTOCK':
-        color = 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+        variant = 'success';
         label = 'Restock Masuk';
         break;
       case 'ADJUSTMENT':
-        color = 'bg-amber-50 text-amber-700 border border-amber-200';
+        variant = 'warning';
         label = 'Opname Fisik';
         break;
       case 'TRANSFER_OUT':
-        color = 'bg-purple-50 text-purple-700 border border-purple-200';
+        variant = 'brand';
         label = 'Transfer Keluar';
         break;
       case 'TRANSFER_IN':
-        color = 'bg-indigo-50 text-indigo-700 border border-indigo-200';
+        variant = 'enterprise';
         label = 'Transfer Masuk';
         break;
       case 'IMPORT':
-        color = 'bg-teal-50 text-teal-700 border border-teal-200';
+        variant = 'neutral';
         label = 'Impor Batch';
         break;
     }
 
     return (
-      <div className="flex items-center gap-1.5">
-        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${color}`}>
+      <div className="flex items-center gap-2">
+        <Badge variant={variant} className="text-[10px] py-0.5">
           {label}
-        </span>
+        </Badge>
         <span
           className={`font-mono font-bold text-xs ${
             change > 0 ? 'text-emerald-600' : change < 0 ? 'text-rose-600' : 'text-slate-500'
@@ -470,70 +481,93 @@ export default function StockPage() {
   return (
     <RoleGuard allowedRoles={['OWNER']}>
       <div className="space-y-6">
-        {/* Title */}
+        {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Mutasi & Pergerakan Stok</h1>
-            <p className="text-sm text-slate-500">
-              Kelola restock barang, opname penyesuaian fisik, transfer antarcabang, dan audit kartu stok
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+                Manajemen Stok &amp; Mutasi Antarcabang
+              </h1>
+              <Badge variant="enterprise">Khusus Owner</Badge>
+            </div>
+            <p className="text-sm text-slate-500 mt-0.5">
+              Kelola restock barang, opname penyesuaian fisik, transfer antarcabang cerdas, dan audit kartu stok
             </p>
           </div>
-          <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
-            Khusus Owner
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                fetchProducts();
+                if (activeTab === 'transfer') fetchRecommendations();
+                if (activeTab === 'history') fetchMovements();
+              }}
+              className="flex items-center gap-1.5"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              Segarkan Data
+            </Button>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex items-center gap-2 border-b border-slate-200">
+        {/* Navigation Tabs (Segmented Control) */}
+        <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 w-fit">
           <button
             type="button"
             onClick={() => setActiveTab('inventory')}
-            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
               activeTab === 'inventory'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Boxes className="w-4 h-4" />
-            Inventaris & Aksi Cepat
+            <Boxes className="w-3.5 h-3.5" />
+            Inventaris &amp; Aksi Cepat
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('transfer')}
-            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
               activeTab === 'transfer'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <ArrowLeftRight className="w-4 h-4" />
+            <ArrowLeftRight className="w-3.5 h-3.5" />
             Transfer Antarcabang
+            {recommendations.length > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-enterprise-600 text-white">
+                {recommendations.length}
+              </span>
+            )}
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('history')}
-            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
               activeTab === 'history'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <History className="w-4 h-4" />
+            <History className="w-3.5 h-3.5" />
             Log Riwayat Kartu Stok
           </button>
         </div>
 
         {/* Error Banner */}
         {errorMsg && (
-          <div className="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-xl flex items-center justify-between text-xs">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-rose-800 flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
               <span>{errorMsg}</span>
             </div>
             <button
               type="button"
               onClick={() => setErrorMsg(null)}
-              className="text-rose-600 font-bold ml-2"
+              className="text-rose-600 font-bold ml-2 hover:text-rose-800"
             >
               ✕
             </button>
@@ -543,56 +577,76 @@ export default function StockPage() {
         {/* TAB 1: INVENTORY & QUICK ACTIONS */}
         {activeTab === 'inventory' && (
           <div className="space-y-4">
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-medium text-slate-500">Total Produk Terdata</p>
-                  <p className="text-2xl font-bold text-slate-900 mt-1">
-                    {summaryMetrics.totalItems}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-                  <Package className="w-5 h-5" />
-                </div>
-              </div>
-
-              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-medium text-slate-500">Stok Menipis (Alert)</p>
-                  <p className="text-2xl font-bold text-amber-600 mt-1">
-                    {summaryMetrics.lowStock}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-                  <AlertTriangle className="w-5 h-5" />
-                </div>
-              </div>
-
-              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-medium text-slate-500">Stok Kosong / Habis</p>
-                  <p className="text-2xl font-bold text-rose-600 mt-1">
-                    {summaryMetrics.outOfStock}
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
-                  <Boxes className="w-5 h-5" />
-                </div>
-              </div>
-            </div>
+            {/* 4-KPI Metric Strip */}
+            <MetricStrip
+              title="Ringkasan Persediaan Barang"
+              action={
+                <span className="text-xs text-slate-500 font-medium">
+                  Filter Cabang:{' '}
+                  <span className="font-semibold text-slate-700">
+                    {selectedBranchId === 'ALL'
+                      ? 'Semua Cabang'
+                      : branchMap.get(selectedBranchId) || selectedBranchId}
+                  </span>
+                </span>
+              }
+              metrics={[
+                {
+                  label: 'Total SKU Terdata',
+                  value: summaryMetrics.totalItems,
+                  subtext: 'Produk aktif dalam katalog',
+                  badge: <Badge variant="neutral">Katalog</Badge>,
+                },
+                {
+                  label: 'Stok Menipis (Alert)',
+                  value: summaryMetrics.lowStock,
+                  subtext: 'Mendekati ambang batas minimum',
+                  badge:
+                    summaryMetrics.lowStock > 0 ? (
+                      <Badge variant="warning" dot>
+                        Peringatan
+                      </Badge>
+                    ) : (
+                      <Badge variant="success" dot>
+                        Aman
+                      </Badge>
+                    ),
+                },
+                {
+                  label: 'Stok Kosong / Habis',
+                  value: summaryMetrics.outOfStock,
+                  subtext: 'Perlu segera restock suplai',
+                  badge:
+                    summaryMetrics.outOfStock > 0 ? (
+                      <Badge variant="danger" dot>
+                        Kritis
+                      </Badge>
+                    ) : (
+                      <Badge variant="success" dot>
+                        Tersedia
+                      </Badge>
+                    ),
+                },
+                {
+                  label: 'Nilai Aset Persediaan',
+                  value: formatRupiah(summaryMetrics.totalAssetValue),
+                  subtext: 'Kalkulasi HPP × Stok Fisik',
+                  badge: <Badge variant="brand">Aset Modal</Badge>,
+                },
+              ]}
+            />
 
             {/* Filter Bar */}
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-3 items-center justify-between">
+            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-card flex flex-col sm:flex-row gap-3 items-center justify-between">
               <div className="flex items-center gap-2 w-full sm:w-auto">
-                <Store className="w-4 h-4 text-slate-400" />
+                <Store className="w-4 h-4 text-slate-400 shrink-0" />
                 <select
                   aria-label="Pilih cabang"
                   value={selectedBranchId}
                   onChange={(e) => setSelectedBranchId(e.target.value)}
-                  className="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500"
+                  className="h-9 px-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-900 focus:bg-white focus:border-enterprise-500 focus:ring-2 focus:ring-enterprise-500/20 transition-colors cursor-pointer"
                 >
-                  <option value="ALL">Semua Cabang</option>
+                  <option value="ALL">Semua Cabang (Konsolidasi)</option>
                   {branches.map((b) => (
                     <option key={b.id} value={b.id}>
                       {b.name}
@@ -601,39 +655,53 @@ export default function StockPage() {
                 </select>
               </div>
 
-              <div className="relative w-full sm:w-72">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <div className="relative w-full sm:w-80">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Cari SKU, nama produk, kategori..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full h-9 pl-9 pr-8 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-enterprise-500 focus:ring-2 focus:ring-enterprise-500/20 transition-colors"
                 />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
 
             {/* Inventory Table */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="rounded-xl border border-slate-200 bg-white shadow-card overflow-hidden">
               {loading ? (
                 <div className="py-20 flex flex-col items-center justify-center text-slate-400">
-                  <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-2" />
-                  <p className="text-sm font-medium text-slate-600">Memuat stok produk...</p>
+                  <Loader2 className="w-8 h-8 animate-spin text-enterprise-600 mb-2" />
+                  <p className="text-sm font-medium text-slate-600">Memuat stok persediaan produk...</p>
                 </div>
               ) : filteredProducts.length === 0 ? (
-                <div className="py-16 text-center text-slate-500">
-                  <Boxes className="w-12 h-12 mx-auto text-slate-300 mb-2" />
-                  <p className="font-semibold text-slate-700">Tidak ada produk ditemukan</p>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Silakan ubah filter cabang atau kata kunci pencarian.
-                  </p>
+                <div className="p-6">
+                  <EmptyState
+                    icon={Boxes}
+                    title="Tidak ada produk ditemukan"
+                    description="Tidak ada item stok yang cocok dengan kriteria cabang atau kata kunci pencarian."
+                    actionLabel="Reset Pencarian"
+                    onAction={() => {
+                      setSelectedBranchId('ALL');
+                      setSearchQuery('');
+                    }}
+                  />
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
-                        <th className="py-3 px-4">SKU / Produk</th>
+                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
+                        <th className="py-3 px-4">SKU / Nama Produk</th>
                         <th className="py-3 px-4">Cabang</th>
                         <th className="py-3 px-4">Kategori</th>
                         <th className="py-3 px-4 text-right">Harga Modal (HPP)</th>
@@ -648,8 +716,8 @@ export default function StockPage() {
                         const isLow = p.stock > 0 && p.stock <= p.min_stock_alert;
 
                         return (
-                          <tr key={p.id} className="hover:bg-slate-50 transition-colors">
-                            <td className="py-3 px-4">
+                          <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="py-3.5 px-4">
                               <span className="font-mono text-[11px] font-bold text-slate-500 block">
                                 {p.sku}
                               </span>
@@ -657,58 +725,64 @@ export default function StockPage() {
                                 {p.name}
                               </span>
                             </td>
-                            <td className="py-3 px-4 font-medium text-slate-800">
+                            <td className="py-3.5 px-4 font-medium text-slate-800 whitespace-nowrap">
                               {branchMap.get(p.branch_id) || 'Cabang'}
                             </td>
-                            <td className="py-3 px-4 text-slate-600">{p.category}</td>
-                            <td className="py-3 px-4 text-right font-medium text-slate-700">
+                            <td className="py-3.5 px-4 text-slate-600 whitespace-nowrap">
+                              <Badge variant="neutral" className="text-[10px]">
+                                {p.category}
+                              </Badge>
+                            </td>
+                            <td className="py-3.5 px-4 text-right font-mono font-medium text-slate-700 whitespace-nowrap">
                               {formatRupiah(p.cost_price)}
                             </td>
-                            <td className="py-3 px-4 text-center font-bold text-sm text-slate-900">
+                            <td className="py-3.5 px-4 text-center font-mono font-bold text-sm text-slate-900 whitespace-nowrap">
                               {p.stock}
                             </td>
-                            <td className="py-3 px-4 text-center">
+                            <td className="py-3.5 px-4 text-center whitespace-nowrap">
                               {isOutOfStock ? (
-                                <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                                <Badge variant="danger" dot className="text-[10px]">
                                   Habis
-                                </span>
+                                </Badge>
                               ) : isLow ? (
-                                <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                <Badge variant="warning" dot className="text-[10px]">
                                   Menipis (&le; {p.min_stock_alert})
-                                </span>
+                                </Badge>
                               ) : (
-                                <span className="inline-block px-2 py-0.5 rounded text-[10px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200">
+                                <Badge variant="success" dot className="text-[10px]">
                                   Aman
-                                </span>
+                                </Badge>
                               )}
                             </td>
-                            <td className="py-3 px-4 text-center">
-                              <div className="flex items-center justify-center gap-2">
-                                <button
-                                  type="button"
+                            <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                              <div className="flex items-center justify-center gap-1.5">
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
                                   onClick={() => {
                                     setRestockProduct(p);
                                     setRestockQty('');
                                     setRestockCost(p.cost_price);
                                     setRestockNote('');
                                   }}
-                                  className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-[11px] rounded-lg border border-emerald-200 flex items-center gap-1 transition-colors"
+                                  className="h-7 text-[11px] text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 border-emerald-200 flex items-center gap-1"
                                   title="Restock barang masuk"
                                 >
-                                  <Plus className="w-3 h-3" /> Restock
-                                </button>
-                                <button
-                                  type="button"
+                                  <Plus className="w-3 h-3 text-emerald-600" /> Restock
+                                </Button>
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
                                   onClick={() => {
                                     setAdjustProduct(p);
                                     setAdjustNewStock(p.stock);
                                     setAdjustReason('');
                                   }}
-                                  className="px-2.5 py-1 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold text-[11px] rounded-lg border border-slate-200 flex items-center gap-1 transition-colors"
+                                  className="h-7 text-[11px] text-slate-700 hover:text-slate-900 hover:bg-slate-100 flex items-center gap-1"
                                   title="Penyesuaian stok opname fisik"
                                 >
-                                  <RefreshCw className="w-3 h-3" /> Opname
-                                </button>
+                                  <RefreshCw className="w-3 h-3 text-slate-500" /> Opname
+                                </Button>
                               </div>
                             </td>
                           </tr>
@@ -726,45 +800,48 @@ export default function StockPage() {
         {activeTab === 'transfer' && (
           <div className="max-w-4xl mx-auto space-y-6">
             {/* Smart Balancing Recommendations Section */}
-            <div className="bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-slate-50 border border-blue-200/80 rounded-2xl p-5 shadow-sm">
+            <div className="rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 via-blue-50/50 to-slate-50 p-5 shadow-2xs">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-2xs shrink-0">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <div>
-                    <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                      Rekomendasi Mutasi Antarcabang Otomatis
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-sm font-bold text-slate-900">
+                        Rekomendasi Mutasi Antarcabang Otomatis
+                      </h2>
                       {recommendations.length > 0 && (
-                        <span className="px-2 py-0.5 text-[10px] font-extrabold bg-blue-600 text-white rounded-full">
-                          {recommendations.length} Saran
-                        </span>
+                        <Badge variant="enterprise" className="text-[10px]">
+                          {recommendations.length} Saran Aktif
+                        </Badge>
                       )}
-                    </h2>
-                    <p className="text-xs text-slate-500">
+                    </div>
+                    <p className="text-xs text-slate-500 mt-0.5">
                       Algoritma cerdas mendeteksi surplus &amp; defisit stok antarcabang dengan perhitungan margin layak.
                     </p>
                   </div>
                 </div>
-                <button
-                  type="button"
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={fetchRecommendations}
                   disabled={recsLoading}
-                  className="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-1.5 transition-all shadow-xs w-fit"
+                  className="h-8 text-xs text-enterprise-700 bg-white hover:bg-enterprise-50 border-enterprise-200 flex items-center gap-1.5 w-fit"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${recsLoading ? 'animate-spin' : ''}`} />
                   Refresh Analisis
-                </button>
+                </Button>
               </div>
 
               {recsLoading ? (
-                <div className="py-8 flex flex-col items-center justify-center text-slate-400 gap-2">
-                  <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+                <div className="py-10 flex flex-col items-center justify-center text-slate-400 gap-2">
+                  <Loader2 className="w-6 h-6 animate-spin text-enterprise-600" />
                   <span className="text-xs font-medium">Menganalisis pergerakan stok seluruh cabang...</span>
                 </div>
               ) : recommendations.length === 0 ? (
-                <div className="bg-white/80 border border-slate-200/80 rounded-xl p-4 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                <div className="bg-white/90 border border-slate-200/80 rounded-xl p-4 flex items-center gap-3 shadow-2xs">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
                     <PackageCheck className="w-4 h-4" />
                   </div>
                   <div className="text-xs">
@@ -779,65 +856,69 @@ export default function StockPage() {
                   {recommendations.map((rec) => (
                     <div
                       key={rec.id}
-                      className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs hover:border-blue-300 transition-all flex flex-col justify-between gap-3"
+                      className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs hover:border-enterprise-300 transition-all flex flex-col justify-between gap-3"
                     >
-                      <div className="space-y-2">
+                      <div className="space-y-2.5">
                         <div className="flex items-center justify-between gap-2">
-                          <span
-                            className={`px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase ${
-                              rec.urgency === 'CRITICAL'
-                                ? 'bg-rose-100 text-rose-700 border border-rose-200'
-                                : 'bg-amber-100 text-amber-700 border border-amber-200'
-                            }`}
+                          <Badge
+                            variant={rec.urgency === 'CRITICAL' ? 'danger' : 'warning'}
+                            dot
+                            className="text-[10px]"
                           >
                             {rec.urgency === 'CRITICAL' ? 'Kritis / Habis' : 'Disarankan'}
-                          </span>
-                          <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                          </Badge>
+                          <span className="text-[11px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                             Net: +{formatRupiah(rec.net_benefit)}
                           </span>
                         </div>
 
                         <div>
                           <h3 className="text-xs font-bold text-slate-900">{rec.product_name}</h3>
-                          <p className="text-[11px] text-slate-500 font-mono mt-0.5">SKU: {rec.sku}</p>
+                          <p className="text-[11px] text-slate-400 font-mono mt-0.5">SKU: {rec.sku}</p>
                         </div>
 
                         {/* Route Transfer */}
-                        <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between text-xs">
+                        <div className="p-3 bg-slate-50/80 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
                           <div className="text-left">
-                            <span className="text-[10px] text-slate-400 block font-medium">Asal (Surplus)</span>
-                            <span className="font-bold text-slate-700">{rec.from_branch_name}</span>
+                            <span className="text-[10px] text-slate-400 block font-medium uppercase tracking-wider">
+                              Asal (Surplus)
+                            </span>
+                            <span className="font-bold text-slate-800">{rec.from_branch_name}</span>
                           </div>
                           <div className="flex flex-col items-center px-2">
-                            <span className="text-[10px] font-extrabold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded">
+                            <span className="text-[10px] font-bold text-enterprise-700 bg-enterprise-100 px-2 py-0.5 rounded-full">
                               {rec.transfer_qty} unit
                             </span>
                             <ArrowRight className="w-3.5 h-3.5 text-slate-400 my-0.5" />
                           </div>
                           <div className="text-right">
-                            <span className="text-[10px] text-slate-400 block font-medium">Tujuan (Kritis)</span>
-                            <span className="font-bold text-slate-700">{rec.to_branch_name}</span>
+                            <span className="text-[10px] text-slate-400 block font-medium uppercase tracking-wider">
+                              Tujuan (Defisit)
+                            </span>
+                            <span className="font-bold text-slate-800">{rec.to_branch_name}</span>
                           </div>
                         </div>
 
-                        <p className="text-[11px] text-slate-600 italic bg-amber-50/50 p-2 rounded border border-amber-100/60">
+                        <p className="text-[11px] text-slate-600 italic bg-amber-50/50 p-2.5 rounded-lg border border-amber-100/60 leading-relaxed">
                           {rec.reason}
                         </p>
                       </div>
 
                       <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
-                        <button
-                          type="button"
+                        <Button
+                          variant="secondary"
+                          size="sm"
                           onClick={() => handlePrefillTransfer(rec)}
-                          className="px-2.5 py-1.5 text-[11px] font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                          className="h-8 text-xs text-slate-600"
                         >
                           Isi Form Manual
-                        </button>
-                        <button
-                          type="button"
+                        </Button>
+                        <Button
+                          variant="primary"
+                          size="sm"
                           onClick={() => handleExecuteRecommendation(rec)}
                           disabled={executingRecId === rec.id}
-                          className="px-3 py-1.5 text-[11px] font-bold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:bg-blue-300 rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
+                          className="h-8 text-xs flex items-center gap-1.5"
                         >
                           {executingRecId === rec.id ? (
                             <>
@@ -850,7 +931,7 @@ export default function StockPage() {
                               Eksekusi 1-Klik
                             </>
                           )}
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -859,207 +940,209 @@ export default function StockPage() {
             </div>
 
             {/* Manual Transfer Form */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-card space-y-6">
               <div>
                 <h2 className="text-base font-bold text-slate-900">Form Transfer Manual Antarcabang</h2>
                 <p className="text-xs text-slate-500">
-                  Pindahkan stok barang dengan SKU yang sama dari satu cabang ke cabang lainnya secara instan dan atomik.
+                  Pindahkan persediaan barang dengan SKU yang sama dari satu cabang ke cabang lainnya secara atomik.
                 </p>
               </div>
 
               <form onSubmit={handleTransferSubmit} className="space-y-5">
-              {/* Branch Source & Target Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Source Branch */}
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 uppercase">
-                    <ArrowUpRight className="w-4 h-4 text-rose-500" /> Cabang Asal (Pengirim)
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
-                      Pilih Cabang Asal
-                    </label>
-                    <select
-                      aria-label="Pilih cabang asal"
-                      value={fromBranchId}
-                      onChange={(e) => {
-                        setFromBranchId(e.target.value);
-                        setFromProductId('');
-                        setToProductId('');
-                      }}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500"
-                    >
-                      {branches.map((b) => (
-                        <option key={b.id} value={b.id}>
-                          {b.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
-                      Pilih Produk yang Ditransfer
-                    </label>
-                    <select
-                      aria-label="Pilih produk yang ditransfer"
-                      value={fromProductId}
-                      onChange={(e) => {
-                        setFromProductId(e.target.value);
-                        setToProductId('');
-                      }}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">-- Pilih Produk --</option>
-                      {fromBranchProducts.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name} ({p.sku}) — Stok: {p.stock}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {selectedFromProduct && (
-                    <div className="p-2.5 bg-white border border-slate-200 rounded-lg text-xs">
-                      <span className="text-slate-500 block">Stok Tersedia Cabang Asal:</span>
-                      <span className="text-base font-bold text-slate-900">
-                        {selectedFromProduct.stock} unit
-                      </span>
+                {/* Branch Source & Target Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Source Branch */}
+                  <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200 space-y-3">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      <ArrowUpRight className="w-4 h-4 text-rose-500" /> Cabang Asal (Pengirim)
                     </div>
-                  )}
-                </div>
-
-                {/* Target Branch */}
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 uppercase">
-                    <ArrowDownLeft className="w-4 h-4 text-emerald-500" /> Cabang Tujuan (Penerima)
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
-                      Pilih Cabang Tujuan
-                    </label>
-                    <select
-                      aria-label="Pilih cabang tujuan"
-                      value={toBranchId}
-                      onChange={(e) => {
-                        setToBranchId(e.target.value);
-                        setToProductId('');
-                      }}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500"
-                    >
-                      {branches
-                        .filter((b) => b.id !== fromBranchId)
-                        .map((b) => (
+                    <div>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+                        Pilih Cabang Asal
+                      </label>
+                      <select
+                        aria-label="Pilih cabang asal"
+                        value={fromBranchId}
+                        onChange={(e) => {
+                          setFromBranchId(e.target.value);
+                          setFromProductId('');
+                          setToProductId('');
+                        }}
+                        className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
+                      >
+                        {branches.map((b) => (
                           <option key={b.id} value={b.id}>
                             {b.name}
                           </option>
                         ))}
-                    </select>
-                  </div>
+                      </select>
+                    </div>
 
-                  <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
-                      Produk Target (SKU Sama)
-                    </label>
-                    <select
-                      aria-label="Pilih produk target"
-                      disabled={!selectedFromProduct || toBranchEligibleProducts.length === 0}
-                      value={toProductId}
-                      onChange={(e) => setToProductId(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500 disabled:bg-slate-200"
-                    >
-                      {toBranchEligibleProducts.length === 0 ? (
-                        <option value="">
-                          {selectedFromProduct
-                            ? 'SKU ini belum ada di cabang tujuan'
-                            : '-- Pilih produk asal dahulu --'}
-                        </option>
-                      ) : (
-                        toBranchEligibleProducts.map((p) => (
+                    <div>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+                        Pilih Produk yang Ditransfer
+                      </label>
+                      <select
+                        aria-label="Pilih produk yang ditransfer"
+                        value={fromProductId}
+                        onChange={(e) => {
+                          setFromProductId(e.target.value);
+                          setToProductId('');
+                        }}
+                        className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
+                      >
+                        <option value="">-- Pilih Produk --</option>
+                        {fromBranchProducts.map((p) => (
                           <option key={p.id} value={p.id}>
-                            {p.name} ({p.sku}) — Stok Sekarang: {p.stock}
+                            {p.name} ({p.sku}) — Stok: {p.stock}
                           </option>
-                        ))
-                      )}
-                    </select>
+                        ))}
+                      </select>
+                    </div>
+
+                    {selectedFromProduct && (
+                      <div className="p-3 bg-white border border-slate-200 rounded-xl text-xs flex items-center justify-between">
+                        <span className="text-slate-500">Stok Tersedia Cabang Asal:</span>
+                        <span className="text-sm font-mono font-bold text-slate-900">
+                          {selectedFromProduct.stock} unit
+                        </span>
+                      </div>
+                    )}
                   </div>
 
-                  {selectedToProduct && (
-                    <div className="p-2.5 bg-white border border-slate-200 rounded-lg text-xs">
-                      <span className="text-slate-500 block">Stok Saat Ini Cabang Tujuan:</span>
-                      <span className="text-base font-bold text-slate-900">
-                        {selectedToProduct.stock} unit
-                      </span>
+                  {/* Target Branch */}
+                  <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200 space-y-3">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      <ArrowDownLeft className="w-4 h-4 text-emerald-500" /> Cabang Tujuan (Penerima)
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+                        Pilih Cabang Tujuan
+                      </label>
+                      <select
+                        aria-label="Pilih cabang tujuan"
+                        value={toBranchId}
+                        onChange={(e) => {
+                          setToBranchId(e.target.value);
+                          setToProductId('');
+                        }}
+                        className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
+                      >
+                        {branches
+                          .filter((b) => b.id !== fromBranchId)
+                          .map((b) => (
+                            <option key={b.id} value={b.id}>
+                              {b.name}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+                        Produk Target (SKU Sama)
+                      </label>
+                      <select
+                        aria-label="Pilih produk target"
+                        disabled={!selectedFromProduct || toBranchEligibleProducts.length === 0}
+                        value={toProductId}
+                        onChange={(e) => setToProductId(e.target.value)}
+                        className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 disabled:bg-slate-100 transition-colors"
+                      >
+                        {toBranchEligibleProducts.length === 0 ? (
+                          <option value="">
+                            {selectedFromProduct
+                              ? 'SKU ini belum ada di cabang tujuan'
+                              : '-- Pilih produk asal dahulu --'}
+                          </option>
+                        ) : (
+                          toBranchEligibleProducts.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name} ({p.sku}) — Stok Sekarang: {p.stock}
+                            </option>
+                          ))
+                        )}
+                      </select>
+                    </div>
+
+                    {selectedToProduct && (
+                      <div className="p-3 bg-white border border-slate-200 rounded-xl text-xs flex items-center justify-between">
+                        <span className="text-slate-500">Stok Saat Ini Cabang Tujuan:</span>
+                        <span className="text-sm font-mono font-bold text-slate-900">
+                          {selectedToProduct.stock} unit
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Transfer Quantity & Calculation */}
+                <div className="p-4 bg-enterprise-50/40 border border-enterprise-200/80 rounded-xl space-y-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      Jumlah Unit yang Ditransfer <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      aria-label="Jumlah unit transfer"
+                      type="number"
+                      min="1"
+                      max={selectedFromProduct ? selectedFromProduct.stock : undefined}
+                      value={transferQty}
+                      onChange={(e) =>
+                        setTransferQty(e.target.value === '' ? '' : parseInt(e.target.value, 10))
+                      }
+                      placeholder="Contoh: 10"
+                      className="w-full h-11 px-3.5 bg-white border border-slate-300 rounded-xl text-base font-bold text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
+                    />
+                  </div>
+
+                  {selectedFromProduct && selectedToProduct && typeof transferQty === 'number' && transferQty > 0 && (
+                    <div className="grid grid-cols-2 gap-3 text-xs pt-2 border-t border-enterprise-200/60">
+                      <div>
+                        <span className="text-slate-500">Sisa Stok Cabang Asal:</span>
+                        <p className="font-mono font-bold text-rose-600 mt-0.5">
+                          {selectedFromProduct.stock - transferQty} unit
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-slate-500">Stok Akhir Cabang Tujuan:</span>
+                        <p className="font-mono font-bold text-emerald-600 mt-0.5">
+                          {selectedToProduct.stock + transferQty} unit
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>
-              </div>
 
-              {/* Transfer Quantity & Calculation */}
-              <div className="p-4 bg-blue-50/50 border border-blue-200 rounded-xl space-y-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Jumlah Unit yang Ditransfer <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    aria-label="Jumlah unit transfer"
-                    type="number"
-                    min="1"
-                    max={selectedFromProduct ? selectedFromProduct.stock : undefined}
-                    value={transferQty}
-                    onChange={(e) =>
-                      setTransferQty(e.target.value === '' ? '' : parseInt(e.target.value, 10))
+                <div className="flex justify-end pt-2">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    type="submit"
+                    disabled={
+                      transferSubmitting ||
+                      !fromProductId ||
+                      !toProductId ||
+                      typeof transferQty !== 'number' ||
+                      transferQty <= 0
                     }
-                    placeholder="Contoh: 10"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-base font-bold text-slate-900 focus:ring-2 focus:ring-blue-500"
-                  />
+                    className="flex items-center gap-2"
+                  >
+                    {transferSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Memproses Transfer...
+                      </>
+                    ) : (
+                      <>
+                        <ArrowLeftRight className="w-4 h-4" />
+                        Eksekusi Transfer Stok
+                      </>
+                    )}
+                  </Button>
                 </div>
-
-                {selectedFromProduct && selectedToProduct && typeof transferQty === 'number' && transferQty > 0 && (
-                  <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-blue-200">
-                    <div>
-                      <span className="text-slate-500">Sisa Stok Cabang Asal:</span>
-                      <p className="font-bold text-rose-600">
-                        {selectedFromProduct.stock - transferQty} unit
-                      </p>
-                    </div>
-                    <div>
-                      <span className="text-slate-500">Stok Akhir Cabang Tujuan:</span>
-                      <p className="font-bold text-emerald-600">
-                        {selectedToProduct.stock + transferQty} unit
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  disabled={
-                    transferSubmitting ||
-                    !fromProductId ||
-                    !toProductId ||
-                    typeof transferQty !== 'number' ||
-                    transferQty <= 0
-                  }
-                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20 flex items-center gap-2 transition-all"
-                >
-                  {transferSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Memproses Transfer...
-                    </>
-                  ) : (
-                    <>
-                      <ArrowLeftRight className="w-4 h-4" />
-                      Eksekusi Transfer Stok
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
+              </form>
+            </div>
           </div>
         )}
 
@@ -1067,16 +1150,16 @@ export default function StockPage() {
         {activeTab === 'history' && (
           <div className="space-y-4">
             {/* Filter Bar */}
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-3 items-center justify-between">
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <Filter className="w-4 h-4 text-slate-400" />
+            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-card flex flex-col sm:flex-row gap-3 items-center justify-between">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                <Filter className="w-4 h-4 text-enterprise-600 shrink-0" />
                 <select
                   aria-label="Pilih cabang riwayat mutasi"
                   value={historyBranchId}
                   onChange={(e) => setHistoryBranchId(e.target.value)}
-                  className="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500"
+                  className="h-9 px-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-900 focus:bg-white focus:border-enterprise-500 focus:ring-2 focus:ring-enterprise-500/20 transition-colors cursor-pointer"
                 >
-                  <option value="ALL">Semua Cabang</option>
+                  <option value="ALL">Semua Cabang (Konsolidasi)</option>
                   {branches.map((b) => (
                     <option key={b.id} value={b.id}>
                       {b.name}
@@ -1088,7 +1171,7 @@ export default function StockPage() {
                   aria-label="Pilih jenis mutasi stok"
                   value={historyType}
                   onChange={(e) => setHistoryType(e.target.value)}
-                  className="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-blue-500"
+                  className="h-9 px-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-900 focus:bg-white focus:border-enterprise-500 focus:ring-2 focus:ring-enterprise-500/20 transition-colors cursor-pointer"
                 >
                   <option value="ALL">Semua Jenis Mutasi</option>
                   <option value="SALE">Penjualan (SALE)</option>
@@ -1101,65 +1184,68 @@ export default function StockPage() {
                 </select>
               </div>
 
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={fetchMovements}
-                className="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1"
+                className="h-8 text-xs text-enterprise-600 hover:text-enterprise-700 flex items-center gap-1.5"
               >
-                <RefreshCw className="w-3.5 h-3.5" /> Segarkan
-              </button>
+                <RefreshCw className={`w-3.5 h-3.5 ${movementsLoading ? 'animate-spin' : ''}`} /> Segarkan
+              </Button>
             </div>
 
             {/* Movements Table */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="rounded-xl border border-slate-200 bg-white shadow-card overflow-hidden">
               {movementsLoading ? (
                 <div className="py-20 flex flex-col items-center justify-center text-slate-400">
-                  <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-2" />
+                  <Loader2 className="w-8 h-8 animate-spin text-enterprise-600 mb-2" />
                   <p className="text-sm font-medium text-slate-600">Memuat log pergerakan stok...</p>
                 </div>
               ) : movements.length === 0 ? (
-                <div className="py-16 text-center text-slate-500">
-                  <History className="w-12 h-12 mx-auto text-slate-300 mb-2" />
-                  <p className="font-semibold text-slate-700">Belum ada riwayat pergerakan stok</p>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Setiap transaksi kasir, restock, atau transfer akan otomatis dicatat di sini.
-                  </p>
+                <div className="p-6">
+                  <EmptyState
+                    icon={History}
+                    title="Belum ada riwayat pergerakan stok"
+                    description="Setiap transaksi kasir POS, restock, opname fisik, atau transfer cabang otomatis tercatat di log audit kartu stok ini."
+                  />
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
                         <th className="py-3 px-4">Waktu (WIB)</th>
                         <th className="py-3 px-4">Cabang</th>
                         <th className="py-3 px-4">Produk</th>
-                        <th className="py-3 px-4">Jenis & Perubahan</th>
+                        <th className="py-3 px-4">Jenis &amp; Perubahan</th>
                         <th className="py-3 px-4 text-center">Stok Akhir</th>
                         <th className="py-3 px-4">Catatan / Alasan</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {movements.map((m) => (
-                        <tr key={m.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="py-3 px-4 font-mono text-slate-600">
+                        <tr key={m.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="py-3.5 px-4 font-mono text-slate-600 whitespace-nowrap">
                             {formatDateId(m.created_at)}
                           </td>
-                          <td className="py-3 px-4 font-medium text-slate-800">
+                          <td className="py-3.5 px-4 font-medium text-slate-800 whitespace-nowrap">
                             {branchMap.get(m.branch_id) || 'Cabang'}
                           </td>
-                          <td className="py-3 px-4 font-semibold text-slate-900">
-                            {m.products?.name || 'Produk'}
-                            <span className="block font-mono text-[10px] text-slate-400">
+                          <td className="py-3.5 px-4 whitespace-nowrap">
+                            <span className="font-semibold text-slate-900 block">
+                              {m.products?.name || 'Produk'}
+                            </span>
+                            <span className="font-mono text-[10px] text-slate-400 block">
                               {m.products?.sku}
                             </span>
                           </td>
-                          <td className="py-3 px-4">
+                          <td className="py-3.5 px-4 whitespace-nowrap">
                             {renderMovementBadge(m.movement_type, m.quantity_change)}
                           </td>
-                          <td className="py-3 px-4 text-center font-bold font-mono text-slate-900">
+                          <td className="py-3.5 px-4 text-center font-mono font-bold text-slate-900 whitespace-nowrap">
                             {m.stock_after}
                           </td>
-                          <td className="py-3 px-4 text-slate-600 max-w-xs truncate" title={m.note || '-'}>
+                          <td className="py-3.5 px-4 text-slate-600 max-w-xs truncate" title={m.note || '-'}>
                             {m.note || '-'}
                           </td>
                         </tr>
@@ -1174,14 +1260,16 @@ export default function StockPage() {
 
         {/* RESTOCK MODAL */}
         {restockProduct && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
-              <div className="p-4 bg-emerald-50 border-b border-emerald-100 flex items-center justify-between text-emerald-900">
-                <div className="flex items-center gap-2">
-                  <Plus className="w-5 h-5 text-emerald-600" />
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-6 py-4 bg-emerald-50 border-b border-emerald-100 flex items-center justify-between text-emerald-900">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                    <Plus className="w-4 h-4" />
+                  </div>
                   <div>
                     <h3 className="text-sm font-bold">Restock Barang Masuk</h3>
-                    <p className="text-[11px] text-emerald-700">
+                    <p className="text-[11px] text-emerald-700 font-mono">
                       {restockProduct.name} ({restockProduct.sku})
                     </p>
                   </div>
@@ -1189,22 +1277,22 @@ export default function StockPage() {
                 <button
                   type="button"
                   onClick={() => setRestockProduct(null)}
-                  className="text-slate-400 hover:text-slate-600 font-bold"
+                  className="text-slate-400 hover:text-slate-600 rounded-lg p-1 hover:bg-slate-200/60 transition-colors"
                 >
-                  ✕
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
               <form onSubmit={handleRestockSubmit} className="p-6 space-y-4">
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs flex justify-between items-center">
-                  <span className="text-slate-500">Stok Saat Ini:</span>
-                  <span className="text-base font-bold text-slate-900">
+                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs flex justify-between items-center">
+                  <span className="text-slate-500 font-medium">Stok Saat Ini:</span>
+                  <span className="text-base font-mono font-bold text-slate-900">
                     {restockProduct.stock} unit
                   </span>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Jumlah Barang Masuk <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -1217,17 +1305,17 @@ export default function StockPage() {
                       setRestockQty(e.target.value === '' ? '' : parseInt(e.target.value, 10))
                     }
                     placeholder="Contoh: 50"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-base font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500"
+                    className="w-full h-10 px-3.5 border border-slate-300 rounded-xl text-base font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-colors"
                   />
                   {typeof restockQty === 'number' && restockQty > 0 && (
-                    <p className="text-[11px] text-emerald-600 font-medium mt-1">
+                    <p className="text-[11px] text-emerald-600 font-semibold mt-1">
                       Stok akhir setelah restock: <strong>{restockProduct.stock + restockQty} unit</strong>
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Harga Beli Modal per Unit (Opsional)
                   </label>
                   <input
@@ -1238,12 +1326,12 @@ export default function StockPage() {
                     onChange={(e) =>
                       setRestockCost(e.target.value === '' ? '' : parseInt(e.target.value, 10))
                     }
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-emerald-500"
+                    className="w-full h-10 px-3.5 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Catatan Supplier / No. Faktur (Opsional)
                   </label>
                   <input
@@ -1252,23 +1340,25 @@ export default function StockPage() {
                     value={restockNote}
                     onChange={(e) => setRestockNote(e.target.value)}
                     placeholder="Contoh: Faktur #INV-9821 Distributor Kopi"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-emerald-500"
+                    className="w-full h-10 px-3.5 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-colors"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-                  <button
-                    type="button"
+                <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
+                  <Button
+                    variant="secondary"
+                    size="md"
                     disabled={restockSubmitting}
                     onClick={() => setRestockProduct(null)}
-                    className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold"
                   >
                     Batal
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="md"
                     type="submit"
                     disabled={restockSubmitting}
-                    className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-300 text-white text-xs font-bold shadow-md shadow-emerald-500/20 flex items-center gap-1.5 transition-all"
+                    className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 border-transparent shadow-xs"
                   >
                     {restockSubmitting ? (
                       <>
@@ -1278,7 +1368,7 @@ export default function StockPage() {
                     ) : (
                       'Simpan Restock'
                     )}
-                  </button>
+                  </Button>
                 </div>
               </form>
             </div>
@@ -1287,14 +1377,16 @@ export default function StockPage() {
 
         {/* ADJUST OPNAME MODAL */}
         {adjustProduct && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
-              <div className="p-4 bg-amber-50 border-b border-amber-100 flex items-center justify-between text-amber-900">
-                <div className="flex items-center gap-2">
-                  <RefreshCw className="w-5 h-5 text-amber-600" />
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-6 py-4 bg-amber-50 border-b border-amber-100 flex items-center justify-between text-amber-900">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                    <RefreshCw className="w-4 h-4" />
+                  </div>
                   <div>
                     <h3 className="text-sm font-bold">Stock Opname (Penyesuaian Fisik)</h3>
-                    <p className="text-[11px] text-amber-700">
+                    <p className="text-[11px] text-amber-700 font-mono">
                       {adjustProduct.name} ({adjustProduct.sku})
                     </p>
                   </div>
@@ -1302,22 +1394,22 @@ export default function StockPage() {
                 <button
                   type="button"
                   onClick={() => setAdjustProduct(null)}
-                  className="text-slate-400 hover:text-slate-600 font-bold"
+                  className="text-slate-400 hover:text-slate-600 rounded-lg p-1 hover:bg-slate-200/60 transition-colors"
                 >
-                  ✕
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
               <form onSubmit={handleAdjustSubmit} className="p-6 space-y-4">
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs flex justify-between items-center">
-                  <span className="text-slate-500">Stok Sistem Saat Ini:</span>
-                  <span className="text-base font-bold text-slate-900">
+                <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs flex justify-between items-center">
+                  <span className="text-slate-500 font-medium">Stok Sistem Saat Ini:</span>
+                  <span className="text-base font-mono font-bold text-slate-900">
                     {adjustProduct.stock} unit
                   </span>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Stok Fisik Riil Hasil Hitung <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -1330,11 +1422,11 @@ export default function StockPage() {
                       setAdjustNewStock(e.target.value === '' ? '' : parseInt(e.target.value, 10))
                     }
                     placeholder="0"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-base font-bold text-slate-900 focus:ring-2 focus:ring-amber-500"
+                    className="w-full h-10 px-3.5 border border-slate-300 rounded-xl text-base font-bold text-slate-900 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 transition-colors"
                   />
                   {typeof adjustNewStock === 'number' && (
                     <p
-                      className={`text-[11px] font-medium mt-1 ${
+                      className={`text-[11px] font-semibold mt-1 ${
                         adjustNewStock - adjustProduct.stock === 0
                           ? 'text-slate-500'
                           : adjustNewStock - adjustProduct.stock > 0
@@ -1352,7 +1444,7 @@ export default function StockPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Alasan Selisih Opname <span className="text-rose-500">*</span>
                   </label>
                   <textarea
@@ -1362,23 +1454,25 @@ export default function StockPage() {
                     value={adjustReason}
                     onChange={(e) => setAdjustReason(e.target.value)}
                     placeholder="Contoh: Barang rusak saat display, selisih salah hitung kasir..."
-                    className="w-full p-2.5 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-amber-500"
+                    className="w-full p-3 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 transition-colors"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-                  <button
-                    type="button"
+                <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
+                  <Button
+                    variant="secondary"
+                    size="md"
                     disabled={adjustSubmitting}
                     onClick={() => setAdjustProduct(null)}
-                    className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold"
                   >
                     Batal
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="md"
                     type="submit"
                     disabled={adjustSubmitting}
-                    className="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 disabled:bg-amber-300 text-white text-xs font-bold shadow-md shadow-amber-500/20 flex items-center gap-1.5 transition-all"
+                    className="bg-amber-600 hover:bg-amber-700 active:bg-amber-800 border-transparent shadow-xs"
                   >
                     {adjustSubmitting ? (
                       <>
@@ -1388,7 +1482,7 @@ export default function StockPage() {
                     ) : (
                       'Simpan Opname'
                     )}
-                  </button>
+                  </Button>
                 </div>
               </form>
             </div>

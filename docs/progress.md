@@ -1083,3 +1083,35 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R6.3:** Selesai 100% (Pengeluaran & Beban Operasional Siap)
+
+### R6.4 — Manajemen Stok & Mutasi Antarcabang (`frontend/src/app/(app)/stock/page.tsx`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/stock/page.tsx` — Peremajaan menyeluruh halaman manajemen persediaan barang dan mutasi cerdas antarcabang mengadopsi tema **Light SaaS Enterprise** modern:
+  - **Header & Guard Khusus Owner:**
+    - Judul halaman *Manajemen Stok & Mutasi Antarcabang* dilindungi `<RoleGuard allowedRoles={['OWNER']}>` dengan badge *Khusus Owner* dan tombol Segarkan Data.
+  - **Navigasi Tab Tersegmen (Segmented Control):**
+    - Tiga tab terintegrasi: *Inventaris & Aksi Cepat*, *Transfer Antarcabang* (dengan pill counter saran mutasi otomatis), dan *Log Riwayat Kartu Stok*.
+  - **Tab 1 — Inventaris & Aksi Cepat:**
+    - Strip 4 Metrik (`<MetricStrip />`): Total SKU Terdata, Stok Menipis (Alert), Stok Kosong / Habis, dan Nilai Aset Persediaan (HPP × Stok Fisik).
+    - Filter Cabang terpadu dan pencarian real-time SKU/nama/kategori dengan tombol hapus instan.
+    - Tabel inventaris densitas tinggi bergaris 1px `#E5E7EB` dengan badge status stok dinamis (*Habis*, *Menipis*, *Aman*) dan tombol aksi cepat Restock & Opname.
+    - Terintegrasi dengan `<EmptyState />` bila pencarian tidak menemukan hasil.
+  - **Tab 2 — Rekomendasi Cerdas & Transfer Manual Antarcabang:**
+    - Panel Rekomendasi Mutasi Otomatis dengan deteksi ketidakseimbangan cabang (surplus vs defisit), badge urgensi (*Kritis* / *Disarankan*), estimasi Net Benefit (formatRupiah), rute transfer asal-ke-tujuan, dan tombol aksi: *Isi Form Manual* serta *Eksekusi 1-Klik* instan.
+    - Kartu formulir transfer manual antarcabang dengan grid dua kolom (Cabang Pengirim & Cabang Penerima), pemilihan produk ber-SKU sama, dan live calculation sisa stok asal & stok akhir tujuan.
+  - **Tab 3 — Log Riwayat Kartu Stok (Audit Trail):**
+    - Filter cabang dan jenis mutasi komprehensif (*SALE*, *VOID_RETURN*, *RESTOCK*, *ADJUSTMENT*, *TRANSFER_OUT*, *TRANSFER_IN*, *IMPORT*).
+    - Tabel audit trail dengan cap waktu WIB (`formatDateId`), badge warna per jenis mutasi dengan delta kuantitas (+/-), stok akhir berfont mono, dan catatan/alasan.
+  - **Modal Restock & Modal Opname Fisik:**
+    - Modal Restock dengan input jumlah masuk, harga beli modal satuan, nomor faktur supplier, dan live preview stok akhir.
+    - Modal Opname Fisik dengan input hasil hitung riil, kalkulasi otomatis selisih (+/- unit), dan textarea alasan wajib minimal 3 karakter.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R6.4:** Selesai 100% (Manajemen Stok & Mutasi Antarcabang Siap)
