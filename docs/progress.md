@@ -1014,3 +1014,37 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R6.1:** Selesai 100% (Kasir Smart Voice POS Siap)
+
+### R6.2 — Riwayat Transaksi & Detail Struk (`frontend/src/app/(app)/transactions/page.tsx`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/transactions/page.tsx` — Peremajaan menyeluruh halaman audit riwayat transaksi kasir mengadopsi tema **Light SaaS Enterprise** modern:
+  - **Header & Ringkasan Metrik:**
+    - Panel header dengan total nota terdata dan tombol Segarkan dengan animasi loading.
+  - **Strip Terpadu 4 Metrik Transaksi (`<MetricStrip />`):**
+    1. *Omzet Halaman Ini (Selesai):* Format Rupiah dengan badge hijau `Selesai` dan jumlah transaksi sukses.
+    2. *Kas Tunai di Register:* Total uang fisik tunai wajib ada di laci kasir.
+    3. *Transaksi Dibatalkan (VOID):* Jumlah nota void dengan badge peringatan merah `Perlu Audit`.
+    4. *Rata-rata Nilai Belanja:* Rata-rata basket size per transaksi pelanggan.
+  - **Toolbar Filter Lengkap (`refrence1 (1).png`):**
+    - Multi-filter dropdown: Cabang kasir, Tanggal bisnis (`input type="date"`), Metode pembayaran (Semua, Tunai, QRIS), dan Status nota (Semua, Selesai, VOID).
+    - Tombol reset ke default (hari ini) bila ada filter aktif.
+  - **Tabel Transaksi Densitas Tinggi:**
+    - Tabel bergaris 1px `#E5E7EB` dengan kolom: ID Nota (font-mono bold), Waktu WIB (`formatDateId`), Cabang, Metode Input (Badge dengan ikon Voice/Import/Demo/Manual), Metode Bayar (Tunai/QRIS), Total Tagihan (dicoret bila VOID), Status (Badge `SELESAI` / `VOID`), dan Aksi (Lihat Detail & Batalkan VOID).
+    - Status hover halus dan `<EmptyState>` bila filter tidak menghasilkan data.
+    - Footer paginasi lengkap (Sebelumnya, Nomor Halaman, Selanjutnya).
+  - **Modal Detail Nota Transaksi:**
+    - Dialog rincian transaksi dengan banner status void (bila dibatalkan), ringkasan metode bayar, transkrip suara kasir asli, tabel rincian item produk yang dibeli, dan kalkulasi Gross Profit (laba kotor) khusus hak akses OWNER.
+    - Tombol Cetak Nota dan tombol Void langsung dari modal.
+  - **Modal Konfirmasi VOID Anti-Fraud:**
+    - Dialog konfirmasi pembatalan nota dengan input alasan void wajib (minimal 3 karakter) untuk audit log pencegahan fraud kasir.
+    - Pemulihan stok barang otomatis ke cabang asal melalui RPC database.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R6.2:** Selesai 100% (Riwayat Transaksi & Detail Struk Siap)
