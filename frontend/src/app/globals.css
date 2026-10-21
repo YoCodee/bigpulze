@@ -111,4 +111,15 @@
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
+
+  /* Pola titik gutter cetak biru (blueprint dot matrix 8px x 8px) */
+  .bg-dot-matrix {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+    background-size: 8px 8px;
+  }
+
+  /* Garis pandu putus-putus blueprint presisi */
+  .border-blueprint {
+    border-color: #26282D;
+  }
 }

@@ -12,7 +12,18 @@ import {
   ShoppingBag,
   Utensils,
   Quote,
+  Zap,
+  TrendingUp,
+  Boxes,
 } from 'lucide-react';
+import {
+  BlueprintCanvas,
+  DashedRule,
+  CornerMarks,
+  Callout,
+  FeatureGrid,
+  FeatureCell,
+} from '@/components/ui/blueprint-grid';
 
 const testimonials = [
   {
@@ -75,12 +86,12 @@ export default function HomePage() {
   const currentTestimonial = testimonials[activeTab];
 
   return (
-    <div className="min-h-screen bg-[#0A0A0C] text-white flex flex-col selection:bg-brand-500 selection:text-white">
+    <BlueprintCanvas className="min-h-screen text-white flex flex-col selection:bg-brand-500 selection:text-white">
       {/* ======================================================== */}
-      {/* 1. TOP NAVBAR (Mengacu ke redesign/home/hero.png) */}
+      {/* 1. TOP NAVBAR (Full-bleed Header) */}
       {/* ======================================================== */}
-      <header className="sticky top-0 z-50 bg-[#0A0A0C]/90 backdrop-blur-md border-b border-[#26282D]/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <header className="sticky top-0 z-50 bg-[#0A0A0C]/90 backdrop-blur-md border-b border-[#26282D]">
+        <div className="max-w-[1120px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center space-x-2.5 group">
             <div className="h-8 w-8 rounded-lg bg-brand-500 text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
@@ -106,19 +117,19 @@ export default function HomePage() {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-zinc-300">
-            <a href="#fitur" className="hover:text-white transition-colors">
-              Fitur
+            <a href="#hero" className="hover:text-white transition-colors">
+              Beranda
             </a>
             <a href="#testimoni" className="hover:text-white transition-colors">
               Cerita UMKM
             </a>
+            <a href="#fondasi" className="hover:text-white transition-colors">
+              Pilar Fondasi
+            </a>
             <a href="#solusi" className="hover:text-white transition-colors">
               Solusi
             </a>
-            <a href="#multi-cabang" className="hover:text-white transition-colors">
-              Multi-Cabang
-            </a>
-            <a href="#harga" className="hover:text-white transition-colors">
+            <a href="#paket" className="hover:text-white transition-colors">
               Paket
             </a>
           </nav>
@@ -153,8 +164,8 @@ export default function HomePage() {
       {/* ======================================================== */}
       {/* 2. HERO CONTAINER ORANYE MELENGKUNG (redesign/home/hero.png) */}
       {/* ======================================================== */}
-      <section className="px-3 sm:px-6 md:px-8 pt-4 pb-12 sm:pb-16 max-w-7xl mx-auto w-full">
-        <div className="relative rounded-3xl overflow-hidden bg-hero-gradient shadow-2xl shadow-brand-500/20 text-white p-7 sm:p-12 md:p-20 text-center flex flex-col items-center justify-center min-h-[560px] sm:min-h-[620px]">
+      <section id="hero" className="px-3 sm:px-6 md:px-8 pt-4 pb-12 sm:pb-16 max-w-[1120px] mx-auto w-full">
+        <div className="relative rounded-3xl overflow-hidden bg-hero-gradient shadow-2xl shadow-brand-500/20 text-white p-7 sm:p-12 md:p-16 text-center flex flex-col items-center justify-center min-h-[540px] sm:min-h-[580px]">
           {/* Tekstur Halftone Dot-Grid murni CSS */}
           <div className="absolute inset-0 bg-dot-grid opacity-35 pointer-events-none" />
 
@@ -173,7 +184,7 @@ export default function HomePage() {
           </Link>
 
           {/* Headline Display Masif */}
-          <h1 className="relative z-10 mt-6 sm:mt-8 max-w-4xl text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.08] text-white">
+          <h1 className="relative z-10 mt-6 sm:mt-8 max-w-3xl text-3xl sm:text-5xl md:text-5xl font-extrabold tracking-tight leading-[1.08] text-white">
             Semua Jawaban untuk Mengelola Multi-Cabang UMKM—Otomatis Setiap Pagi
           </h1>
 
@@ -217,130 +228,183 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Full-bleed Horizontal Dashed Rule */}
+      <DashedRule />
+
       {/* ======================================================== */}
       {/* 3. SOCIAL PROOF & TESTIMONI TABBED BOX (redesign/home/info1.png) */}
       {/* ======================================================== */}
-      <section id="testimoni" className="px-4 sm:px-6 md:px-8 py-16 sm:py-24 max-w-7xl mx-auto w-full">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-3">
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
-            Dipercaya oleh Pelaku Usaha & Penggiat UMKM Multi-Cabang
-          </h2>
-          <p className="text-sm sm:text-base text-zinc-400">
-            Membantu pemilik kedai kopi, bakery, minimarket retail, dan kuliner mengambil keputusan bisnis akurat setiap hari.
-          </p>
-        </div>
-
-        {/* macOS Style Window Frame Card (info1.png) */}
-        <div className="mt-12 max-w-5xl mx-auto rounded-2xl border border-[#26282D] bg-[#121316] shadow-2xl overflow-hidden">
-          {/* Top Window Bar with macOS Dots and Tabs */}
-          <div className="border-b border-[#26282D] bg-[#16171A] px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-            {/* macOS Window Dots */}
-            <div className="hidden sm:flex items-center space-x-2">
-              <div className="h-3 w-3 rounded-full bg-rose-500/80" />
-              <div className="h-3 w-3 rounded-full bg-amber-500/80" />
-              <div className="h-3 w-3 rounded-full bg-emerald-500/80" />
-            </div>
-
-            {/* Business Category Tabs */}
-            <div className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto w-full sm:w-auto scrollbar-none py-1">
-              {testimonials.map((item, idx) => {
-                const isActive = activeTab === idx;
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveTab(idx)}
-                    type="button"
-                    className={`relative inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-colors cursor-pointer select-none whitespace-nowrap ${
-                      isActive
-                        ? 'bg-[#1F2024] text-white shadow-xs'
-                        : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
-                    }`}
-                  >
-                    <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-brand-500' : 'text-zinc-500'}`} />
-                    <span>{item.brand}</span>
-                    {isActive && (
-                      <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-brand-500 rounded-full" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+      <section id="testimoni" className="relative w-full py-16 sm:py-24">
+        <div className="max-w-[910px] mx-auto px-4 sm:px-6">
+          {/* Section Header dengan Bobot Ringan Refined (Blueprint Typography) */}
+          <div className="text-center max-w-2xl mx-auto space-y-3">
+            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-white">
+              Dipercaya oleh Pelaku Usaha & Penggiat UMKM
+            </h2>
+            <p className="text-xs sm:text-sm text-zinc-400 tracking-tight">
+              Membantu pemilik kedai kopi, bakery, minimarket, dan resto mengambil keputusan bisnis akurat setiap hari.
+            </p>
           </div>
 
-          {/* Inside Card Body (Quote + Detail) */}
-          <div className="p-6 sm:p-10 md:p-12 relative">
-            <Quote className="h-10 w-10 sm:h-12 sm:w-12 text-zinc-700/50 absolute top-6 right-6 sm:top-10 sm:right-10 pointer-events-none" />
+          {/* Callout Anotasi Blueprint Grid */}
+          <div className="mt-8 max-w-2xl mx-auto">
+            <Callout title="Pencapaian Efisiensi Operasional">
+              Rata-rata pemilik gerai menghemat hingga <strong>90% waktu pencatatan</strong> manual harian dan mendeteksi selisih kas register secara instan tanpa menunggu tutup buku bulanan.
+            </Callout>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-              {/* Quote Content */}
-              <div className="md:col-span-8 space-y-6">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-500/15 text-brand-400 border border-brand-500/30">
-                  {currentTestimonial.tag}
-                </span>
+          {/* macOS Style Window Frame Card (info1.png) */}
+          <div className="mt-8 rounded-2xl border border-[#26282D] bg-[#121316] shadow-2xl overflow-hidden relative">
+            <CornerMarks />
 
-                <blockquote className="text-base sm:text-xl font-medium text-zinc-100 leading-relaxed sm:leading-snug">
-                  “{currentTestimonial.quote}”
-                </blockquote>
+            {/* Top Window Bar with macOS Dots and Tabs */}
+            <div className="border-b border-[#26282D] bg-[#16171A] px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+              {/* macOS Window Dots */}
+              <div className="hidden sm:flex items-center space-x-2">
+                <div className="h-2.5 w-2.5 rounded-full bg-rose-500/80" />
+                <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
+                <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
+              </div>
 
-                <div>
-                  <h4 className="text-sm sm:text-base font-bold text-white">
-                    {currentTestimonial.author}
-                  </h4>
-                  <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-                    {currentTestimonial.role}
+              {/* Business Category Tabs */}
+              <div className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto w-full sm:w-auto scrollbar-none py-1">
+                {testimonials.map((item, idx) => {
+                  const isActive = activeTab === idx;
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setActiveTab(idx)}
+                      type="button"
+                      className={`relative inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-colors cursor-pointer select-none whitespace-nowrap ${
+                        isActive
+                          ? 'bg-[#1F2024] text-white shadow-xs'
+                          : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
+                      }`}
+                    >
+                      <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-brand-500' : 'text-zinc-500'}`} />
+                      <span>{item.brand}</span>
+                      {isActive && (
+                        <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-brand-500 rounded-full" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Inside Card Body (Quote + Detail) */}
+            <div className="p-6 sm:p-10 relative">
+              <Quote className="h-10 w-10 sm:h-12 sm:w-12 text-zinc-700/50 absolute top-6 right-6 sm:top-10 sm:right-10 pointer-events-none" />
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                {/* Quote Content */}
+                <div className="md:col-span-8 space-y-5">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-500/15 text-brand-400 border border-brand-500/30">
+                    {currentTestimonial.tag}
+                  </span>
+
+                  <blockquote className="text-base sm:text-xl font-medium text-zinc-100 leading-relaxed sm:leading-snug">
+                    “{currentTestimonial.quote}”
+                  </blockquote>
+
+                  <div>
+                    <h4 className="text-sm sm:text-base font-bold text-white">
+                      {currentTestimonial.author}
+                    </h4>
+                    <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
+                      {currentTestimonial.role}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Stat Highlight Card */}
+                <div className="md:col-span-4 bg-[#16171A] rounded-xl border border-[#26282D] p-5 text-center space-y-2 flex flex-col justify-center">
+                  <div className="h-9 w-9 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center mx-auto">
+                    <CheckCircle2 className="h-5 w-5" />
+                  </div>
+                  <h5 className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+                    Dampak Nyata
+                  </h5>
+                  <p className="text-sm sm:text-base font-bold text-brand-400 leading-tight">
+                    {currentTestimonial.stats}
                   </p>
                 </div>
               </div>
-
-              {/* Stat Highlight Card */}
-              <div className="md:col-span-4 bg-[#16171A] rounded-xl border border-[#26282D] p-5 sm:p-6 text-center space-y-2 flex flex-col justify-center">
-                <div className="h-10 w-10 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center mx-auto">
-                  <CheckCircle2 className="h-5 w-5" />
-                </div>
-                <h5 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Dampak Langsung
-                </h5>
-                <p className="text-base sm:text-lg font-bold text-brand-400 leading-tight">
-                  {currentTestimonial.stats}
-                </p>
-              </div>
             </div>
           </div>
-        </div>
 
-        {/* Tech Ecosystem Ticker Bar */}
-        <div className="mt-16 text-center space-y-5">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
-            Dibangun dengan Ekosistem Teknologi Teruji & Standar Perbankan
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
-            {techStack.map((tech) => (
-              <div
-                key={tech.name}
-                className="flex items-center space-x-2 text-zinc-400 hover:text-zinc-200 transition-colors group"
-              >
-                <div className="h-2 w-2 rounded-full bg-brand-500/80 group-hover:scale-125 transition-transform" />
-                <span className="text-sm font-bold text-zinc-300">{tech.name}</span>
-                <span className="text-[11px] text-zinc-600 font-mono">({tech.desc})</span>
-              </div>
-            ))}
+          {/* Tech Ecosystem Ticker Bar */}
+          <div className="mt-14 text-center space-y-4">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-zinc-500">
+              Dibangun dengan Ekosistem Teknologi Teruji & Standar Perbankan
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8">
+              {techStack.map((tech) => (
+                <div
+                  key={tech.name}
+                  className="flex items-center space-x-2 text-zinc-400 hover:text-zinc-200 transition-colors group"
+                >
+                  <div className="h-1.5 w-1.5 rounded-full bg-brand-500/80 group-hover:scale-125 transition-transform" />
+                  <span className="text-xs sm:text-sm font-semibold text-zinc-300">{tech.name}</span>
+                  <span className="text-[10px] text-zinc-600 font-mono">({tech.desc})</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
+      {/* Full-bleed Horizontal Dashed Rule */}
+      <DashedRule />
+
+      {/* ======================================================== */}
+      {/* 4. PILAR FONDASI BISNIS & TEKNOLOGI (detail-blueprint-grid.png style) */}
+      {/* ======================================================== */}
+      <section id="fondasi" className="relative w-full py-16 sm:py-24">
+        <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2.5">
+            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-white">
+              Fondasi Arsitektur Skala Enterprise untuk UMKM
+            </h2>
+            <p className="text-xs sm:text-sm text-zinc-400 tracking-tight">
+              Tiga pilar ketangguhan sistem yang menjamin ketersediaan data, kecepatan transaksi, dan akurasi finansial mutlak.
+            </p>
+          </div>
+
+          {/* Feature Grid dengan CornerMarks Siku Tajam (detail-blueprint-grid.png) */}
+          <FeatureGrid className="mt-8">
+            <FeatureCell
+              icon={Zap}
+              title="Kecepatan Transaksi 2 Detik"
+              description="Input pesanan majemuk via Smart Voice POS dengan NLP lisan bahasa Indonesia lokal tanpa latensi jaringan token API."
+            />
+            <FeatureCell
+              icon={TrendingUp}
+              title="Auto-Ledger & 3 Pagi"
+              description="Kalkulasi buku besar otomatis, HPP real-time, serta asisten keputusan harian mendeteksi anomali finansial sejak dini."
+            />
+            <FeatureCell
+              icon={Boxes}
+              title="Isolasi Tenant & Stok Atomik"
+              description="Row Level Security PostgreSQL di semua tabel dan proteksi mutasi stok wajib melalui RPC database aman."
+            />
+          </FeatureGrid>
+        </div>
+      </section>
+
+      {/* Full-bleed Horizontal Dashed Rule */}
+      <DashedRule />
+
       {/* ======================================================== */}
       {/* PLACEHOLDER SECTION ANCHORS (Untuk R4.3 s.d. R4.7) */}
       {/* ======================================================== */}
-      <div id="fitur" />
       <div id="solusi" />
-      <div id="multi-cabang" />
-      <div id="harga" />
+      <div id="paket" />
 
       {/* Footer Minimalist Sementara Sebelum R4.7 */}
       <footer className="mt-auto border-t border-[#26282D] py-8 px-6 text-center text-xs text-zinc-500">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-[1120px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center space-x-2 text-zinc-400">
             <ShieldCheck className="h-4 w-4 text-brand-500" />
             <span>BizPulse — Asisten Keputusan & Voice POS UMKM Multi-Cabang</span>
@@ -350,6 +414,6 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
-    </div>
+    </BlueprintCanvas>
   );
 }

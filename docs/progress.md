@@ -763,3 +763,27 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R4.2:** Selesai (Social Proof & Testimoni 100% siap)
+
+### R2+R4 (Penyempurnaan Pola "Blueprint Grid" `redesign/home/detail-blueprint-grid.png`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `docs/design-system.md` — Penambahan Bagian 8: Pengukuran akurat (kanvas 1889px, kontainer luar 1120px, konten dalam 910px, gutter 105px, dot matrix 8px x 8px, sudut siku tajam `rounded-none`, kotak penanda sudut `CornerMarks` 8px x 8px, dan callout berborder putus-putus oranye `#F6821F`).
+- `frontend/src/app/globals.css` — Pendaftaran utility class `.bg-dot-matrix` (radial gradient 1px per 8px x 8px) dan `.border-blueprint` (`#26282D`).
+- `frontend/src/components/ui/blueprint-grid.tsx` — Modul komponen cetak biru terpadu:
+  - `<CornerMarks>`: Handle seleksi 8px x 8px di 4 sudut sel kartu.
+  - `<DotGutter>`: Koridor tekstur titik 105px di antara garis pandu luar dan dalam.
+  - `<DashedRule>`: Garis putus-putus horizontal selebar layar (*full bleed*) yang memotong garis vertikal.
+  - `<Callout>`: Kotak anotasi berbingkai putus-putus aksen oranye `#F6821F`.
+  - `<FeatureGrid>` & `<FeatureCell>`: Grid sel bersudut siku tajam dengan border 1px dan ikon garis tipis.
+  - `<BlueprintCanvas>`: Kontainer utama kontinu yang menjaga garis pandu vertikal luar, koridor dot gutter, dan garis pandu dalam menembus utuh dari atas ke bawah melintasi seluruh landing page tanpa terputus.
+  - `<BlueprintSection>`: Wrapper section 910px terpusat dengan garis pemisah horizontal atas-bawah.
+- `frontend/src/app/page.tsx` — Penerapan menyeluruh `BlueprintCanvas`, garis putus-putus horizontal `DashedRule`, kartu testimoni dengan `CornerMarks`, anotasi `Callout`, dan pilar fondasi `FeatureGrid`.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status:** Selesai (Fondasi Blueprint Grid kontinu 100% aktif di seluruh Landing Page)

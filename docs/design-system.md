@@ -261,3 +261,42 @@ Desain referensi memanfaatkan hierarki tipografi sans-serif modern bertipe neo-g
 1. **Bahasa Desain**: BizPulse mengadopsi ketajaman visual, kedisiplinan hierarki, kepadatan data enterprise, dan aksen oranye menyala dari referensi untuk memberikan kesan aplikasi kelas dunia.
 2. **Kemandirian Merek**: Seluruh teks antarmuka tetap **100% Bahasa Indonesia**, identitas nama tetap **BizPulse**, target pasar tetap **UMKM multi-cabang**, dan hak cipta sepenuhnya bersih dari aset pihak ketiga.
 3. **Integritas Fungsional**: Tidak ada satu pun fitur PRD yang dihilangkan atau diubah perilakunya. Seluruh aturan transaksi, proteksi stok via RPC, zona waktu WIB, format Rupiah utuh, dan logika 3 Pertanyaan Pagi tetap berjalan 100% utuh.
+
+---
+
+## 8. Pola "Blueprint Grid" (Detail Modernisme Landing Page & Card Grid)
+
+Berdasarkan analisis presisi terhadap artefak visual `redesign/home/detail-blueprint-grid.png` (resolusi lebar 1889 px), gaya modern mutakhir referensi dibangun di atas sistem grid geometris arsitektural (*Blueprint Grid*) yang tegas, terukur, dan berorientasi presisi teknis.
+
+### 8.1. Pengukuran Presisi dari Referensi (`detail-blueprint-grid.png`)
+| Elemen Grid | Nilai Terukur (px) | Token CSS Variable / Tailwind | Karakteristik Visual & Perilaku |
+| :--- | :--- | :--- | :--- |
+| **Lebar Kanvas Gambar** | `1889px` | Full viewport | Kanvas gelap utama (`#0A0A0C`) |
+| **Lebar Kontainer Luar (Outer Guide)** | `1110px – 1120px` | `max-w-[1120px]` / `--grid-outer-width: 1120px` | Garis pandu vertikal luar putus-putus tembus dari atas ke bawah |
+| **Lebar Kolom Konten Dalam (Inner Guide)** | `900px – 910px` | `max-w-[910px]` / `--grid-inner-width: 910px` | Garis pandu vertikal dalam pembatas teks & sel kartu |
+| **Lebar Gutter (Koridor Titik)** | `105px` | `w-[105px]` / `--grid-gutter-width: 105px` | Koridor di antara garis luar dan garis dalam |
+| **Tekstur Titik Gutter (Dot Matrix)** | Titik 1px, spasi 8px × 8px | `--gutter-dot-size: 8px`<br>`--gutter-dot-color: rgba(255,255,255,0.08)` | `radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px)`. Hanya di area gutter, tidak bocor ke konten |
+| **Garis Pandu Putus-Putus (Dashed Guides)** | Tebal 1px, dash 4px, gap 4px | `--grid-line-color: #26282D`<br>`--grid-line-dash: 4px 4px` | Warna abu-abu gelap kontras rendah (`#26282D`), garis vertikal utuh & horizontal selebar layar (*full bleed*) |
+| **Kotak Sudut Grid (Corner Marks)** | `8px × 8px` persegi | `--handle-size: 8px`<br>`--handle-border: #4B5563`<br>`--handle-bg: #0A0A0C` | Kotak kecil mirip *selection handle* di Figma/CAD pada 4 sudut grid & titik persilangan kolom |
+| **Bentuk Sudut Kartu Grid** | `0px` (Sudut Tajam) | `rounded-none` | Mengabaikan `rounded-xl`, memakai sudut persegi tajam presisi cetak biru |
+| **Callout Keterangan Aksen** | Border 1px putus-putus oranye | `--callout-border: #F6821F`<br>`--callout-bg: rgba(246,130,31,0.04)` | Border dashed oranye `#F6821F`, teks 11px–12px oranye, padding ringkas `px-3 py-2`, sudut siku tajam |
+| **Tipografi Judul Blueprint** | 32px – 36px | `font-normal` s.d. `font-medium` | Judul terpusat berbobot ringan/elegan (*light-to-medium*), tracking `-0.025em`, kontras tinggi terhadap teks sekunder |
+
+### 8.2. Daftar Komponen Reusable yang Dibutuhkan
+Komponen-komponen ini akan diintegrasikan ke dalam `frontend/src/components/ui/`:
+1. **`<BlueprintSection>`**: Kontainer pembungkus section dengan garis vertikal luar dan dalam, gutter bertekstur titik, dan garis horizontal atas-bawah.
+2. **`<DotGutter>`**: Koridor 105px berisi pola titik-titik halus murni CSS `radial-gradient` yang presisi.
+3. **`<DashedRule>`**: Garis horizontal putus-putus selebar layar (*full bleed*) berpotongan dengan garis pandu vertikal.
+4. **`<CornerMarks>`**: Handle sudut persegi 8px × 8px (`border border-zinc-600 bg-[#0A0A0C]`) di 4 sudut sel/grid.
+5. **`<FeatureGrid>` & `<FeatureCell>`**: Wadah kartu sel bergaris tepi tipis 1px `#26282D` sudut tajam (`rounded-none`), dengan ikon garis tipis (stroke 1.25px), judul semi-bold 14px, dan deskripsi 12px redup.
+6. **`<Callout>`**: Kotak anotasi berbingkai putus-putus aksen oranye `#F6821F` untuk metrik kunci.
+
+### 8.3. Aturan Penerapan & Responsivitas
+- **Landing Page (`/`):** Terapkan penuh pada section fitur, arsitektur multi-cabang, dan komparasi solusi untuk menghadirkan nuansa cetak biru modern yang autentik.
+- **Area Aplikasi Internal (`/dashboard`, `/pos`, tabel data):** Gunakan versi **MINIMAL** (garis pemisah halus dan `CornerMarks` pada kartu utama/strip metrik). Dilarang menyematkan dot gutter atau garis pandu berlebih di dalam dashboard aplikasi agar tidak mengorbankan kepadatan data dan fokus kerja kasir/owner.
+- **Responsivitas:**
+  - **Desktop (>= 1280px):** Gutter penuh 105px, garis pandu ganda (luar & dalam) aktif.
+  - **Tablet (768px – 1279px):** Gutter dikecilkan menjadi 48px – 64px, tekstur titik tetap halus.
+  - **Mobile (< 768px):** Sembunyikan dot gutter dan garis vertikal dalam demi ruang baca maksimal; pertahankan garis horizontal putus-putus selebar layar.
+  - **Bebas Horizontal Scroll:** Semua elemen dekoratif dibungkus dalam kontainer `overflow-x-clip` agar tidak menyebabkan scroll menyamping di perangkat apa pun.
+
