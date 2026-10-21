@@ -976,3 +976,41 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R5:** Selesai 100% (Owner Dashboard & Kartu 3 Pertanyaan Pagi Siap)
+
+---
+
+## Tahap R6: Peremajaan Halaman Operasional Aplikasi
+
+### R6.1 — Kasir Smart Voice POS (`frontend/src/app/(app)/pos/page.tsx`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/pos/page.tsx` — Peremajaan menyeluruh terminal POS kasir mengadopsi tema **Light SaaS Enterprise** modern berdensitas data tinggi (`refrence1 (1).png`):
+  - **Top Control Bar:**
+    - Panel status cabang kasir aktif dengan indikator titik hijau live, nama gerai, dan petunjuk penggunaan Smart Voice POS.
+  - **Toolbar Pencarian & Filter Kategori (`refrence1 (1).png`):**
+    - Input pencarian cepat SKU/nama/alias dengan tombol hapus instan.
+    - Tombol aktivasi Voice Mic Button berukuran touch target >= 44px.
+    - Deretan tombol kapsul kategori menu (*Semua Kategori*, *Kopi*, dll.) dengan status aktif biru enterprise `bg-enterprise-600 text-white`.
+  - **Katalog Menu Responsif (High-Density Grid):**
+    - Kartu produk 1px border `#E5E7EB` dengan badge status stok dinamis (`Habis` merah, `Sisa N` amber, `Stok N` abu-abu).
+    - Tipografi harga bold format Rupiah utuh (`formatRupiah`), indikator kuantitas di keranjang, dan tombol tambah touch-friendly.
+  - **Panel Keranjang Kasir (Right Rail Terpadu):**
+    - Sidebar keranjang kasir terpadu dengan border `#E5E7EB` dan status live transkrip suara kasir (*"Transkrip Asli"*).
+    - Stepper kuantitas touch-friendly (tombol minus, plus, dan tempat sampah dengan area sentuh minimal 44px per panduan touch accessibility).
+    - Ringkasan total tagihan berfont mono tebal dan tombol checkout utama berukuran `size="touch"`.
+  - **Modal Pembayaran & Simulasi QRIS:**
+    - Dialog pembayaran modern dengan pilihan Tunai (Cash) dan QRIS Simulasi.
+    - Pilihan nominal cepat (*Uang Pas*, *Rp 50.000*, *Rp 100.000*) serta kalkulasi kembalian kasir real-time.
+    - Hitung mundur simulasi QRIS 3 detik dengan verifikasi otomatis.
+  - **Struk Kasir Thermal & Modal Konfirmasi Suara:**
+    - Tampilan struk kasir sah bergaya cetak thermal monospaced dengan tombol Cetak Struk dan Transaksi Baru.
+    - Modal tinjauan transkrip suara kasir dengan persentase akurasi, penanda frasa tidak cocok, dan stepper kuantitas.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R6.1:** Selesai 100% (Kasir Smart Voice POS Siap)
