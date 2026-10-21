@@ -1292,3 +1292,42 @@
 - `npm run build`     : **Lulus 100%** (34 static & dynamic routes compiled)
 
 **Status Seluruh Tahap Redesign (R1 – R7):** Selesai 100% (BizPulse GTNIC 2026 Siap Evaluasi)
+
+---
+
+## Tahap R8: Redesign Autentikasi (Login, Register & Auth Layout) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(auth)/layout.tsx` — Split-screen modern dua kolom mengadopsi tema **Dark Blueprint SaaS**:
+  - **Panel Showcase Kiri (Desktop):**
+    - Identitas brand BizPulse dengan gradient flame icon dan pulsing indicator.
+    - Badge `GTNIC 2026 Finalist Edition`.
+    - Headline terpadu & 3 pilar proposisi nilai (Voice POS Kasir < 1 Detik, Sinkronisasi 5 Cabang Real-time, AI Asisten Keputusan & Deteksi Anomali).
+    - Testimonial box dengan kutipan pemilik UMKM demo (*Budi Santoso - Kopi Senja*).
+    - Ticker metrik live: 106 Unit Tests (100% Passed), 5 Cabang Terintegrasi, Offline-Ready POS.
+  - **Panel Formulir Kanan:**
+    - Navigasi atas: tautan *Kembali ke Beranda* dan akses langsung ke *Panduan Juri* (`/demo-guide`).
+    - Kartu formulir beraksen gradient top border, Blueprint CAD `CornerMarks`, dan ambient radial glow.
+    - Tampilan mobile responsif dengan header ringkas.
+- `frontend/src/app/(auth)/login/page.tsx` — Peremajaan halaman login dengan pengujian juri 1-klik:
+  - **Panel Pengujian Juri GTNIC 2026 (Login 1-Klik):**
+    - 2 tombol kartu aksi cepat: **Masuk sbg Owner** (Akses Penuh: Dashboard, 5 Cabang & AI) dan **Masuk sbg Kasir** (Terminal POS Cabang 1 Malioboro).
+    - Indikator loading spinner dinamis pada kartu tombol yang diklik.
+  - **Formulir Login Manual:**
+    - Input email dan kata sandi bertema dark slate dengan icon (`Mail`, `Lock`).
+    - Toggle visibilitas kata sandi (`Eye` / `EyeOff`).
+    - Banner peringatan error dinamis jika otentikasi gagal.
+- `frontend/src/app/(auth)/register/page.tsx` — Peremajaan formulir registrasi pemilik usaha UMKM:
+  - Input nama organisasi/tenant, nama lengkap pemilik, email, dan kata sandi (min. 8 karakter) dengan icon terpandu.
+  - Toggle visibilitas kata sandi (`Eye` / `EyeOff`).
+  - Kotak jaminan auto-activation per PRD FR-1.1: Akun Owner dan Cabang Utama langsung aktif tanpa menunggu verifikasi email.
+  - Navigasi cepat kembali ke halaman login atau opsi pengujian juri 1-klik.
+
+**Hasil Verifikasi:**
+- `npm run test`      : **Lulus 100%** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus 100%** (0 TypeScript error)
+- `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+- `npm run build`     : **Lulus 100%** (34 static & dynamic routes compiled)
+
+**Status Tahap R8:** Selesai 100% (Modul Autentikasi Modern & Tombol Uji Juri Siap)

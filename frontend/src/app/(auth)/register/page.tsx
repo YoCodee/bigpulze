@@ -3,7 +3,20 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
+import {
+  Loader2,
+  Building2,
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  UserPlus,
+  ArrowRight,
+  AlertCircle,
+  CheckCircle2,
+  Sparkles,
+} from 'lucide-react';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -11,6 +24,7 @@ export default function RegisterPage() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -63,82 +77,164 @@ export default function RegisterPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-slate-900 text-center">
-          Daftar Pemilik Usaha
+      {/* Header Formulir */}
+      <div className="text-center space-y-1.5">
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-[11px] font-semibold tracking-wide">
+          <UserPlus className="h-3 w-3" />
+          REGISTRASI PEMILIK USAHA
+        </div>
+        <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+          Daftar Usaha Baru
         </h2>
-        <p className="mt-1 text-sm text-slate-500 text-center">
-          Daftarkan usaha Anda dan kelola hingga 5 cabang
+        <p className="text-xs sm:text-sm text-zinc-400">
+          Daftarkan usaha Anda dan kelola operasional multi-cabang
         </p>
       </div>
 
+      {/* Alert Error */}
       {errorMsg && (
-        <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-          {errorMsg}
+        <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-xl text-xs flex items-start gap-2.5">
+          <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+          <span className="leading-relaxed">{errorMsg}</span>
         </div>
       )}
 
+      {/* Formulir Registrasi */}
       <form className="space-y-4" onSubmit={handleRegister}>
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Nama Usaha / Tenant</label>
-          <input
-            type="text"
-            required
-            value={orgName}
-            onChange={(e) => setOrgName(e.target.value)}
-            placeholder="Contoh: Kopi Nusantara"
-            className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+        {/* Input Nama Usaha */}
+        <div className="space-y-1.5">
+          <label className="block text-xs font-semibold text-zinc-300">
+            Nama Usaha / Tenant
+          </label>
+          <div className="relative">
+            <Building2 className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              required
+              value={orgName}
+              onChange={(e) => setOrgName(e.target.value)}
+              placeholder="Contoh: Kopi Nusantara"
+              className="w-full pl-9 pr-3 py-2 bg-[#0A0A0C] border border-[#26282D] rounded-lg text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors"
+            />
+          </div>
+          <p className="text-[10px] text-zinc-500">
+            Nama organisasi induk untuk manajemen semua cabang Anda.
+          </p>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Nama Lengkap Pemilik</label>
-          <input
-            type="text"
-            required
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder="Nama Pemilik"
-            className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+
+        {/* Input Nama Lengkap Pemilik */}
+        <div className="space-y-1.5">
+          <label className="block text-xs font-semibold text-zinc-300">
+            Nama Lengkap Pemilik
+          </label>
+          <div className="relative">
+            <User className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              required
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Contoh: Budi Santoso"
+              className="w-full pl-9 pr-3 py-2 bg-[#0A0A0C] border border-[#26282D] rounded-lg text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors"
+            />
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Email</label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="owner@usaha.com"
-            className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+
+        {/* Input Email Pemilik */}
+        <div className="space-y-1.5">
+          <label className="block text-xs font-semibold text-zinc-300">
+            Alamat Email Pemilik
+          </label>
+          <div className="relative">
+            <Mail className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="owner@usaha.com"
+              className="w-full pl-9 pr-3 py-2 bg-[#0A0A0C] border border-[#26282D] rounded-lg text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors"
+            />
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Kata Sandi (Min. 8 Karakter)</label>
-          <input
-            type="password"
-            required
-            minLength={8}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+
+        {/* Input Kata Sandi */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label className="block text-xs font-semibold text-zinc-300">
+              Kata Sandi
+            </label>
+            <span className="text-[11px] text-zinc-500">Min. 8 Karakter</span>
+          </div>
+          <div className="relative">
+            <Lock className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type={showPassword ? 'text' : 'password'}
+              required
+              minLength={8}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full pl-9 pr-10 py-2 bg-[#0A0A0C] border border-[#26282D] rounded-lg text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+              aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
+
+        {/* Guarantee Note Box (PRD FR-1.1: Tanpa verifikasi email) */}
+        <div className="p-3 rounded-lg border border-[#26282D] bg-[#0A0A0C]/60 flex items-start gap-2.5 text-[11px] text-zinc-400">
+          <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+          <span>
+            Akun langsung aktif dan otomatis masuk ke Dashboard setelah pendaftaran tanpa perlu menunggu verifikasi email.
+          </span>
+        </div>
+
+        {/* Tombol Submit Registrasi */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2.5 px-4 rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition flex items-center justify-center disabled:opacity-50"
+          className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold text-white bg-brand-500 hover:bg-brand-600 active:bg-brand-700 transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-brand-500/20 disabled:opacity-50 cursor-pointer"
         >
-          {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-          Daftarkan Akun
+          {loading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <>
+              <span>Daftarkan Usaha & Buka Dashboard</span>
+              <ArrowRight className="w-4 h-4" />
+            </>
+          )}
         </button>
       </form>
 
-      <div className="text-center text-sm text-slate-600">
-        Sudah memiliki akun?{' '}
-        <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
-          Masuk di sini
-        </Link>
+      {/* Navigasi Masuk & Akses Cepat */}
+      <div className="pt-2 text-center text-xs text-zinc-400 border-t border-[#26282D] space-y-2">
+        <div>
+          Sudah memiliki akun?{' '}
+          <Link
+            href="/login"
+            className="font-semibold text-brand-400 hover:text-brand-300 underline underline-offset-4 transition-colors"
+          >
+            Masuk di sini
+          </Link>
+        </div>
+
+        <div className="text-[11px] text-zinc-500">
+          Atau ingin menguji tanpa mendaftar?{' '}
+          <Link
+            href="/login"
+            className="text-enterprise-400 hover:text-enterprise-300 inline-flex items-center gap-1 font-medium"
+          >
+            <Sparkles className="w-3 h-3" />
+            Gunakan Quick Demo Juri
+          </Link>
+        </div>
       </div>
     </div>
   );
