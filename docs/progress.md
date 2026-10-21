@@ -937,3 +937,42 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R4 (Landing Page Redesign):** Selesai 100% (R4.1 s.d. R4.7 Lengkap)
+
+---
+
+## Tahap R5: Owner Dashboard & Kartu "3 Pertanyaan Pagi" (`frontend/src/app/(app)/dashboard/page.tsx`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/dashboard/page.tsx` — Peremajaan total dashboard pemilik usaha mengadopsi estetika **Light SaaS Enterprise** modern berdensitas data tinggi mengacu pada referensi `redesign/dashboard/`:
+  - **Greeting & Quick Action Banner (pola `refrence1 (2).png`):**
+    - Kartu bergaris tepi 1px `#E5E7EB` dengan ucapan selamat datang personal, tanggal bisnis zona WIB (`formatDateId`), tombol Segarkan dinamis, dan tombol Panduan Juri.
+    - 3 Kartu Shortcut Aksi Cepat: Buka Kasir Voice POS (`/pos`), Catat Beban Operasional (`/expenses`), dan Laporan Laba Rugi Auto-Ledger (`/reports`).
+  - **Segmented Tabs Kapsul (pola `refrence1 (4).png`):**
+    - Menggunakan komponen `<Tabs />` varian pill: *Ikhtisar 3 Pertanyaan Pagi*, *Performa Cabang Aktif (3)*, dan *Deteksi Anomali Terbuka*.
+    - Status sistem PostgreSQL RLS multi-tenant aktif secara live.
+  - **Strip Terpadu 4-KPI "3 Pertanyaan Pagi" (pola `refrence1 (4).png`):**
+    - Menggunakan komponen `<MetricStrip />`:
+      1. *Pertanyaan 1: Kemarin Untung / Rugi?* — Estimasi Laba Bersih `+Rp 2.730.000` (Margin 70.9%, Omzet Rp 3.850.000, Badge `Untung ✅`).
+      2. *Uang Fisik Kasir di Laci (Register)* — `Rp 2.140.000` (Selisih Rp 0, 167 transaksi QRIS & Tunai klop).
+      3. *Pertanyaan 2: Deteksi Anomali Sistem* — `${total_open} Terbuka` (${critical_count} Kritis, Modified Z-score > 2.5).
+      4. *Pertanyaan 3: Rekomendasi Mutasi* — `${count} Rekomendasi` (Potensi Laba +${potential_net_benefit}, Badge `Hemat Ongkir`).
+  - **Tata Letak Dua Kolom Enterprise (Main Rail 8-Kolom + Right Rail 4-Kolom):**
+    - **Main Rail (8-Kolom):**
+      - *Pilar 2 (Deteksi Anomali):* Kartu anomali aktif dengan badge tingkat keparahan (CRITICAL, HIGH, MEDIUM), Modified Z-Score, tanggal deteksi, tombol Tinjau yang memicu Resolution Modal, dan `<EmptyState>` saat seluruh cabang beroperasi normal.
+      - *Pilar 3 (Rekomendasi Mutasi 1-Klik):* Aliran rute mutasi visual (Cabang Donor Surplus ➔ Unit Mutasi ➔ Cabang Penerima Defisit), kalkulator untung bersih setelah ongkir kurir, dan tombol eksekusi 1-klik via RPC database.
+      - *Tren Finansial 7 Hari:* Visualisasi rasio omzet harian 7 hari terakhir dengan persentase margin laba.
+      - *Klasemen Cabang:* Tampilan terperinci saat tab Cabang aktif (Thamrin, Dago, Gubeng).
+    - **Right Rail (4-Kolom, pola `refrence1 (3).png`):**
+      - *Capaian Target Hari Ini per Cabang:* Progress bar dinamis capaian omzet Thamrin (84%), Dago (88%), dan Gubeng (95%).
+      - *Kapasitas & Integritas Akun:* Kuota 3/5 cabang aktif (Pro Tier), PostgreSQL RLS terisolasi, log audit anti-fraud VOID aktif.
+      - *Panduan Cepat Skenario Juri GTNIC 2026:* Akses cepat ke 6 skenario demo dan ekspor PDF KUR bank.
+  - **Modal Resolusi Anomali:** Restyle modal konfirmasi elegan dengan saran tindakan AI, input catatan owner, tombol Abaikan (Dismiss) dan Tandai Selesai (Resolved).
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R5:** Selesai 100% (Owner Dashboard & Kartu 3 Pertanyaan Pagi Siap)

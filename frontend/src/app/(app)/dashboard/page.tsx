@@ -4,12 +4,24 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { RoleGuard } from '@/components/role-guard';
 import { formatRupiah } from '@/lib/format';
+import { formatDateId } from '@/lib/date';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui/card';
+import { MetricStrip, MetricItem } from '@/components/ui/metric-strip';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs } from '@/components/ui/tabs';
+import { EmptyState } from '@/components/ui/empty-state';
 import {
   CheckCircle2,
   ArrowRightLeft,
   TrendingDown,
   TrendingUp,
-  Wallet,
   Sparkles,
   ShieldAlert,
   Loader2,
@@ -19,6 +31,12 @@ import {
   Check,
   Building2,
   ArrowRight,
+  Mic,
+  FileText,
+  Calendar,
+  BarChart3,
+  Lock,
+  Boxes,
 } from 'lucide-react';
 
 interface AnomalyItem {
@@ -64,7 +82,57 @@ interface TransferRecommendationItem {
   reason: string;
 }
 
+const sevenDaysTrend = [
+  { date: '15 Okt', omzet: 3450000, beban: 850000, laba: 1580000, ratio: 72 },
+  { date: '16 Okt', omzet: 3900000, beban: 920000, laba: 1830000, ratio: 78 },
+  { date: '17 Okt', omzet: 4200000, beban: 980000, laba: 1980000, ratio: 82 },
+  { date: '18 Okt', omzet: 4800000, beban: 1050000, laba: 2330000, ratio: 94 },
+  { date: '19 Okt', omzet: 5100000, beban: 1120000, laba: 2470000, ratio: 100 },
+  { date: '20 Okt', omzet: 3850000, beban: 890000, laba: 1840000, ratio: 76 },
+  { date: 'Hari Ini', omzet: 3920000, beban: 910000, laba: 1870000, ratio: 77 },
+];
+
+const branchList = [
+  {
+    id: 'b-01',
+    name: 'Kopi Senja Thamrin (Pusat)',
+    city: 'Jakarta Pusat',
+    todayRevenue: 4200000,
+    dailyTarget: 5000000,
+    progress: 84,
+    activeStaff: 3,
+    anomalyCount: 0,
+    stockStatus: 'Aman (100%)',
+    isHeadquarters: true,
+  },
+  {
+    id: 'b-02',
+    name: 'Kopi Senja Dago',
+    city: 'Bandung',
+    todayRevenue: 3100000,
+    dailyTarget: 3500000,
+    progress: 88,
+    activeStaff: 2,
+    anomalyCount: 1,
+    stockStatus: 'Perlu Mutasi (Sirup)',
+    isHeadquarters: false,
+  },
+  {
+    id: 'b-03',
+    name: 'Kopi Senja Gubeng',
+    city: 'Surabaya',
+    todayRevenue: 2850000,
+    dailyTarget: 3000000,
+    progress: 95,
+    activeStaff: 2,
+    anomalyCount: 0,
+    stockStatus: 'Aman (96%)',
+    isHeadquarters: false,
+  },
+];
+
 export default function DashboardPage() {
+  const [activeTab, setActiveTab] = useState<'overview' | 'branches' | 'anomalies'>('overview');
   const [anomalies, setAnomalies] = useState<AnomalyItem[]>([]);
   const [anomalySummary, setAnomalySummary] = useState<{
     total_open: number;
@@ -192,405 +260,746 @@ export default function DashboardPage() {
     }
   };
 
+  // Metrics for MetricStrip component
+  const morningMetrics: MetricItem[] = [
+    {
+      label: 'Pertanyaan 1: Kemarin Untung / Rugi?',
+      value: '+Rp 2.730.000',
+      subtext: 'Omzet Rp 3.850.000 • HPP Rp 1.120.000 (Margin 70.9%)',
+      badge: (
+        <Badge variant="success" dot>
+          Untung ✅
+        </Badge>
+      ),
+      change: {
+        value: '+12.4% vs target',
+        isPositive: true,
+      },
+    },
+    {
+      label: 'Uang Fisik Kasir di Laci (Register)',
+      value: 'Rp 2.140.000',
+      subtext: 'Selisih Rp 0 • 167 transaksi QRIS & Tunai klop',
+      badge: (
+        <Badge variant="neutral" dot>
+          Klop Sempurna
+        </Badge>
+      ),
+      change: {
+        value: 'Rekonsiliasi 100%',
+        isNeutral: true,
+      },
+    },
+    {
+      label: 'Pertanyaan 2: Deteksi Anomali Sistem',
+      value: `${anomalySummary.total_open} Terbuka`,
+      subtext: `${anomalySummary.critical_count} Kritis • Modified Z-score > 2.5`,
+      badge: (
+        <Badge variant={anomalySummary.total_open > 0 ? 'warning' : 'success'} dot>
+          {anomalySummary.total_open > 0 ? 'Perlu Tinjauan' : 'Normal'}
+        </Badge>
+      ),
+    },
+    {
+      label: 'Pertanyaan 3: Rekomendasi Mutasi',
+      value: `${recommendations.length} Rekomendasi`,
+      subtext: `Potensi Laba: +${formatRupiah(recommendationSummary.total_potential_net_benefit)}`,
+      badge: (
+        <Badge variant="brand" dot>
+          Hemat Ongkir
+        </Badge>
+      ),
+    },
+  ];
+
   return (
     <RoleGuard allowedRoles={['OWNER']}>
-      <div className="space-y-6 max-w-7xl mx-auto pb-12">
+      <div className="space-y-6 max-w-[1440px] mx-auto pb-16">
         {/* Toast Alert */}
         {successToast && (
-          <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-emerald-800 text-xs font-semibold shadow-sm animate-in fade-in duration-200">
+          <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-emerald-800 text-xs font-semibold shadow-xs animate-in fade-in duration-200">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>{successToast}</span>
             </div>
             <button
               type="button"
               onClick={() => setSuccessToast(null)}
-              className="text-emerald-600 hover:text-emerald-800"
+              className="text-emerald-600 hover:text-emerald-800 p-1 rounded-md"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         )}
 
-        {/* Dashboard Title & Quick Stats */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 text-purple-800 text-[11px] font-bold mb-2">
-              <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-              Asisten Keputusan Harian Pemilik Usaha (GTNIC 2026)
+        {/* ======================================================== */}
+        {/* 1. GREETING BANNER (redesign/dashboard/refrence1 (2).png) */}
+        {/* ======================================================== */}
+        <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="brand" dot>
+                GTNIC 2026 • Asisten Keputusan
+              </Badge>
+              <span className="text-xs text-slate-500 flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                {formatDateId(new Date(), 'EEEE, d MMMM yyyy')} • Zona WIB (Asia/Jakarta)
+              </span>
             </div>
+
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Dashboard Keputusan 3 Pagi
+              Pusat Kendali Eksekutif, Budi Santoso 👋
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Tiga Pertanyaan Strategis Pemilik Usaha: Laba Harian, Deteksi Anomali, dan Rekomendasi Tindakan Mutasi Stok.
+
+            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
+              Selamat pagi! Berikut adalah ikhtisar harian <strong className="text-slate-700">3 Pertanyaan Pagi</strong> untuk 3 cabang Kopi Senja. Buku besar otomatis telah terkonsiliasi hingga fajar ini.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
+          <div className="flex items-center gap-2.5 shrink-0">
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={fetchDashboardData}
               disabled={refreshing}
-              className="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs disabled:opacity-60"
+              className="gap-1.5"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-purple-600' : ''}`} />
-              Segarkan
-            </button>
-            <Link
-              href="/demo-guide"
-              className="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-500/20 flex items-center gap-1.5"
-            >
-              <Sparkles className="w-3.5 h-3.5" /> Panduan Juri
+              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-enterprise-600' : ''}`} />
+              <span>Segarkan</span>
+            </Button>
+
+            <Link href="/demo-guide">
+              <Button variant="primary" size="sm" className="gap-1.5 bg-enterprise-600 hover:bg-enterprise-700">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Panduan Juri</span>
+              </Button>
             </Link>
           </div>
         </div>
 
-        {/* Three Morning Questions Grid (PRD §10.1) */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* ========================================================================= */}
-          {/* PILAR 1: KEMARIN UNTUNG ATAU RUGI? */}
-          {/* ========================================================================= */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-5">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-[11px] font-bold uppercase tracking-wider">
-                  Pertanyaan 1 • Finansial
-                </span>
-                <span className="text-[11px] text-slate-500 flex items-center gap-1">
-                  <Building2 className="w-3 h-3" /> Multi-Cabang
-                </span>
+        {/* ======================================================== */}
+        {/* 2. 3 QUICK ACTION SHORTCUT CARDS (refrence1 (2).png) */}
+        {/* ======================================================== */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Link
+            href="/pos"
+            className="group rounded-xl border border-slate-200 bg-white p-4 sm:p-5 hover:border-enterprise-300 hover:shadow-sm transition-all flex items-center justify-between"
+          >
+            <div className="flex items-center space-x-3.5">
+              <div className="h-10 w-10 rounded-lg bg-blue-50 text-enterprise-600 border border-blue-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <Mic className="h-5 w-5" />
               </div>
-
-              <h2 className="text-lg font-bold text-slate-900 leading-snug">
-                Kemarin untung atau rugi?
-              </h2>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Ringkasan performa finansial harian: capaian target omzet, beban biaya, dan laba operasional bersih.
-              </p>
-
-              {/* Snapshot Metrics */}
-              <div className="space-y-3 pt-2">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
-                      <TrendingUp className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="text-[11px] text-slate-500 font-medium">Omzet Harian Rata-rata</div>
-                      <div className="text-sm font-bold text-slate-900 font-mono">Rp 3.850.000</div>
-                    </div>
-                  </div>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                    Sehat
-                  </span>
-                </div>
-
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
-                      <TrendingDown className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="text-[11px] text-slate-500 font-medium">Total Beban Biaya</div>
-                      <div className="text-sm font-bold text-slate-900 font-mono">Rp 1.120.000</div>
-                    </div>
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">
-                    29% Omzet
-                  </span>
-                </div>
-
-                <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold">
-                      <Wallet className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="text-[11px] text-emerald-800 font-medium">Estimasi Laba Bersih</div>
-                      <div className="text-base font-extrabold text-emerald-900 font-mono">
-                        +Rp 2.730.000
-                      </div>
-                    </div>
-                  </div>
-                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-200/60 px-2 py-0.5 rounded-full">
-                    Untung ✅
-                  </span>
-                </div>
+              <div>
+                <h4 className="text-sm font-bold text-slate-900 group-hover:text-enterprise-600 transition-colors">
+                  Buka Kasir Voice POS
+                </h4>
+                <p className="text-xs text-slate-500">Input transaksi 2 detik & cetak struk</p>
               </div>
             </div>
+            <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-enterprise-600 group-hover:translate-x-0.5 transition-all" />
+          </Link>
 
-            <div className="pt-4 border-t border-slate-100">
-              <Link
-                href="/reports"
-                className="w-full py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border border-slate-200"
-              >
-                <span>Lihat Laporan Lengkap (Tahap F)</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-
-          {/* ========================================================================= */}
-          {/* PILAR 2: APA YANG HARUS DIPERHATIKAN? (DETEKSI ANOMALI) */}
-          {/* ========================================================================= */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-5">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700 text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
-                  Pertanyaan 2 • Peringatan
-                </span>
-                <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    anomalySummary.critical_count > 0
-                      ? 'bg-rose-100 text-rose-800 animate-pulse'
-                      : 'bg-amber-100 text-amber-800'
-                  }`}
-                >
-                  {anomalySummary.total_open} Anomali Aktif
-                </span>
+          <Link
+            href="/expenses"
+            className="group rounded-xl border border-slate-200 bg-white p-4 sm:p-5 hover:border-amber-300 hover:shadow-sm transition-all flex items-center justify-between"
+          >
+            <div className="flex items-center space-x-3.5">
+              <div className="h-10 w-10 rounded-lg bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <TrendingDown className="h-5 w-5" />
               </div>
-
-              <h2 className="text-lg font-bold text-slate-900 leading-snug">
-                Apa yang harus diperhatikan?
-              </h2>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Algoritma Z-Score mendeteksi lonjakan biaya tak wajar, penurunan omzet drastis, dan transaksi kembar.
-              </p>
-
-              {/* Anomalies List */}
-              <div className="space-y-2.5 pt-1 max-h-[340px] overflow-y-auto pr-1">
-                {loading ? (
-                  <div className="p-8 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
-                    Menganalisis anomali sistem...
-                  </div>
-                ) : anomalies.length === 0 ? (
-                  <div className="p-6 text-center bg-emerald-50/60 rounded-xl border border-emerald-100 space-y-2">
-                    <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
-                    <p className="text-xs font-bold text-emerald-900">
-                      Seluruh Cabang Beroperasi Normal
-                    </p>
-                    <p className="text-[11px] text-emerald-700">
-                      Tidak ditemukan lonjakan biaya, transaksi kembar, atau anomali omzet terbuka.
-                    </p>
-                  </div>
-                ) : (
-                  anomalies.map((anom) => (
-                    <div
-                      key={anom.id}
-                      className={`p-3 rounded-xl border text-xs space-y-2 transition-all ${
-                        anom.severity === 'CRITICAL'
-                          ? 'bg-rose-50/70 border-rose-200 text-rose-950'
-                          : 'bg-amber-50/70 border-amber-200 text-amber-950'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="font-bold flex items-center gap-1.5 leading-snug">
-                          <ShieldAlert
-                            className={`w-3.5 h-3.5 flex-shrink-0 ${
-                              anom.severity === 'CRITICAL' ? 'text-rose-600' : 'text-amber-600'
-                            }`}
-                          />
-                          <span>{anom.title}</span>
-                        </div>
-                        <span
-                          className={`text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
-                            anom.severity === 'CRITICAL'
-                              ? 'bg-rose-200 text-rose-900'
-                              : 'bg-amber-200 text-amber-900'
-                          }`}
-                        >
-                          {anom.severity}
-                        </span>
-                      </div>
-
-                      <p className="text-[11px] opacity-90 leading-relaxed">
-                        {anom.description}
-                      </p>
-
-                      <div className="flex items-center justify-between pt-1 border-t border-black/5 text-[10px]">
-                        <span className="font-medium text-slate-500">
-                          {anom.branch_name || 'Cabang'}
-                          {anom.z_score !== null && anom.z_score !== undefined && (
-                            <span className="ml-1.5 font-mono">Z: {anom.z_score}</span>
-                          )}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedAnomaly(anom)}
-                          className="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-800 rounded-lg font-bold border border-slate-200 shadow-2xs transition-all cursor-pointer"
-                        >
-                          Tinjau & Selesaikan
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
+              <div>
+                <h4 className="text-sm font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
+                  Catat Beban Operasional
+                </h4>
+                <p className="text-xs text-slate-500">Input biaya harian lisan atau manual</p>
               </div>
             </div>
+            <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-amber-600 group-hover:translate-x-0.5 transition-all" />
+          </Link>
 
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <span>Status: Modified Z-Score Aktif</span>
-              <span className="font-mono text-slate-700">Threshold: Z &gt; 2.5</span>
-            </div>
-          </div>
-
-          {/* ========================================================================= */}
-          {/* PILAR 3: APA YANG HARUS DILAKUKAN? (REKOMENDASI MUTASI STOK 1-KLIK) */}
-          {/* ========================================================================= */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-5">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
-                  Pertanyaan 3 • Tindakan
-                </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800">
-                  {recommendations.length} Mutasi Cerdas
-                </span>
+          <Link
+            href="/reports"
+            className="group rounded-xl border border-slate-200 bg-white p-4 sm:p-5 hover:border-emerald-300 hover:shadow-sm transition-all flex items-center justify-between"
+          >
+            <div className="flex items-center space-x-3.5">
+              <div className="h-10 w-10 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <TrendingUp className="h-5 w-5" />
               </div>
-
-              <h2 className="text-lg font-bold text-slate-900 leading-snug">
-                Apa yang harus dilakukan?
-              </h2>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Rekomendasi pemindahan stok antarcabang cerdas untuk mencegah kehilangan omzet akibat stok habis.
-              </p>
-
-              {/* Recommendations List */}
-              <div className="space-y-2.5 pt-1 max-h-[340px] overflow-y-auto pr-1">
-                {loading ? (
-                  <div className="p-8 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
-                    Menghitung kalkulasi mutasi optimal...
-                  </div>
-                ) : recommendations.length === 0 ? (
-                  <div className="p-6 text-center bg-slate-50 rounded-xl border border-slate-100 space-y-2">
-                    <PackageCheck className="w-8 h-8 text-slate-400 mx-auto" />
-                    <p className="text-xs font-bold text-slate-800">
-                      Persediaan Seluruh Cabang Aman
-                    </p>
-                    <p className="text-[11px] text-slate-500">
-                      Tidak ada cabang dengan stok kritis yang membutuhkan mutasi darurat saat ini.
-                    </p>
-                  </div>
-                ) : (
-                  recommendations.map((rec) => (
-                    <div
-                      key={rec.id}
-                      className="p-3.5 bg-gradient-to-br from-purple-50/60 to-indigo-50/40 rounded-xl border border-purple-200 text-xs space-y-2.5 shadow-2xs"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-slate-900 flex items-center gap-1.5">
-                          <ArrowRightLeft className="w-3.5 h-3.5 text-purple-600" />
-                          {rec.product_name}
-                        </span>
-                        <span
-                          className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
-                            rec.urgency === 'CRITICAL'
-                              ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                              : 'bg-purple-100 text-purple-800 border border-purple-200'
-                          }`}
-                        >
-                          {rec.urgency === 'CRITICAL' ? 'Kritis' : 'Disarankan'}
-                        </span>
-                      </div>
-
-                      {/* Movement Route Flow */}
-                      <div className="p-2 bg-white rounded-lg border border-purple-100 flex items-center justify-between text-[11px]">
-                        <div>
-                          <div className="text-[10px] text-slate-400">Donor (Surplus)</div>
-                          <div className="font-bold text-slate-800 truncate max-w-[90px]">
-                            {rec.from_branch_name}
-                          </div>
-                          <div className="text-[10px] text-slate-500 font-mono">
-                            {rec.from_current_stock} &rarr; {rec.from_stock_after} unit
-                          </div>
-                        </div>
-
-                        <div className="text-center px-1">
-                          <span className="text-[10px] font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full block">
-                            +{rec.transfer_qty} unit
-                          </span>
-                          <span className="text-[9px] text-slate-400">Mutasi</span>
-                        </div>
-
-                        <div className="text-right">
-                          <div className="text-[10px] text-slate-400">Penerima (Defisit)</div>
-                          <div className="font-bold text-rose-700 truncate max-w-[90px]">
-                            {rec.to_branch_name}
-                          </div>
-                          <div className="text-[10px] text-slate-500 font-mono">
-                            {rec.to_current_stock} &rarr; {rec.to_stock_after} unit
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Economic Net Benefit */}
-                      <div className="flex items-center justify-between text-[11px] pt-0.5">
-                        <span className="text-slate-600">
-                          Net Benefit:{' '}
-                          <strong className="text-emerald-700 font-mono">
-                            +{formatRupiah(rec.net_benefit)}
-                          </strong>
-                        </span>
-                        <span className="text-[10px] text-slate-400">
-                          (Setelah ongkir {formatRupiah(rec.logistics_cost)})
-                        </span>
-                      </div>
-
-                      {/* 1-Click Action Button */}
-                      <button
-                        type="button"
-                        disabled={executingId === rec.id}
-                        onClick={() => handleExecuteTransfer(rec)}
-                        className="w-full py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-500/20 flex items-center justify-center gap-1.5 cursor-pointer"
-                      >
-                        {executingId === rec.id ? (
-                          <>
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            Memproses Mutasi Stok...
-                          </>
-                        ) : (
-                          <>
-                            <Check className="w-3.5 h-3.5" />
-                            Eksekusi Mutasi 1-Klik ({rec.transfer_qty} Unit)
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  ))
-                )}
+              <div>
+                <h4 className="text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
+                  Laporan Laba Rugi Auto-Ledger
+                </h4>
+                <p className="text-xs text-slate-500">Ekspor format resmi PDF siap bank/KUR</p>
               </div>
             </div>
+            <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
+          </Link>
+        </div>
 
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <span className="text-[11px] font-medium text-emerald-700">
-                {recommendationSummary.total_potential_net_benefit > 0
-                  ? `Potensi Laba: +${formatRupiah(recommendationSummary.total_potential_net_benefit)}`
-                  : 'Stok Teroptimasi'}
-              </span>
-              <Link href="/stock" className="text-purple-600 hover:text-purple-800 font-bold flex items-center gap-1">
-                <span>Buka Menu Stok</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
+        {/* ======================================================== */}
+        {/* 3. SEGMENTED TABS SWITCHER (refrence1 (4).png) */}
+        {/* ======================================================== */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+          <Tabs
+            variant="pill"
+            activeId={activeTab}
+            onChange={(id) => setActiveTab(id as 'overview' | 'branches' | 'anomalies')}
+            items={[
+              {
+                id: 'overview',
+                label: 'Ikhtisar 3 Pertanyaan Pagi',
+                icon: Sparkles,
+              },
+              {
+                id: 'branches',
+                label: 'Performa Cabang Aktif',
+                icon: Building2,
+                count: 3,
+              },
+              {
+                id: 'anomalies',
+                label: 'Deteksi Anomali Terbuka',
+                icon: ShieldAlert,
+                count: anomalySummary.total_open,
+              },
+            ]}
+          />
+
+          <div className="text-xs text-slate-500 flex items-center gap-1.5 self-end sm:self-auto">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>PostgreSQL RLS Multi-Tenant Aktif</span>
           </div>
         </div>
 
-        {/* RESOLUTION MODAL FOR ANOMALIES */}
-        {selectedAnomaly && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
-              <div className="p-4 bg-gradient-to-r from-amber-500 to-rose-500 text-white flex items-center justify-between">
+        {/* ======================================================== */}
+        {/* 4. SEGMENTED 4-KPI METRIC STRIP (refrence1 (4).png) */}
+        {/* ======================================================== */}
+        <MetricStrip
+          title="Indikator Kunci Keputusan 3 Pagi (D-1 s.d. Fajar Ini)"
+          action={
+            <Link href="/reports" className="text-enterprise-600 hover:text-enterprise-700 font-bold flex items-center gap-1">
+              <span>Buka Buku Besar</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          }
+          metrics={morningMetrics}
+        />
+
+        {/* ======================================================== */}
+        {/* 5. TWO-COLUMN LAYOUT (Main Rail 8-Col + Right Rail 4-Col) */}
+        {/* ======================================================== */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* ========================================================================= */}
+          {/* MAIN RAIL (8 COLUMNS) */}
+          {/* ========================================================================= */}
+          <div className="lg:col-span-8 space-y-6">
+            {/* TAB: OVERVIEW & ANOMALIES */}
+            {activeTab !== 'branches' && (
+              <>
+                {/* 5.1. PILAR 2: APA YANG HARUS DIPERHATIKAN? (DETEKSI ANOMALI) */}
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-slate-100 pb-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="p-1.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-200">
+                          <ShieldAlert className="w-4 h-4" />
+                        </span>
+                        <CardTitle>Pertanyaan 2: Apa yang Harus Diperhatikan?</CardTitle>
+                      </div>
+                      <CardDescription className="mt-1">
+                        Algoritma Modified Z-Score mendeteksi lonjakan beban abnormal, penurunan omzet drastis, dan transaksi kembar secara otomatis.
+                      </CardDescription>
+                    </div>
+
+                    <Badge
+                      variant={anomalySummary.critical_count > 0 ? 'danger' : 'warning'}
+                      dot
+                      className="shrink-0"
+                    >
+                      {anomalySummary.total_open} Anomali Terbuka
+                    </Badge>
+                  </CardHeader>
+
+                  <CardContent className="p-5 space-y-3">
+                    {loading ? (
+                      <div className="p-8 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin text-enterprise-600" />
+                        <span>Menganalisis integritas data finansial seluruh cabang...</span>
+                      </div>
+                    ) : anomalies.length === 0 ? (
+                      <EmptyState
+                        icon={CheckCircle2}
+                        title="Seluruh Cabang Beroperasi Normal"
+                        description="Tidak ditemukan lonjakan biaya abnormal, selisih register kasir, atau transaksi kembar saat ini. Bisnis Anda dalam kondisi prima."
+                      />
+                    ) : (
+                      <div className="space-y-3">
+                        {anomalies.map((anom) => (
+                          <div
+                            key={anom.id}
+                            className={`p-4 rounded-xl border text-xs space-y-2.5 transition-all ${
+                              anom.severity === 'CRITICAL'
+                                ? 'bg-rose-50/50 border-rose-200'
+                                : anom.severity === 'HIGH'
+                                ? 'bg-amber-50/50 border-amber-200'
+                                : 'bg-slate-50/80 border-slate-200'
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <Badge
+                                    variant={
+                                      anom.severity === 'CRITICAL'
+                                        ? 'danger'
+                                        : anom.severity === 'HIGH'
+                                        ? 'warning'
+                                        : 'neutral'
+                                    }
+                                  >
+                                    {anom.severity}
+                                  </Badge>
+                                  <h4 className="text-sm font-bold text-slate-900 leading-snug">
+                                    {anom.title}
+                                  </h4>
+                                </div>
+                                <p className="text-xs text-slate-600 leading-relaxed pt-0.5">
+                                  {anom.description}
+                                </p>
+                              </div>
+
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => setSelectedAnomaly(anom)}
+                                className="shrink-0 font-bold"
+                              >
+                                Tinjau
+                              </Button>
+                            </div>
+
+                            <div className="pt-2 border-t border-slate-200/60 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+                              <span className="font-medium text-slate-700">
+                                Lokasi: {anom.branch_name || 'Seluruh Cabang'}
+                              </span>
+                              {anom.z_score !== null && anom.z_score !== undefined && (
+                                <span className="font-mono text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">
+                                  Modified Z-Score: {anom.z_score}
+                                </span>
+                              )}
+                              <span className="text-slate-400">
+                                Terdeteksi: {formatDateId(anom.detected_at, 'd MMM, HH:mm')} WIB
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* 5.2. PILAR 3: APA YANG HARUS DILAKUKAN? (MUTASI STOK 1-KLIK) */}
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-slate-100 pb-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="p-1.5 rounded-lg bg-blue-50 text-enterprise-600 border border-blue-200">
+                          <ArrowRightLeft className="w-4 h-4" />
+                        </span>
+                        <CardTitle>Pertanyaan 3: Apa yang Harus Dilakukan?</CardTitle>
+                      </div>
+                      <CardDescription className="mt-1">
+                        Rekomendasi transfer persediaan antarcabang cerdas untuk menyelamatkan potensi omzet hilang dengan perhitungan laba bersih setelah biaya logistik.
+                      </CardDescription>
+                    </div>
+
+                    <Badge variant="brand" dot className="shrink-0">
+                      {recommendations.length} Mutasi Siap
+                    </Badge>
+                  </CardHeader>
+
+                  <CardContent className="p-5 space-y-3">
+                    {loading ? (
+                      <div className="p-8 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin text-enterprise-600" />
+                        <span>Menghitung optimasi transfer stok antarcabang...</span>
+                      </div>
+                    ) : recommendations.length === 0 ? (
+                      <EmptyState
+                        icon={PackageCheck}
+                        title="Persediaan Seluruh Cabang Terseimbang"
+                        description="Tidak ada cabang dengan persediaan bahan kritis yang memerlukan mutasi antarcabang saat ini. Seluruh stok gerai dalam batas aman."
+                      />
+                    ) : (
+                      <div className="space-y-4">
+                        {recommendations.map((rec) => (
+                          <div
+                            key={rec.id}
+                            className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 text-xs space-y-3 shadow-2xs hover:border-slate-300 transition-all"
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                                  <Boxes className="w-4 h-4 text-enterprise-600" />
+                                  {rec.product_name}
+                                </span>
+                                <span className="text-[10px] text-slate-500 font-mono">
+                                  ({rec.sku})
+                                </span>
+                              </div>
+
+                              <Badge
+                                variant={rec.urgency === 'CRITICAL' ? 'danger' : 'enterprise'}
+                              >
+                                {rec.urgency === 'CRITICAL' ? 'Kritis' : 'Disarankan'}
+                              </Badge>
+                            </div>
+
+                            {/* Movement Route Flow Box */}
+                            <div className="p-3 bg-white rounded-lg border border-slate-200 flex items-center justify-between gap-2 text-xs">
+                              {/* Donor Branch */}
+                              <div className="space-y-0.5">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                                  Cabang Donor (Surplus)
+                                </span>
+                                <p className="font-bold text-slate-800">{rec.from_branch_name}</p>
+                                <p className="text-[11px] text-slate-500 font-mono">
+                                  {rec.from_current_stock} &rarr;{' '}
+                                  <strong className="text-slate-700">{rec.from_stock_after}</strong> unit
+                                </p>
+                              </div>
+
+                              {/* Center Arrow & Qty */}
+                              <div className="flex flex-col items-center px-2">
+                                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-enterprise-700 font-bold text-xs border border-blue-200 font-mono">
+                                  +{rec.transfer_qty} unit
+                                </span>
+                                <span className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+                                  Mutasi Cerdas <ArrowRight className="w-3 h-3" />
+                                </span>
+                              </div>
+
+                              {/* Receiver Branch */}
+                              <div className="space-y-0.5 text-right">
+                                <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider block">
+                                  Cabang Penerima (Defisit)
+                                </span>
+                                <p className="font-bold text-rose-800">{rec.to_branch_name}</p>
+                                <p className="text-[11px] text-slate-500 font-mono">
+                                  {rec.to_current_stock} &rarr;{' '}
+                                  <strong className="text-emerald-700 font-bold">
+                                    {rec.to_stock_after}
+                                  </strong>{' '}
+                                  unit
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Economic Net Benefit */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs pt-1">
+                              <div>
+                                <span className="text-slate-600">
+                                  Keuntungan Bersih:{' '}
+                                  <strong className="text-emerald-700 font-bold font-mono text-sm">
+                                    +{formatRupiah(rec.net_benefit)}
+                                  </strong>
+                                </span>
+                                <span className="text-[11px] text-slate-400 ml-1.5">
+                                  (Setelah ongkir {formatRupiah(rec.logistics_cost)})
+                                </span>
+                              </div>
+
+                              <span className="text-[11px] text-slate-500">
+                                Cadangan pasokan: {rec.to_days_of_supply_after} hari aman
+                              </span>
+                            </div>
+
+                            {/* 1-Click Action Button */}
+                            <Button
+                              variant="primary"
+                              size="md"
+                              disabled={executingId === rec.id}
+                              onClick={() => handleExecuteTransfer(rec)}
+                              className="w-full bg-enterprise-600 hover:bg-enterprise-700 font-bold shadow-xs gap-2"
+                            >
+                              {executingId === rec.id ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                  <span>Memproses Mutasi Stok Melalui RPC Database...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Check className="w-4 h-4" />
+                                  <span>Eksekusi Mutasi Stok 1-Klik ({rec.transfer_qty} Unit)</span>
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* 5.3. TREN FINANSIAL 7 HARI TERAKHIR (AUTO-LEDGER) */}
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-slate-100 pb-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <BarChart3 className="w-4 h-4" />
+                        </span>
+                        <CardTitle>Tren Finansial 7 Hari Terakhir</CardTitle>
+                      </div>
+                      <CardDescription className="mt-1">
+                        Kalkulasi buku besar harian otomatis: Omzet kotor, beban operasional, dan margin laba bersih.
+                      </CardDescription>
+                    </div>
+
+                    <Link href="/reports">
+                      <Button variant="secondary" size="sm" className="gap-1 font-bold">
+                        <span>Laporan Laba Rugi</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Button>
+                    </Link>
+                  </CardHeader>
+
+                  <CardContent className="p-5 space-y-4">
+                    <div className="grid grid-cols-7 gap-2 items-end pt-4 h-36 border-b border-slate-100 pb-2">
+                      {sevenDaysTrend.map((t, idx) => (
+                        <div key={idx} className="flex flex-col items-center h-full justify-end group">
+                          <div className="w-full max-w-[36px] bg-slate-100 rounded-t-md relative flex flex-col justify-end overflow-hidden h-28">
+                            <div
+                              style={{ height: `${t.ratio}%` }}
+                              className="w-full bg-enterprise-500 group-hover:bg-enterprise-600 transition-all rounded-t-sm"
+                            />
+                          </div>
+                          <span className="text-[10px] text-slate-500 font-medium mt-2 truncate w-full text-center">
+                            {t.date}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500 pt-1">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1.5">
+                          <span className="h-2.5 w-2.5 rounded-xs bg-enterprise-500" />
+                          <span>Omzet Harian</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="h-2.5 w-2.5 rounded-xs bg-slate-200" />
+                          <span>Target Capaian</span>
+                        </div>
+                      </div>
+
+                      <span className="font-mono text-slate-700 font-medium">
+                        Rata-rata Margin: <strong className="text-emerald-700">74.2%</strong>
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
+
+            {/* TAB: BRANCHES ONLY VIEW */}
+            {activeTab === 'branches' && (
+              <Card>
+                <CardHeader className="border-b border-slate-100 pb-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Klasemen & Performa 3 Cabang Aktif</CardTitle>
+                      <CardDescription className="mt-1">
+                        Monitoring pencapaian target penjualan dan kesehatan operasional tiap gerai.
+                      </CardDescription>
+                    </div>
+                    <Link href="/branches">
+                      <Button variant="secondary" size="sm" className="font-bold">
+                        Kelola Cabang
+                      </Button>
+                    </Link>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="p-5 space-y-4">
+                  {branchList.map((branch) => (
+                    <div
+                      key={branch.id}
+                      className="p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-all space-y-3"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-sm font-bold text-slate-900">{branch.name}</h4>
+                            {branch.isHeadquarters && (
+                              <Badge variant="enterprise">Kantor Pusat</Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-slate-500">{branch.city}</p>
+                        </div>
+
+                        <div className="text-left sm:text-right">
+                          <span className="text-sm font-extrabold text-slate-900 font-mono">
+                            {formatRupiah(branch.todayRevenue)}
+                          </span>
+                          <span className="text-xs text-slate-400 block font-mono">
+                            Target: {formatRupiah(branch.dailyTarget)} ({branch.progress}%)
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <div
+                          className="bg-enterprise-600 h-2 rounded-full transition-all"
+                          style={{ width: `${branch.progress}%` }}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1 text-xs text-slate-500">
+                        <span>Staff Kasir Aktif: {branch.activeStaff} orang</span>
+                        <span className="font-medium text-slate-700">
+                          Status Bahan: {branch.stockStatus}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+          {/* ========================================================================= */}
+          {/* RIGHT RAIL (4 COLUMNS - pola redesign/dashboard/refrence1 (3).png) */}
+          {/* ========================================================================= */}
+          <div className="lg:col-span-4 space-y-6">
+            {/* 1. Target Penjualan Hari Ini per Cabang */}
+            <Card>
+              <CardHeader className="border-b border-slate-100 pb-3.5">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-bold">Capaian Target Hari Ini</CardTitle>
+                  <span className="text-xs text-slate-400 font-mono">Zona WIB</span>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-5 space-y-4">
+                {branchList.map((b) => (
+                  <div key={b.id} className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-semibold text-slate-800 truncate max-w-[160px]">
+                        {b.name.replace('Kopi Senja ', '')}
+                      </span>
+                      <span className="font-bold text-slate-900 font-mono">
+                        {b.progress}%
+                      </span>
+                    </div>
+
+                    <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                      <div
+                        className={`h-2 rounded-full transition-all ${
+                          b.progress >= 90
+                            ? 'bg-emerald-500'
+                            : b.progress >= 80
+                            ? 'bg-enterprise-600'
+                            : 'bg-amber-500'
+                        }`}
+                        style={{ width: `${b.progress}%` }}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                      <span>{formatRupiah(b.todayRevenue)}</span>
+                      <span>Target: {formatRupiah(b.dailyTarget)}</span>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* 2. Ringkasan Kapasitas & Status Akun */}
+            <Card>
+              <CardHeader className="border-b border-slate-100 pb-3.5">
+                <CardTitle className="text-sm font-bold">Kapasitas & Integritas Akun</CardTitle>
+              </CardHeader>
+
+              <CardContent className="p-5 space-y-3.5 text-xs">
+                <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                  <span className="text-slate-500">Kuota Cabang Aktif</span>
+                  <Badge variant="enterprise">3 / 5 Cabang (Pro Tier)</Badge>
+                </div>
+
+                <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                  <span className="text-slate-500">Keamanan Database</span>
+                  <span className="font-semibold text-slate-800 flex items-center gap-1">
+                    <Lock className="w-3.5 h-3.5 text-emerald-600" /> PostgreSQL RLS
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                  <span className="text-slate-500">Log Audit Anti-Fraud</span>
+                  <span className="font-semibold text-emerald-700 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Aktif & Terproteksi
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">Format Laporan</span>
+                  <span className="font-mono text-slate-700">Standar Pengajuan KUR</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 3. Panduan Cepat Skenario Juri GTNIC 2026 */}
+            <Card className="bg-gradient-to-br from-slate-900 to-slate-950 text-white border-slate-800">
+              <CardHeader className="border-b border-slate-800/80 pb-3">
                 <div className="flex items-center gap-2">
-                  <ShieldAlert className="w-5 h-5 text-white" />
-                  <h3 className="text-sm font-bold">Tinjauan Resolusi Anomali</h3>
+                  <Sparkles className="w-4 h-4 text-brand-400" />
+                  <CardTitle className="text-sm font-bold text-white">Panduan Pengujian Juri</CardTitle>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-5 space-y-3 text-xs text-slate-300">
+                <p className="leading-relaxed text-[11px] text-slate-300">
+                  Gunakan panduan 6 skenario interaktif untuk menguji voice input, auto-ledger, deteksi anomali Z-score, dan mutasi stok.
+                </p>
+
+                <div className="space-y-1.5 pt-1">
+                  <Link
+                    href="/demo-guide"
+                    className="w-full py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-brand-500/20"
+                  >
+                    <span>Buka Panduan 6 Skenario</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+
+                  <Link
+                    href="/reports"
+                    className="w-full py-2 bg-slate-800/80 hover:bg-slate-800 text-slate-200 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 border border-slate-700"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-brand-400" />
+                    <span>Ekspor PDF KUR Bank</span>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* ======================================================== */}
+        {/* 6. RESOLUTION MODAL FOR ANOMALIES (Clean Restyle) */}
+        {/* ======================================================== */}
+        {selectedAnomaly && (
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+              <div className="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShieldAlert className="w-5 h-5 text-amber-600" />
+                  <h3 className="text-sm font-bold text-slate-900">Resolusi Anomali Finansial</h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSelectedAnomaly(null)}
-                  className="text-white/80 hover:text-white p-1 rounded-lg"
+                  className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -598,8 +1007,8 @@ export default function DashboardPage() {
 
               <div className="p-5 space-y-4">
                 <div className="space-y-1">
-                  <div className="text-xs text-slate-500 uppercase tracking-wide font-semibold">
-                    {selectedAnomaly.branch_name || 'Cabang'} • {selectedAnomaly.anomaly_type}
+                  <div className="text-[11px] text-slate-500 uppercase tracking-wider font-bold">
+                    {selectedAnomaly.branch_name || 'Seluruh Cabang'} • {selectedAnomaly.anomaly_type}
                   </div>
                   <h4 className="text-base font-bold text-slate-900">{selectedAnomaly.title}</h4>
                   <p className="text-xs text-slate-600 leading-relaxed">
@@ -607,53 +1016,55 @@ export default function DashboardPage() {
                   </p>
                 </div>
 
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1 text-xs">
-                  <div className="font-semibold text-slate-700">Rekomendasi Tindakan:</div>
-                  <p className="text-slate-600 text-[11px] leading-relaxed">
+                <div className="p-3 bg-amber-50/60 rounded-lg border border-amber-200 space-y-1 text-xs">
+                  <div className="font-bold text-amber-900">Saran Tindakan Asisten:</div>
+                  <p className="text-amber-800 text-[11px] leading-relaxed">
                     {selectedAnomaly.suggested_action}
                   </p>
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="block text-xs font-semibold text-slate-700">
-                    Catatan Owner (Opsional):
+                    Catatan Pemilik Usaha (Opsional):
                   </label>
                   <textarea
                     rows={2}
                     value={resolutionNote}
                     onChange={(e) => setResolutionNote(e.target.value)}
-                    placeholder="Contoh: Sudah dikonfirmasi dengan kasir, terjadi lonjakan permintaan festival..."
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-purple-500"
+                    placeholder="Contoh: Sudah konfirmasi dengan kasir, terjadi lonjakan permintaan festival..."
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-enterprise-500"
                   />
                 </div>
 
                 <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                  <button
-                    type="button"
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     disabled={resolving}
                     onClick={() => handleResolveAnomaly('DISMISSED')}
-                    className="px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold"
                   >
                     Abaikan (Dismiss)
-                  </button>
-                  <button
-                    type="button"
+                  </Button>
+
+                  <Button
+                    variant="primary"
+                    size="sm"
                     disabled={resolving}
                     onClick={() => handleResolveAnomaly('RESOLVED')}
-                    className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white text-xs font-bold shadow-md shadow-purple-500/20 flex items-center gap-1.5 transition-all"
+                    className="bg-enterprise-600 hover:bg-enterprise-700 gap-1.5"
                   >
                     {resolving ? (
                       <>
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        Menyelesaikan...
+                        <span>Menyelesaikan...</span>
                       </>
                     ) : (
                       <>
                         <Check className="w-3.5 h-3.5" />
-                        Tandai Selesai
+                        <span>Tandai Selesai</span>
                       </>
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
