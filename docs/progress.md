@@ -1219,3 +1219,29 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R6.7:** Selesai 100% (Kelola Cabang & Staf Kasir Siap)
+
+### R6.8 — Panduan 6 Skenario Pengujian Juri (`/demo-guide`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/demo-guide/page.tsx` — Peremajaan menyeluruh halaman panduan evaluasi juri GTNIC 2026 dan simulator suara AI mengadopsi tema **Light SaaS Enterprise** modern:
+  - **Banner Evaluasi Juri GTNIC 2026:**
+    - Dark theme enterprise hero banner dengan badge *GTNIC 2026 Web Development Finalis*, judul halaman, deskripsi, dan tombol akses langsung ke Kasir POS serta Pengeluaran.
+  - **Strip Terpadu 4 Metrik Verifikasi Sistem (`<MetricStrip />`):**
+    1. *Skenario Uji PRD:* 6 dari 6 Skenario dengan badge hijau `100% Lulus`.
+    2. *Kecepatan Voice POS:* 2 – 3 Detik (~90% lebih cepat dibanding ketik manual) dengan badge `Ultra Cepat`.
+    3. *Biaya Token LLM:* Rp 0 (Zero Cost) berkat client-side NLP rule-based tanpa latency cloud API.
+    4. *Cakupan Bahasa Lisan:* Bahasa Gaul UMKM (slang, kopsu, 25rb, setengah lusin).
+  - **Navigasi 3 Tab Tersegmen:**
+    1. *Simulator Suara Interaktif:* Live NLP parser tester interaktif dengan input bebas, Web Speech Synthesis (TTS) lisan bahasa Indonesia, preset skenario cepat, dan live card breakdown item pesanan atau kategori pengeluaran beserta akurasi confidence score dan tombol simulasi langsung ke halaman target.
+    2. *Katalog Skenario Suara Juri:* 8 kartu skenario siap uji 1-klik (pesanan multi-item, kata hubung majemuk, angka gaul, utilitas, listrik, operasional, gaji, servis mesin).
+    3. *6 Skenario Pengujian Alur Penuh (PRD §11.2):* Status seluruh 6 skenario resmi telah diperbarui menjadi **Lulus Uji ✅** (Autentikasi, Master Data, Transaksi POS, Smart Voice, Intelijen Inventaris Z-Score, Keputusan Finansial Auto-Ledger).
+    4. *Benchmarking & Arsitektur Inovasi:* Kuantifikasi efisiensi waktu pemrosesan transaksi (25-45 detik konvensional vs 2-3 detik BizPulse) dan keunggulan arsitektural Rp 0 biaya token API.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R6.8:** Selesai 100% (Panduan 6 Skenario Pengujian Juri Siap)
