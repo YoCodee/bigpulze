@@ -907,3 +907,33 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R4.6:** Selesai (Jaringan Multi-Cabang Terhubung 100% siap)
+
+### R4.7 — Landing Page: CTA Banner Penutup & Footer Multi-Kolom (`redesign/home/footer.png`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/page.tsx` — Penambahan section penutup Landing Page mengacu pada referensi `footer.png`:
+  - **CTA Banner Oranye Melengkung (`rounded-3xl`):**
+    - Kotak pahlawan penutup berlatar belakang `bg-hero-gradient` dengan tekstur dot-grid halftone murni CSS (`bg-dot-grid`) dan kilau cahaya hangat di bagian bawah.
+    - Ikon dekoratif melayang bergaris tipis (`ShieldCheck`, `Sparkles`, `FileText`, `Zap`) dengan rotasi dinamis.
+    - Headline Display: *"Tumbuh Tanpa Batas Bersama BizPulse"* (mengacu *"Build without boundaries"*).
+    - Subjudul persuasif eliminasi friksi pembukuan manual dan mulai tanpa kartu kredit.
+    - Tombol ganda pill: Tombol putih *"Mulai Demo 1-Klik"* (`/demo-guide`) dan tombol oranye transparan *"Masuk Akun Demo"* (`/login`).
+    - Pita Ticker Bawah: Translucent ribbon di dalam banner dengan 4 pilar jaminan (Auto-Ledger akuntansi, Smart Voice POS 2 detik, RLS PostgreSQL, dan Mutasi Stok hemat ongkir).
+  - **Footer Multi-Kolom Enterprise (`#07080A`):**
+    - Kolom Brand & Tagline BizPulse GTNIC 2026 lengkap dengan badge stack teknologi (Next.js 14, Supabase, Web Speech API, Tailwind CSS).
+    - 4 Kolom Navigasi Terstruktur:
+      - **Mulai Cepat:** Panduan Juri 1-Klik, Simulator Kasir POS, Pusat Kendali Owner, Masuk Akun Demo, Pilihan Paket.
+      - **Fitur Utama:** Smart Voice POS, 3 Pertanyaan Pagi, Auto-Ledger Real-Time, Rekomendasi Mutasi, Deteksi Anomali Biaya.
+      - **Keamanan & Standar:** RLS PostgreSQL, Audit Log VOID, Ekspor PDF KUR, Offline-First Resilien.
+      - **GTNIC 2026:** Garda Tech Competition, Web Development, 6 Skenario Pengujian, Standar WIB (UTC+7), Format Rupiah Baku.
+    - Baris Hak Cipta Bawah: Informasi kompetisi dan indikator status operasional sistem live (*Asia/Jakarta WIB*).
+  - Diapit oleh garis putus-putus horizontal `<DashedRule>` selebar layar.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R4 (Landing Page Redesign):** Selesai 100% (R4.1 s.d. R4.7 Lengkap)
