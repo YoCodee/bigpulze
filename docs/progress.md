@@ -814,3 +814,31 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R4.3:** Selesai (Komparasi Masalah vs Solusi 100% siap)
+
+### R4.4 — Landing Page: Paket & Fleksibilitas UMKM (`redesign/home/info3.png`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/page.tsx` — Penambahan section paket dan diagram aliran arsitektur di dalam Blueprint Grid:
+  - **Section Header:** *"Pilihan Paket Sesuai Skala Usaha"* dengan dekorasi teks oranye dan penjelasan model investasi UMKM transparan.
+  - **Pill Tab Switcher 3 Solusi:**
+    - Tombol kapsul interaktif: *"Smart Voice POS & Kasir"*, *"Auto-Ledger & 3 Pagi"*, dan *"Deteksi Anomali & Mutasi"*.
+    - Status aktif tombol oranye menyala `bg-brand-500 text-white` berbayangan halus.
+  - **Feature Architecture Box (2 Kolom):**
+    - Kolom kiri: Deskripsi mekanisme kerja solusi tanpa token API eksternal.
+    - Kolom kanan: Diagram aliran data 5 langkah (e.g. Suara Kasir ➔ Web Speech API ➔ Rule-Based NLP ➔ Keranjang Kasir ➔ Struk Sah).
+  - **Grid 4 Paket Usaha (`pricingPlans`):**
+    - **Starter UMKM:** `Rp 0 /bulan` (1 Cabang, Kasir POS Suara, Transaksi Tak Terbatas, Struk Sah).
+    - **Pro Multi-Cabang:** `Rp 49.000 /bulan` (s.d. 3 Cabang, Auto-Ledger Real-Time, Deteksi Anomali Z-score, Rekomendasi Mutasi).
+    - **Scale Franchise:** `Rp 149.000 /bulan` (s.d. 5 Cabang, Laporan Bank PDF KUR, Ekspor Excel CSV UTF-8 BOM, Multi-Kasir).
+    - **Juri Demo GTNIC 2026:** `Bebas Akses` (1-Klik Login Owner & Kasir Demo Kopi Senja, Simulator Suara & Audio TTS, Data Riil 3 Cabang).
+    - Dilengkapi angka tipografi besar `tabular-nums`, tag fitur berikon checkmark, `<CornerMarks>`, dan tombol aksi pill.
+  - Diapit garis horizontal `<DashedRule>` selebar layar.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R4.4:** Selesai (Paket & Fleksibilitas UMKM 100% siap)

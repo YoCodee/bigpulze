@@ -17,6 +17,10 @@ import {
   Boxes,
   AlertTriangle,
   XCircle,
+  Mic,
+  FileSpreadsheet,
+  Activity,
+  Check,
 } from 'lucide-react';
 import {
   BlueprintCanvas,
@@ -83,9 +87,129 @@ const techStack = [
   { name: 'TypeScript', desc: 'Strict Mode' },
 ];
 
+const featureFlows = [
+  {
+    id: 'voice',
+    title: 'Smart Voice POS & Kasir',
+    icon: Mic,
+    desc: 'Kasir menyebutkan pesanan dalam bahasa Indonesia lisan sehari-hari. Algoritma NLP lokal menerjemahkan frasa, memetakan alias produk ("kopsu"), dan otomatis menghitung kuantitas majemuk tanpa token API berbayar.',
+    steps: [
+      { label: 'Suara Kasir', sub: 'id-ID Lisan' },
+      { label: 'Web Speech API', sub: 'Latensi 0ms' },
+      { label: 'Rule-Based NLP', sub: 'Fuzzy Match' },
+      { label: 'Keranjang Kasir', sub: 'Kalkulasi HPP' },
+      { label: 'Struk Sah', sub: 'Tunai / QRIS' },
+    ],
+  },
+  {
+    id: 'ledger',
+    title: 'Auto-Ledger & 3 Pagi',
+    icon: FileSpreadsheet,
+    desc: 'Setiap transaksi penjualan dan pengeluaran cabang langsung dibukukan seketika. Pemilik usaha tidak perlu lagi menunggu akhir bulan untuk mengetahui laba kotor, HPP modal, dan margin operasional bersih.',
+    steps: [
+      { label: 'Transaksi POS', sub: 'Multi-Cabang' },
+      { label: 'Pengeluaran', sub: '8 Kategori PRD' },
+      { label: 'Auto-Ledger', sub: 'COGS Real-Time' },
+      { label: 'Buku Kasir', sub: 'Audit Fraud' },
+      { label: '3 Pertanyaan Pagi', sub: 'Pukul 06.00 WIB' },
+    ],
+  },
+  {
+    id: 'anomaly',
+    title: 'Deteksi Anomali & Mutasi',
+    icon: Activity,
+    desc: 'Sistem statistik Modified Z-score memantau fluktuasi omzet dan lonjakan biaya secara real-time. Jika stok menipis, algoritma mutasi cerdas merekomendasikan transfer antarcabang dengan net benefit positif setelah ongkir kurir.',
+    steps: [
+      { label: 'Audit Log 30 Hari', sub: 'Data Transaksi' },
+      { label: 'Modified Z-Score', sub: 'Eliminasi Dilusi' },
+      { label: 'Alarm Anomali', sub: 'Peringatan Dini' },
+      { label: 'Smart Balancing', sub: 'Preservasi Batas' },
+      { label: 'Mutasi 1-Klik', sub: 'Atomic RPC Lock' },
+    ],
+  },
+];
+
+const pricingPlans = [
+  {
+    name: 'Starter UMKM',
+    tag: 'Gerai Pertama',
+    price: 'Rp 0',
+    unit: '/bulan',
+    period: 'Gratis selamanya',
+    desc: 'Solusi kasir suara lengkap untuk 1 gerai atau kedai kopi baru.',
+    features: [
+      'Smart Voice POS 2 Detik',
+      '1 Cabang Aktif',
+      'Katalog Produk Tak Terbatas',
+      'Kasir Tunai & Simulasi QRIS',
+      'Cetak Struk Transaksi Sah',
+    ],
+    cta: 'Mulai Gratis',
+    href: '/login',
+    popular: false,
+  },
+  {
+    name: 'Pro Multi-Cabang',
+    tag: 'Paling Populer',
+    price: 'Rp 49.000',
+    unit: '/bulan',
+    period: 'Ditagih per organisasi',
+    desc: 'Manajemen terpusat untuk pemilik usaha yang berkembang ke multi-cabang.',
+    features: [
+      'Hingga 3 Cabang Aktif',
+      'Auto-Ledger Laba Rugi Real-Time',
+      'Deteksi Anomali Z-score',
+      'Rekomendasi Mutasi Antarcabang',
+      'Dashboard 3 Pertanyaan Pagi',
+    ],
+    cta: 'Pilih Paket Pro',
+    href: '/login',
+    popular: true,
+  },
+  {
+    name: 'Scale Franchise',
+    tag: 'Multi-Gerai Penuh',
+    price: 'Rp 149.000',
+    unit: '/bulan',
+    period: 'Ditagih per organisasi',
+    desc: 'Fitur terlengkap untuk ekspansi usaha dengan kebutuhan audit finansial ketat.',
+    features: [
+      'Hingga 5 Cabang (Batas Maksimal)',
+      'Ekspor Dokumen PDF Standar Bank KUR',
+      'Ekspor Laporan Excel / CSV UTF-8 BOM',
+      'Wewenang Akun Kasir Tak Terbatas',
+      'Prioritas Deteksi Fraud Transaksi',
+    ],
+    cta: 'Pilih Paket Scale',
+    href: '/login',
+    popular: false,
+  },
+  {
+    name: 'Juri Demo GTNIC',
+    tag: 'Akses Evaluasi',
+    price: 'Bebas Akses',
+    unit: '',
+    period: 'Siap uji instan 1-klik',
+    desc: 'Paket evaluasi khusus dewan juri kompetisi dengan akun demo pre-populated.',
+    features: [
+      'Akun Owner Demo Kopi Senja',
+      'Akun Kasir Cabang Demo',
+      '6 Skenario Pengujian Terpandu',
+      'Simulator Suara & Audio TTS',
+      'Data Riil Transaksi 3 Cabang',
+    ],
+    cta: 'Mulai Demo 1-Klik',
+    href: '/demo-guide',
+    popular: false,
+    isJuri: true,
+  },
+];
+
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState(0);
+  const [activeFeatureTab, setActiveFeatureTab] = useState(0);
   const currentTestimonial = testimonials[activeTab];
+  const currentFlow = featureFlows[activeFeatureTab];
 
   return (
     <BlueprintCanvas className="min-h-screen text-white flex flex-col selection:bg-brand-500 selection:text-white">
@@ -513,9 +637,185 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ======================================================== */}
+      {/* 6. PAKET & FLEKSIBILITAS UMKM (redesign/home/info3.png) */}
+      {/* ======================================================== */}
+      <section id="paket" className="relative w-full py-16 sm:py-24">
+        <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-12">
+          {/* Section Header */}
+          <div className="text-center max-w-2xl mx-auto space-y-3">
+            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-white">
+              Pilihan Paket <span className="text-brand-400 underline decoration-brand-500/40 underline-offset-8">Sesuai Skala Usaha</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-zinc-400 tracking-tight">
+              Investasi transparan tanpa biaya royalti tersembunyi. Dari 1 gerai rintisan hingga 5 cabang terpadu.
+            </p>
+          </div>
+
+          {/* Capsule Tab Switcher (info3.png) */}
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {featureFlows.map((flow, idx) => {
+              const isActive = activeFeatureTab === idx;
+              const Icon = flow.icon;
+              return (
+                <button
+                  key={flow.id}
+                  onClick={() => setActiveFeatureTab(idx)}
+                  type="button"
+                  className={`inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-full transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/25 scale-102'
+                      : 'bg-[#16171A] text-zinc-400 hover:text-white border border-[#26282D] hover:bg-zinc-800/40'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{flow.title}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Architecture Overview Flow Box (info3.png top box) */}
+          <div className="relative rounded-none border border-[#26282D] bg-[#0E0F12] p-6 sm:p-8 space-y-6">
+            <CornerMarks />
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              {/* Left Column: Deskripsi Alur */}
+              <div className="lg:col-span-5 space-y-3">
+                <span className="text-[11px] font-bold text-brand-400 uppercase tracking-widest">
+                  Arsitektur Solusi
+                </span>
+                <h4 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                  {currentFlow.title}
+                </h4>
+                <p className="text-xs sm:text-[13px] text-zinc-400 leading-relaxed">
+                  {currentFlow.desc}
+                </p>
+              </div>
+
+              {/* Right Column: Visual Pipeline Steps Diagram */}
+              <div className="lg:col-span-7 bg-[#141518] border border-[#26282D] p-4 sm:p-5">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-3 text-right">
+                  Aliran Data Real-Time
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
+                  {currentFlow.steps.map((st, i) => (
+                    <div
+                      key={i}
+                      className="border border-dashed border-[#26282D] bg-[#0E0F12] p-2.5 flex flex-col justify-center space-y-1 relative group hover:border-brand-500/50 transition-colors"
+                    >
+                      <p className="text-xs font-bold text-zinc-200 truncate">
+                        {st.label}
+                      </p>
+                      <p className="text-[10px] text-zinc-500 font-mono">
+                        {st.sub}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[11px] text-zinc-500 text-center mt-3">
+                  Diproses seketika di tingkat perangkat & Supabase tanpa jeda antrean
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 4-Tier Pricing Cards Grid (info3.png bottom 4 columns) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+            {pricingPlans.map((plan) => (
+              <div
+                key={plan.name}
+                className={`relative rounded-none border p-5 sm:p-6 flex flex-col justify-between space-y-6 transition-all ${
+                  plan.popular
+                    ? 'bg-[#121316] border-brand-500/60 shadow-lg shadow-brand-500/10'
+                    : plan.isJuri
+                    ? 'bg-[#14121a] border-purple-500/40'
+                    : 'bg-[#0E0F12] border-[#26282D]'
+                }`}
+              >
+                <CornerMarks
+                  borderClass={
+                    plan.popular
+                      ? 'border-brand-500'
+                      : plan.isJuri
+                      ? 'border-purple-400'
+                      : 'border-zinc-600'
+                  }
+                />
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-none uppercase tracking-wider ${
+                        plan.popular
+                          ? 'bg-brand-500/20 text-brand-400 border border-brand-500/40'
+                          : plan.isJuri
+                          ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
+                          : 'bg-zinc-800 text-zinc-400'
+                      }`}
+                    >
+                      {plan.tag}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h4 className="text-base font-bold text-white tracking-tight">
+                      {plan.name}
+                    </h4>
+                    <p className="text-xs text-zinc-400 mt-1 line-clamp-2">
+                      {plan.desc}
+                    </p>
+                  </div>
+
+                  {/* Price Block */}
+                  <div className="pt-2 border-t border-[#26282D]">
+                    <div className="flex items-baseline space-x-1">
+                      <span className="text-2xl sm:text-3xl font-extrabold text-white tabular-nums tracking-tight">
+                        {plan.price}
+                      </span>
+                      {plan.unit && (
+                        <span className="text-xs text-zinc-400 font-medium">{plan.unit}</span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-zinc-500 mt-0.5">
+                      {plan.period}
+                    </p>
+                  </div>
+
+                  {/* Feature Tags List */}
+                  <ul className="space-y-2 pt-2 text-xs text-zinc-300">
+                    {plan.features.map((feat, fidx) => (
+                      <li key={fidx} className="flex items-start gap-2">
+                        <Check className="h-3.5 w-3.5 text-brand-500 shrink-0 mt-0.5" />
+                        <span className="text-zinc-300 leading-tight">{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Bottom CTA Button */}
+                <div className="pt-4">
+                  <Link
+                    href={plan.href}
+                    className={`w-full inline-flex items-center justify-center py-2 px-3 text-xs font-bold rounded-full transition-all cursor-pointer ${
+                      plan.popular
+                        ? 'bg-brand-500 text-white hover:bg-brand-600 shadow-md shadow-brand-500/30'
+                        : plan.isJuri
+                        ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-md'
+                        : 'border border-zinc-700 text-zinc-200 hover:bg-white hover:text-slate-900'
+                    }`}
+                  >
+                    {plan.cta}
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Full-bleed Horizontal Dashed Rule */}
       <DashedRule />
-      <div id="paket" />
 
       {/* Footer Minimalist Sementara Sebelum R4.7 */}
       <footer className="mt-auto border-t border-[#26282D] py-8 px-6 text-center text-xs text-zinc-500">
