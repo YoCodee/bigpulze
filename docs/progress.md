@@ -653,3 +653,25 @@
 **Total Unit Tests:** 106 tests passing (100% Lulus, 0 Gagal)  
 **Total Next.js Routes:** 34 production routes compiled  
 **Kesiapan:** Siap Dikirim untuk GTNIC 2026 Web Development Competition 🏆
+
+---
+
+## Tahap R: Redesign Visual (Enterprise SaaS Redesign)
+
+### R1 — Tokens: Tailwind Config, CSS Variables, Font, & Globals CSS ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `docs/design-system.md` — Dokumentasi pedoman desain komprehensif mengacu pada folder `redesign/` (`home/` dan `dashboard/`).
+- `frontend/tailwind.config.ts` — Pendaftaran tokens: Enterprise Blue (`#0051C7`), Brand Orange (`#F6821F`), Dark Canvas (`#0A0A0C`, `#121316`, `#26282D`), Light Surface (`#FFFFFF`, `#F9FAFB`), Border Crisp (`#E5E7EB`), radius terpadu (`lg`, `2xl`, `3xl`), dan bayangan mikro.
+- `frontend/src/app/globals.css` — Pendaftaran CSS variables `:root` & `.dark`, font smoothing, utilitas pola dot-grid murni CSS (`.bg-dot-grid`, `.bg-dot-grid-dark`, `.bg-dot-grid-light`), gradien hero oranye (`.bg-hero-gradient`), dan angka tabular.
+- `frontend/src/app/layout.tsx` — Penerapan font lokal Geist Sans/Mono, penyesuaian atribut `lang="id"`, dan metadata resmi BizPulse.
+- `frontend/src/lib/anomaly/anomaly-cache.ts` — Pemisahan memory cache resolusi anomali untuk kepatuhan ketat standar Next.js App Router route handler.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R1:** Selesai (Fondasi Tokens 100% siap)

@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { apiSuccess, apiError, handleApiError } from '@/lib/api-response';
-import { markLiveAnomalyResolved } from '../route';
+import { markLiveAnomalyResolved } from '@/lib/anomaly/anomaly-cache';
 
 const resolveSchema = z.object({
   status: z.enum(['RESOLVED', 'DISMISSED']).default('RESOLVED'),

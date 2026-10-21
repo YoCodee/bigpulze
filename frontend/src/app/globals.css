@@ -2,26 +2,113 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* Enterprise Blue (#0051C7) */
+    --primary: 215 100% 39%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    /* Brand Orange (#F6821F) */
+    --accent: 27 92% 54%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 215 100% 39%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 7%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 7%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 215 100% 39%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 27 92% 54%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 215 100% 39%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-geist-sans), Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Pola halftone dot-grid untuk kontainer hero oranye dan banner landing page */
+  .bg-dot-grid {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  /* Pola dot-grid halus untuk latar belakang kanvas gelap */
+  .bg-dot-grid-dark {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Pola dot-grid mikro untuk kartu terang */
+  .bg-dot-grid-light {
+    background-image: radial-gradient(rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  /* Gradien Oranye Menyala ala Cloudflare / BizPulse */
+  .bg-hero-gradient {
+    background: linear-gradient(135deg, #F6821F 0%, #FA6400 45%, #E65A00 100%);
+  }
+
+  /* Angka tabular untuk nilai uang dan metrik finansial */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 }
