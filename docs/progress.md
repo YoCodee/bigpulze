@@ -1245,3 +1245,25 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R6.8:** Selesai 100% (Panduan 6 Skenario Pengujian Juri Siap)
+
+### R6.9 — Impor Data CSV / Excel & Batch Migration (`/import`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/import/page.tsx` — Peremajaan menyeluruh modul migrasi data CSV/Excel mengadopsi tema **Light SaaS Enterprise** modern:
+  - **Header & Strip 4 Metrik:**
+    - Panel header dengan badge `Batch 500 Baris` dan `Zod Validated`.
+    - Strip 4 metrik per PRD §12.3: Validasi Skema Klien (Strict Zod), Batas Maksimal Batch (500 Baris Atomik), Format File Didukung (CSV & Excel), dan Pemetaan Kolom Otomatis.
+  - **Pemilih Tipe Impor:**
+    - Tab tersegmen untuk Impor Transaksi Penjualan vs Impor Master Katalog Produk.
+  - **Area Unggah Berkas & Unduh Template:**
+    - Drag-and-drop zone elegan bergaris putus-putus dengan tombol unduh template sampel CSV otomatis (`sample_penjualan_bizpulse.csv` & `sample_produk_bizpulse.csv`).
+    - Panduan daftar kolom wajib dan banner jaminan keamanan transaksi atomik PostgreSQL.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R6.9:** Selesai 100% (Impor Data CSV / Excel Siap)
