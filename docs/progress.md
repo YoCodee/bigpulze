@@ -1331,3 +1331,29 @@
 - `npm run build`     : **Lulus 100%** (34 static & dynamic routes compiled)
 
 **Status Tahap R8:** Selesai 100% (Modul Autentikasi Modern & Tombol Uji Juri Siap)
+
+---
+
+## Tahap R9: Penyederhanaan Navbar & Ticker Hero 1-Baris ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/page.tsx` — Revisi navbar & hero landing page:
+  - **Penyederhanaan Navbar:**
+    - Menghapus badge `GTNIC 2026` di sebelah logo BizPulse untuk tampilan logo yang bersih dan elegan.
+    - Meringkas link navigasi dari 7 link menjadi 4 link inti (`Solusi`, `Pilar Fondasi`, `Cerita UMKM`, `Paket`) sehingga navbar terasa lapang dan tidak padat.
+    - Menghapus tombol `Panduan Juri` dari navbar utama.
+    - Mengintegrasikan pengecekan status autentikasi dinamis (`/api/auth/me`):
+      - Jika sudah login: Menampilkan 1 tombol **Dashboard** (`/dashboard`).
+      - Jika belum login: Menampilkan 1 tombol **Masuk** (`/login`).
+  - **Ticker Kepercayaan Hero (1 Baris Utuh):**
+    - Mengubah layout ticker 3 poin dari 3-kolom sempit menjadi 1 baris horizontal utuh (`whitespace-nowrap flex items-center justify-center gap-6 lg:gap-8`) dengan pemisah dot bullet `•`.
+    - Mencegah teks *100% Client-Side Voice NLP (Rp 0 API)*, *Laporan PDF Standar Bank (KUR Ready)*, dan *Sinkronisasi Multi-Cabang Latensi 0ms* terpotong atau turun ke baris berikutnya.
+
+**Hasil Verifikasi:**
+- `npm run test`      : **Lulus 100%** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus 100%** (0 TypeScript error)
+- `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+- `npm run build`     : **Lulus 100%** (34 static & dynamic routes compiled)
+
+**Status Tahap R9:** Selesai 100% (Navbar & Hero Ticker Rapi & Terverifikasi)

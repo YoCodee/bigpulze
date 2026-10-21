@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Sparkles,
@@ -217,6 +217,20 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState(0);
   const [activeFeatureTab, setActiveFeatureTab] = useState(0);
   const [terminalExecuted, setTerminalExecuted] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me');
+        setIsLoggedIn(res.ok);
+      } catch {
+        setIsLoggedIn(false);
+      }
+    }
+    checkAuth();
+  }, []);
+
   const currentTestimonial = testimonials[activeTab];
   const currentFlow = featureFlows[activeFeatureTab];
 
@@ -242,62 +256,42 @@ export default function HomePage() {
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
               </svg>
             </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xl font-extrabold tracking-tight text-white">BizPulse</span>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-brand-500/20 text-brand-400 border border-brand-500/30 uppercase tracking-wider hidden sm:inline-block">
-                GTNIC 2026
-              </span>
-            </div>
+            <span className="text-xl font-extrabold tracking-tight text-white">BizPulse</span>
           </Link>
 
-          {/* Desktop Navigation Links */}
+          {/* Desktop Navigation Links (Clean & Ringkas) */}
           <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-zinc-300">
-            <a href="#hero" className="hover:text-white transition-colors">
-              Beranda
-            </a>
-            <a href="#testimoni" className="hover:text-white transition-colors">
-              Cerita UMKM
+            <a href="#solusi" className="hover:text-white transition-colors">
+              Solusi
             </a>
             <a href="#fondasi" className="hover:text-white transition-colors">
               Pilar Fondasi
             </a>
-            <a href="#solusi" className="hover:text-white transition-colors">
-              Solusi
+            <a href="#testimoni" className="hover:text-white transition-colors">
+              Cerita UMKM
             </a>
             <a href="#paket" className="hover:text-white transition-colors">
               Paket
             </a>
-            <a href="#keunggulan" className="hover:text-white transition-colors">
-              Keunggulan
-            </a>
-            <a href="#cabang" className="hover:text-white transition-colors">
-              Multi-Cabang
-            </a>
           </nav>
 
-          {/* Right Action Buttons */}
-          <div className="flex items-center space-x-3">
-            <Link
-              href="/demo-guide"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-brand-500/15 text-brand-400 border border-brand-500/30 hover:bg-brand-500/25 transition-colors"
-            >
-              <Sparkles className="h-3 w-3" />
-              <span>Panduan Juri</span>
-            </Link>
-
-            <Link
-              href="/login"
-              className="px-4 py-1.5 text-xs font-bold rounded-full bg-white text-slate-950 hover:bg-zinc-200 transition-colors shadow-xs"
-            >
-              Masuk / Demo
-            </Link>
-
-            <Link
-              href="/dashboard"
-              className="hidden lg:inline-flex px-3.5 py-1.5 text-xs font-semibold rounded-full border border-white/20 text-white hover:bg-white/10 transition-colors"
-            >
-              Dashboard
-            </Link>
+          {/* Right Action Button (Masuk jika belum login, Dashboard jika sudah login) */}
+          <div className="flex items-center">
+            {isLoggedIn ? (
+              <Link
+                href="/dashboard"
+                className="px-4 py-1.5 text-xs font-bold rounded-full bg-white text-slate-950 hover:bg-zinc-200 transition-colors shadow-xs"
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="px-4 py-1.5 text-xs font-bold rounded-full bg-white text-slate-950 hover:bg-zinc-200 transition-colors shadow-xs"
+              >
+                Masuk
+              </Link>
+            )}
           </div>
         </div>
       </header>
@@ -351,18 +345,20 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* Trust Ticker Badges di Bagian Bawah Kartu Hero */}
-          <div className="relative z-10 mt-10 sm:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs font-medium text-white/90 pt-6 border-t border-white/20 max-w-2xl mx-auto w-full">
-            <div className="flex items-center justify-center gap-1.5">
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-white" />
+          {/* Trust Ticker Badges di Bagian Bawah Kartu Hero (1 Baris Utuh) */}
+          <div className="relative z-10 mt-10 sm:mt-12 flex items-center justify-center gap-3 sm:gap-6 lg:gap-8 text-[11px] sm:text-xs font-medium text-white/90 pt-6 border-t border-white/20 max-w-4xl mx-auto w-full overflow-x-auto scrollbar-none py-1">
+            <div className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0">
+              <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-white" />
               <span>100% Client-Side Voice NLP (Rp 0 API)</span>
             </div>
-            <div className="flex items-center justify-center gap-1.5">
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-white" />
+            <span className="text-white/40 shrink-0">•</span>
+            <div className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0">
+              <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-white" />
               <span>Laporan PDF Standar Bank (KUR Ready)</span>
             </div>
-            <div className="flex items-center justify-center gap-1.5">
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-white" />
+            <span className="text-white/40 shrink-0">•</span>
+            <div className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0">
+              <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-white" />
               <span>Sinkronisasi Multi-Cabang Latensi 0ms</span>
             </div>
           </div>
