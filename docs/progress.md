@@ -1357,3 +1357,38 @@
 - `npm run build`     : **Lulus 100%** (34 static & dynamic routes compiled)
 
 **Status Tahap R9:** Selesai 100% (Navbar & Hero Ticker Rapi & Terverifikasi)
+
+---
+
+## Tahap R10: Redesign Autentikasi Cloudflare Connect Split-Screen ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(auth)/layout.tsx` — Transformasi total layout split-screen mengadopsi desain **Cloudflare Connect**:
+  - **Sisi Kiri (Clean Pure White):**
+    - Logo BizPulse dengan ikon denyut oranye minimalis dan tautan kembali ke beranda.
+    - Area tengah untuk formulir login / registrasi yang bersih dan lapang.
+    - Footer dengan hak cipta BizPulse 2026, Cookie Preferences, dan tautan Panduan Juri.
+  - **Sisi Kanan (Vibrant Orange & Diagonal Hatch Pattern):**
+    - Kanvas warna oranye menyala khas Cloudflare (`#F6821F`) dengan pola garis arsir diagonal (*diagonal line hatch overlay*).
+    - Bar atas kanan: pemilih bahasa (*Indonesia*) dan tombol aksi dinamis (*Sign in* / *Sign up*).
+    - Konten tengah: Eyebrow *BizPulse Connect 2026*, headline masif *Where the UMKM builders connect.*, deskripsi terpadu, dan tombol CTA putih berikon panah (*Panduan Skenario Juri GTNIC*).
+    - Footer banner: Jaminan 100% Offline-Ready & 5 Cabang Terintegrasi.
+- `frontend/src/app/(auth)/login/page.tsx` — Halaman login dengan gaya Cloudflare:
+  - Header *Sign in to BizPulse* dengan tipografi tebal dan bersih.
+  - Kartu profil pengujian juri 1-klik (*Owner Demo* & *Kasir Demo*) mengadopsi format kartu profil "Last used" ala Cloudflare lengkap dengan status badge dan panah aksi.
+  - Pemisah minimalis (*or*).
+  - Formulir input manual (email, password dengan toggle eye) dan tombol *Sign in* biru enterprise.
+  - Tautan *Don't have an account? Sign up* dan teks *terms & privacy policy*.
+- `frontend/src/app/(auth)/register/page.tsx` — Halaman pendaftaran pemilik usaha:
+  - Header *Create an account* dan formulir rapi (Nama Usaha, Nama Pemilik, Email, Password).
+  - Banner jaminan auto-activation tanpa verifikasi email (FR-1.1).
+  - Tombol aksi biru enterprise *Create account*.
+
+**Hasil Verifikasi:**
+- `npm run test`      : **Lulus 100%** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus 100%** (0 TypeScript error)
+- `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+- `npm run build`     : **Lulus 100%** (34 static & dynamic routes compiled)
+
+**Status Tahap R10:** Selesai 100% (Desain Login & Register Cloudflare Siap)
