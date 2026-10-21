@@ -675,3 +675,28 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R1:** Selesai (Fondasi Tokens 100% siap)
+
+### R2 — Komponen Dasar Reusable ✅
+**Selesai:** 2026-10-21
+
+**Dibuat:**
+- `frontend/src/components/ui/button.tsx` — Standardisasi tombol (Primary Enterprise Blue, Secondary Crisp Border, Ghost, Destructive, Brand Orange, Hero Pill) dan varian ukuran termasuk `size="touch"` (>= 44px) untuk ramah sentuhan POS.
+- `frontend/src/components/ui/card.tsx` — Komponen kartu bergaya Enterprise SaaS dengan border 1px `#E5E7EB`, rounded-xl, padding terkontrol, serta sub-komponen `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`.
+- `frontend/src/components/ui/badge.tsx` — Lencana chip kapsul (`rounded-full`) dengan 7 varian semantik (Neutral, Success, Warning, Danger, Brand, Enterprise, Outline), indikator status dot opsional, dan kontras memenuhi WCAG AA.
+- `frontend/src/components/ui/input.tsx` — Input teks terstandarisasi dengan ring fokus Enterprise Blue dan status error.
+- `frontend/src/components/ui/search-input.tsx` — Bilah pencarian dengan ikon prefix `Search` dan lencana shortcut keyboard `Ctrl K` ala referensi Cloudflare.
+- `frontend/src/components/ui/table.tsx` — Tabel data enterprise berkepadatan tinggi (baris 44px–48px, header uppercase teks abu-abu, hover effect halus).
+- `frontend/src/components/ui/tabs.tsx` — Segmented pill tabs switcher mengacu pada tab bar `refrence1 (4).png`.
+- `frontend/src/components/ui/empty-state.tsx` — Komponen data kosong berbingkai dengan ikon monolin elegan dan tombol aksi mengacu pada `refrence1 (3).png`.
+- `frontend/src/components/ui/metric-strip.tsx` — Panel kartu KPI terpadu dengan pembatas garis vertikal untuk metrik 3 Pertanyaan Pagi dan performa finansial (`refrence1 (4).png`).
+- `frontend/src/components/ui/dialog.tsx` — Modal dialog dengan backdrop blur, penanganan `Escape` & *overflow lock*, serta header/body/footer rapi.
+- `frontend/src/components/ui/dropdown-filter.tsx` — Tombol filter dropdown dengan ikon panah ganda naik-turun (`↕` / `ChevronsUpDown`).
+- `frontend/src/components/ui/index.ts` — Barrel export terpusat untuk kemudahan import seluruh komponen UI.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R2:** Selesai (Komponen Dasar 100% siap)
