@@ -842,3 +842,36 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R4.4:** Selesai (Paket & Fleksibilitas UMKM 100% siap)
+
+### R4.5 — Landing Page: Bento Grid Fitur Unggulan (`redesign/home/info4.png`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/page.tsx` — Penambahan section Bento Grid 2×2 asimetris mengacu pada referensi `info4.png` di dalam arsitektur Blueprint Grid:
+  - **Section Header:** *"Dirancang Khusus untuk Alur Kerja UMKM"* dengan subjudul orientasi dari gerai pertama hingga kendali enterprise.
+  - **Navigasi Navbar:** Penambahan tautan `#keunggulan` pada navbar desktop.
+  - **Wadah Bento Grid Asimetris (3 Kolom Grid):**
+    - Berbingkai 1px `#26282D`, sudut tajam `rounded-none`, dan 4 handle sudut `<CornerMarks>`.
+    - **Kartu 1 (Kiri Atas, Lebar 2 Kolom):**
+      - Tampilan visual live transaksi register (TRX-0842, TRX-0841, TRX-0840) dengan status Selesai dan Sinkronisasi serta timestamp WIB.
+      - Fitur: *"Cocok dengan Kebiasaan Kasir & Pemilik Usaha"* (Voice POS 2 detik, cetak struk Bluetooth thermal 58/80mm, offline-first).
+    - **Kartu 2 (Kanan Atas, Lebar 1 Kolom, Radiant Orange):**
+      - Wadah oranye menyala `bg-hero-gradient` dengan ikon bola dunia / jaringan terhubung (`Globe2`).
+      - Judul: *"Satu Platform untuk POS, Stok, dan Keuangan"* dengan latensi sinkronisasi instan `< 100ms`.
+    - **Kartu 3 (Kiri Bawah, Lebar 1 Kolom):**
+      - Wadah gelap dengan ikon `ShieldCheck` oranye.
+      - Judul: *"Aman & Tervalidasi Standar Bank"* (PostgreSQL Row Level Security, audit log VOID anti-fraud, ekspor laporan keuangan KUR).
+    - **Kartu 4 (Kanan Bawah, Lebar 2 Kolom dengan Terminal Interaktif):**
+      - Kolom deskripsi: *"Deteksi Dini Masalah Operasional"* (Algoritma Z-score, pengawasan otomatis 24/7).
+      - Kolom terminal gelap (`#08090B`) ala `info4.png`:
+        - Indikator: `● 3 modul pengawasan aktif` (beban-biaya, kas-register, stok-kritis).
+        - Baris prompt interaktif: `> kirim_rekomendasi_mutasi` dengan tombol mikro-interaksi `[Eksekusi ↵]`.
+  - Diapit oleh garis putus-putus horizontal `<DashedRule>` selebar layar.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R4.5:** Selesai (Bento Grid Fitur Unggulan 100% siap)

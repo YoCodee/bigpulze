@@ -21,6 +21,8 @@ import {
   FileSpreadsheet,
   Activity,
   Check,
+  Receipt,
+  Globe2,
 } from 'lucide-react';
 import {
   BlueprintCanvas,
@@ -208,6 +210,7 @@ const pricingPlans = [
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState(0);
   const [activeFeatureTab, setActiveFeatureTab] = useState(0);
+  const [terminalExecuted, setTerminalExecuted] = useState(false);
   const currentTestimonial = testimonials[activeTab];
   const currentFlow = featureFlows[activeFeatureTab];
 
@@ -257,6 +260,9 @@ export default function HomePage() {
             </a>
             <a href="#paket" className="hover:text-white transition-colors">
               Paket
+            </a>
+            <a href="#keunggulan" className="hover:text-white transition-colors">
+              Keunggulan
             </a>
           </nav>
 
@@ -810,6 +816,216 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Full-bleed Horizontal Dashed Rule */}
+      <DashedRule />
+
+      {/* ======================================================== */}
+      {/* 7. BENTO GRID FITUR UNGGULAN (redesign/home/info4.png) */}
+      {/* ======================================================== */}
+      <section id="keunggulan" className="relative w-full py-16 sm:py-24">
+        <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-10">
+          {/* Section Header */}
+          <div className="text-center max-w-2xl mx-auto space-y-2.5">
+            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-white">
+              Dirancang Khusus untuk Alur Kerja UMKM
+            </h2>
+            <p className="text-xs sm:text-sm text-zinc-400 tracking-tight">
+              Mudah digunakan oleh kasir baru di gerai pertama, cukup tangguh untuk kendali multi-cabang skala enterprise.
+            </p>
+          </div>
+
+          {/* 2x2 Asymmetric Bento Grid Container (Outer Blueprint Frame) */}
+          <div className="relative rounded-none border border-[#26282D] bg-[#0E0F12]">
+            <CornerMarks />
+
+            <div className="grid grid-cols-1 md:grid-cols-3">
+              {/* Card 1: Top-Left (Col span 2) - Fits into your existing workflows */}
+              <div className="md:col-span-2 p-6 sm:p-8 flex flex-col justify-between border-b md:border-b border-[#26282D] space-y-6">
+                {/* Top Visual Area: Live Transaction Register Stream (info4.png deployment list) */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  {/* Left Orange Icon Pill */}
+                  <div className="h-12 w-12 rounded-xl bg-hero-gradient flex items-center justify-center text-white shadow-md shadow-brand-500/20 shrink-0">
+                    <Receipt className="h-6 w-6" />
+                  </div>
+
+                  {/* Transaction Status Table / Rows */}
+                  <div className="flex-1 w-full bg-[#141518] border border-[#26282D] divide-y divide-[#26282D]/80 font-mono text-[11px] sm:text-xs">
+                    <div className="px-3.5 py-2.5 flex items-center justify-between text-zinc-300">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-zinc-500">TRX-0842</span>
+                        <span className="hidden sm:inline text-zinc-400">• Kopi Senja 2x</span>
+                      </div>
+                      <span className="text-zinc-500 text-[10px]">Hari ini, 11:32 WIB</span>
+                      <span className="inline-flex items-center gap-1 text-emerald-400 font-semibold">
+                        Selesai <CheckCircle2 className="h-3.5 w-3.5" />
+                      </span>
+                    </div>
+
+                    <div className="px-3.5 py-2.5 flex items-center justify-between text-zinc-300">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-zinc-500">TRX-0841</span>
+                        <span className="hidden sm:inline text-zinc-400">• Roti Bakar Keju</span>
+                      </div>
+                      <span className="text-zinc-500 text-[10px]">Hari ini, 11:28 WIB</span>
+                      <span className="inline-flex items-center gap-1 text-emerald-400 font-semibold">
+                        Selesai <CheckCircle2 className="h-3.5 w-3.5" />
+                      </span>
+                    </div>
+
+                    <div className="px-3.5 py-2.5 flex items-center justify-between text-zinc-400">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-zinc-500">TRX-0840</span>
+                        <span className="hidden sm:inline text-zinc-400">• Es Teh Manis 3x</span>
+                      </div>
+                      <span className="text-zinc-500 text-[10px]">Hari ini, 11:25 WIB</span>
+                      <span className="inline-flex items-center gap-1 text-brand-400 font-medium">
+                        Sinkronisasi <span className="animate-spin text-xs">⟳</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Text */}
+                <div className="space-y-1.5 pt-2">
+                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                    Cocok dengan Kebiasaan Kasir & Pemilik Usaha
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-zinc-400 leading-relaxed">
+                    Voice POS 2 detik, cetak struk Bluetooth thermal 58/80mm, dan kasir offline-first. Staf baru langsung bisa melayani pelanggan tanpa training rumit.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 2: Top-Right (Col span 1) - One network for users, apps, and data (Vibrant Orange Card) */}
+              <div className="md:col-span-1 p-6 sm:p-8 flex flex-col justify-between bg-hero-gradient text-white border-b md:border-b md:border-l border-[#26282D] space-y-6 shadow-inner">
+                <div className="space-y-4">
+                  <div className="h-10 w-10 rounded-lg bg-white/20 flex items-center justify-center text-white backdrop-blur-xs">
+                    <Globe2 className="h-5 w-5" />
+                  </div>
+
+                  <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight leading-snug">
+                    Satu Platform untuk POS, Stok, dan Keuangan
+                  </h3>
+
+                  <p className="text-xs sm:text-[13px] text-white/90 leading-relaxed">
+                    Mulai dari kasir mencatat pesanan, gudang memutasi bahan baku, hingga pemilik memantau laba bersih harian — semua tersinkronisasi seketika dalam satu database aman tanpa modul terpisah.
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-white/20 flex items-center justify-between text-[11px] text-white/80 font-mono">
+                  <span>Sinkronisasi instan</span>
+                  <span className="font-bold text-white">&lt; 100ms</span>
+                </div>
+              </div>
+
+              {/* Card 3: Bottom-Left (Col span 1) - Secure by default */}
+              <div className="md:col-span-1 p-6 sm:p-8 flex flex-col justify-between border-b md:border-b-0 border-[#26282D] space-y-6">
+                <div className="space-y-4">
+                  <div className="h-10 w-10 rounded-lg bg-[#18191E] border border-[#26282D] flex items-center justify-center text-brand-400">
+                    <ShieldCheck className="h-5 w-5" />
+                  </div>
+
+                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                    Aman & Tervalidasi Standar Bank
+                  </h3>
+
+                  <p className="text-xs sm:text-[13px] text-zinc-400 leading-relaxed">
+                    PostgreSQL Row Level Security (RLS) di setiap baris, log audit pembatalan nota (VOID) anti-fraud, dan ekspor laporan keuangan terstandarisasi pengajuan kredit bank/KUR.
+                  </p>
+                </div>
+
+                <div className="space-y-1.5 pt-4 border-t border-[#26282D]">
+                  <div className="flex items-center gap-2 text-[11px] text-zinc-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    <span>RLS PostgreSQL Multi-Tenant</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[11px] text-zinc-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
+                    <span>Audit Log VOID Anti-Manipulasi</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 4: Bottom-Right (Col span 2) - Fast path to AI adoption with Terminal */}
+              <div className="md:col-span-2 p-6 sm:p-8 flex flex-col lg:flex-row justify-between md:border-l border-[#26282D] gap-6 items-stretch">
+                {/* Left Description inside Card 4 */}
+                <div className="lg:w-2/5 flex flex-col justify-between space-y-4">
+                  <div className="space-y-2.5">
+                    <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                      Deteksi Dini Masalah Operasional
+                    </h3>
+                    <p className="text-xs sm:text-[13px] text-zinc-400 leading-relaxed">
+                      Algoritma Z-score dan asisten 3 Pertanyaan Pagi otomatis menganalisis lonjakan biaya, stok mati, dan potensi kebocoran margin kasir setiap fajar.
+                    </p>
+                  </div>
+
+                  <div className="inline-flex items-center gap-1.5 text-xs text-brand-400 font-medium">
+                    <Activity className="h-3.5 w-3.5" />
+                    <span>Pengawasan otomatis non-stop 24/7</span>
+                  </div>
+                </div>
+
+                {/* Right Dark Terminal UI Box (exact match to info4.png) */}
+                <div className="lg:w-3/5 bg-[#08090B] border border-[#26282D] p-3.5 sm:p-4 rounded-none font-mono text-[11px] sm:text-xs flex flex-col justify-between space-y-3">
+                  <div className="space-y-2">
+                    <p className="text-zinc-500 text-[10px] leading-tight">
+                      Menjalankan mesin anomali BizPulse...
+                    </p>
+                    <p className="text-brand-400 font-semibold flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-brand-500 animate-pulse" />
+                      3 modul pengawasan aktif
+                    </p>
+
+                    <div className="space-y-1 pl-2 text-zinc-300 text-[11px]">
+                      <div className="flex items-center justify-between">
+                        <span className="text-zinc-400">↳ beban-biaya</span>
+                        <span className="text-zinc-500 text-[10px]">scan Z-score • 0 lonjakan</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-zinc-400">↳ kas-register</span>
+                        <span className="text-emerald-400 text-[10px]">rekonsiliasi • selisih Rp 0</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-zinc-400">↳ stok-kritis</span>
+                        <span className="text-amber-400 text-[10px]">batas minimum • 2 mutasi siap</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Terminal Status & Action Button */}
+                  <div className="pt-2 border-t border-[#26282D]/80 flex items-center justify-between gap-2">
+                    {terminalExecuted ? (
+                      <div className="flex items-center gap-1.5 text-emerald-400 text-[10px] font-bold">
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        <span>2 mutasi dikirim ke dashboard</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-1.5 text-zinc-500 text-[10px] truncate">
+                        <span className="text-brand-500">&gt;</span>
+                        <span className="text-zinc-400">kirim_rekomendasi_mutasi</span>
+                        <span className="animate-pulse">_</span>
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => setTerminalExecuted((prev) => !prev)}
+                      className={`px-2.5 py-1 text-[10px] font-bold rounded-sm transition-colors cursor-pointer shrink-0 ${
+                        terminalExecuted
+                          ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                          : 'bg-brand-500 text-white hover:bg-brand-600'
+                      }`}
+                    >
+                      {terminalExecuted ? 'Terkirim ✓' : 'Eksekusi ↵'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
