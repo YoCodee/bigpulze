@@ -15,6 +15,8 @@ import {
   Zap,
   TrendingUp,
   Boxes,
+  AlertTriangle,
+  XCircle,
 } from 'lucide-react';
 import {
   BlueprintCanvas,
@@ -397,9 +399,122 @@ export default function HomePage() {
       <DashedRule />
 
       {/* ======================================================== */}
-      {/* PLACEHOLDER SECTION ANCHORS (Untuk R4.3 s.d. R4.7) */}
+      {/* 5. KOMPARASI MASALAH VS SOLUSI (redesign/home/info2.png) */}
       {/* ======================================================== */}
-      <div id="solusi" />
+      <section id="solusi" className="relative w-full py-16 sm:py-24">
+        <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-10">
+          {/* Section Header */}
+          <div className="text-center max-w-2xl mx-auto space-y-2.5">
+            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-white">
+              Mengapa Memilih BizPulse?
+            </h2>
+            <p className="text-xs sm:text-sm text-zinc-400 tracking-tight">
+              Menghilangkan friksi pencatatan manual dan memberi kepastian angka bagi pemilik usaha setiap hari.
+            </p>
+          </div>
+
+          {/* 2-Column Side-by-Side Comparison Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+            {/* Kartu Kiri: Masalah Tradisional (Dark Card with Friction Tags) */}
+            <div className="relative rounded-none border border-[#26282D] bg-[#0E0F12] p-6 sm:p-8 flex flex-col justify-between space-y-6">
+              <CornerMarks />
+
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                    <AlertTriangle className="h-3 w-3" />
+                    STATUS: BELUM REKONSILIASI
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-none text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">
+                    P0: SELISIH KAS REGISTER
+                  </span>
+                </div>
+
+                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-snug">
+                  Pusing dengan Pembukuan Manual & POS Kaku
+                </h3>
+
+                <ul className="space-y-3 text-xs sm:text-[13px] text-zinc-400 leading-relaxed pt-2">
+                  <li className="flex items-start gap-2.5">
+                    <XCircle className="h-4 w-4 text-rose-500 shrink-0 mt-0.5" />
+                    <span>Nota kertas tercecer atau sobek di meja kasir; data penjualan rawan hilang.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <XCircle className="h-4 w-4 text-rose-500 shrink-0 mt-0.5" />
+                    <span>Kasir lambat mengetik di jam sibuk, membuat antrean pelanggan mengular panjang.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <XCircle className="h-4 w-4 text-rose-500 shrink-0 mt-0.5" />
+                    <span>Stok fisik gudang tidak cocok dengan pembukuan; bahan baku terbuang sia-sia.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <XCircle className="h-4 w-4 text-rose-500 shrink-0 mt-0.5" />
+                    <span>Pemilik usaha baru mengetahui kebocoran biaya di akhir bulan saat sudah terlambat ditangani.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-4 border-t border-[#26282D] flex items-center justify-between text-xs text-zinc-500">
+                <span>Rata-rata waktu terbuang</span>
+                <span className="font-semibold text-rose-400">~2 Jam / Cabang / Hari</span>
+              </div>
+            </div>
+
+            {/* Kartu Kanan: Solusi Gesit BizPulse (Vibrant Orange Card) */}
+            <div className="relative rounded-none border border-brand-500/40 bg-hero-gradient p-6 sm:p-8 flex flex-col justify-between space-y-6 text-white shadow-xl shadow-brand-500/15">
+              <CornerMarks borderClass="border-white/50" bgClass="bg-brand-600" />
+
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/20 text-white border border-white/30 backdrop-blur-xs">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  <span>✓ 167 Transaksi Selesai & Kas Terkonsiliasi Hari Ini</span>
+                </div>
+
+                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-snug">
+                  Bergerak Cepat & Terukur dengan BizPulse
+                </h3>
+
+                <ul className="space-y-3 text-xs sm:text-[13px] text-white/95 leading-relaxed pt-2">
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-white shrink-0 mt-0.5" />
+                    <span>Smart Voice POS 2 detik: Pesanan lisan langsung jadi keranjang dan struk sah.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-white shrink-0 mt-0.5" />
+                    <span>Auto-Ledger real-time: Omzet, HPP modal, dan margin laba selalu terhitung otomatis.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-white shrink-0 mt-0.5" />
+                    <span>Deteksi anomali Z-score: Peringatan seketika bila terjadi lonjakan beban atau nota ganda.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-white shrink-0 mt-0.5" />
+                    <span>Rekomendasi mutasi stok antarcabang cerdas dengan kalkulasi untung bersih setelah ongkir.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-4 border-t border-white/20 flex items-center justify-between text-xs text-white/90">
+                <span>Kepastian bisnis terjawab</span>
+                <span className="font-bold text-white">06.00 WIB Setiap Pagi</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Section Transition Heading (Mengacu ke teks transisi info2.png) */}
+          <div className="pt-10 text-center space-y-1.5">
+            <h3 className="text-xl sm:text-3xl font-medium tracking-tight text-white">
+              Investasi Terjangkau, Tumbuh Bersama Usaha Anda
+            </h3>
+            <p className="text-xs sm:text-sm text-zinc-400">
+              (Mulai gratis untuk gerai pertama, siap berskala saat cabang bertambah.)
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Full-bleed Horizontal Dashed Rule */}
+      <DashedRule />
       <div id="paket" />
 
       {/* Footer Minimalist Sementara Sebelum R4.7 */}

@@ -787,3 +787,30 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status:** Selesai (Fondasi Blueprint Grid kontinu 100% aktif di seluruh Landing Page)
+
+### R4.3 — Landing Page: Komparasi Masalah vs Solusi (`redesign/home/info2.png`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/page.tsx` — Penambahan section komparasi berdampingan (*side-by-side comparison*) di dalam arsitektur Blueprint Grid:
+  - **Section Header:** *"Mengapa Memilih BizPulse?"* berbobot medium elegan dengan subtitle penjelas pengentasan friksi operasional UMKM.
+  - **Kartu Kiri (Masalah Tradisional):**
+    - Wadah gelap `#0E0F12` dengan border `#26282D`, sudut siku tajam dilengkapi `<CornerMarks>`.
+    - Badge peringatan: `STATUS: BELUM REKONSILIASI` (kuning) dan `P0: SELISIH KAS REGISTER` (merah).
+    - 4 poin friksi nyata kasir: nota terselip, antrean panjang di jam sibuk, selisih stok gudang saat opname, dan kebocoran biaya yang terlambat disadari.
+    - Metrik waktu terbuang: *"~2 Jam / Cabang / Hari"*.
+  - **Kartu Kanan (Solusi Gesit BizPulse):**
+    - Wadah oranye menyala `bg-hero-gradient` dengan `<CornerMarks>` putih dan teks putih kontras tinggi.
+    - Badge sukses terpusat: *"✓ 167 Transaksi Selesai & Kas Terkonsiliasi Hari Ini"*.
+    - 4 poin solusi: Smart Voice POS 2 detik, Auto-Ledger real-time, deteksi anomali Z-score, dan rekomendasi mutasi stok antarcabang.
+    - Metrik kepastian bisnis: *"06.00 WIB Setiap Pagi"*.
+  - **Transisi Section:** Heading jembatan *"Investasi Terjangkau, Tumbuh Bersama Usaha Anda"* menuju section paket harga.
+  - Diapit oleh garis putus-putus horizontal `<DashedRule>` selebar layar.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R4.3:** Selesai (Komparasi Masalah vs Solusi 100% siap)
