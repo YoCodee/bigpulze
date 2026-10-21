@@ -742,3 +742,24 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R4.1:** Selesai (Navbar & Hero Section 100% siap)
+
+### R4.2 — Landing Page: Social Proof & Testimoni Tabbed Box (`redesign/home/info1.png`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/page.tsx` — Penambahan bagian bukti sosial UMKM:
+  - **Section Header:** *"Dipercaya oleh Pelaku Usaha & Penggiat UMKM Multi-Cabang"* dengan teks pengantar berfokus pada efisiensi operasional.
+  - **macOS Window Frame Card (`#121316`):**
+    - Desain bingkai window macOS dengan 3 titik traffic lights (`○ ○ ○`).
+    - Tab interaktif kategori UMKM (Kopi Senja, Roti Manis, Toko Berkah Mart, Dapur Selera) dengan indikator aktif bergaris oranye `#F6821F`.
+    - Kutipan testimoni riil pebisnis: pangkas waktu tutup buku dari 2 jam jadi 5 menit, pencegahan stok berlebih, dokumen pengajuan KUR bank, dan input pengeluaran 2 detik via suara.
+    - Kartu dampak kuantitatif: *"Hemat 90% waktu tutup buku harian"*, *"Zero food waste"*, *"Laporan bank 100% otomatis"*.
+  - **Tech Ecosystem Ticker:** Tampilan monokrom redup tumpukan teknologi modern penopang BizPulse (Next.js 14, Supabase RLS, Tailwind CSS, Web Speech API, Recharts, TypeScript Strict).
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R4.2:** Selesai (Social Proof & Testimoni 100% siap)

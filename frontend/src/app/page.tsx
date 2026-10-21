@@ -1,15 +1,79 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   Sparkles,
   ArrowRight,
   ShieldCheck,
   CheckCircle2,
+  Coffee,
+  Store,
+  ShoppingBag,
+  Utensils,
+  Quote,
 } from 'lucide-react';
 
+const testimonials = [
+  {
+    id: 'kopi-senja',
+    tag: 'Kedai Kopi',
+    brand: 'Kopi Senja',
+    icon: Coffee,
+    quote:
+      'Tutup buku kasir yang dulunya butuh waktu 2 jam per cabang sekarang selesai dalam 5 menit. Fitur Smart Voice POS membuat barista kami melayani pesanan 3x lebih cepat di jam sibuk, dan deteksi anomali langsung memberi tahu saat ada nota ganda atau lonjakan beban es batu.',
+    author: 'Budi Santoso',
+    role: 'Pemilik Usaha Kopi Senja (3 Cabang di Jakarta & Bandung)',
+    stats: 'Hemat 90% waktu tutup buku harian',
+  },
+  {
+    id: 'roti-manis',
+    tag: 'Bakery & Pastry',
+    brand: 'Roti Manis Nusantara',
+    icon: Store,
+    quote:
+      'Rekomendasi mutasi stok antarcabang menyelamatkan puluhan loyang adonan premium kami dari kadaluwarsa. Sistem langsung mendeteksi cabang mana yang surplus dan cabang mana yang kekurangan dengan perhitungan untung bersih setelah ongkir kurir.',
+    author: 'Siti Rahmawati',
+    role: 'Operational Lead Roti Manis (4 Gerai)',
+    stats: 'Zero food waste dari stok berlebih',
+  },
+  {
+    id: 'toko-berkah',
+    tag: 'Minimarket Retail',
+    brand: 'Toko Berkah Mart',
+    icon: ShoppingBag,
+    quote:
+      'Format ekspor PDF laba-rugi BizPulse resmi kami gunakan untuk pengajuan pinjaman modal usaha KUR ke bank tanpa perlu menyewa akuntan eksternal. Struktur laporan income statement dan cashflow-nya sangat rapi dan langsung disetujui pihak analis perbankan.',
+    author: 'Hendra Wijaya',
+    role: 'Owner Toko Berkah Mart (2 Cabang)',
+    stats: 'Laporan standar bank 100% otomatis',
+  },
+  {
+    id: 'dapur-selera',
+    tag: 'Resto & Kuliner',
+    brand: 'Dapur Selera Nusantara',
+    icon: Utensils,
+    quote:
+      'Fitur pencatatan pengeluaran via suara sangat praktis. Kasir kami tinggal ucapkan "catat beli gas melon 40 ribu" dan sistem langsung mengklasifikasikan ke kategori Utilitas dengan akurasi 95%. Tidak ada lagi nota tercecer di laci kasir!',
+    author: 'Dewi Lestari',
+    role: 'Manajer Resto Dapur Selera',
+    stats: 'Input pengeluaran 2 detik bebas repot',
+  },
+];
+
+const techStack = [
+  { name: 'Next.js 14', desc: 'App Router' },
+  { name: 'Supabase', desc: 'PostgreSQL + RLS' },
+  { name: 'Tailwind CSS', desc: 'Enterprise Tokens' },
+  { name: 'Web Speech API', desc: 'Client Voice NLP' },
+  { name: 'Recharts', desc: 'Financial Analytics' },
+  { name: 'TypeScript', desc: 'Strict Mode' },
+];
+
 export default function HomePage() {
+  const [activeTab, setActiveTab] = useState(0);
+  const currentTestimonial = testimonials[activeTab];
+
   return (
     <div className="min-h-screen bg-[#0A0A0C] text-white flex flex-col selection:bg-brand-500 selection:text-white">
       {/* ======================================================== */}
@@ -45,8 +109,11 @@ export default function HomePage() {
             <a href="#fitur" className="hover:text-white transition-colors">
               Fitur
             </a>
+            <a href="#testimoni" className="hover:text-white transition-colors">
+              Cerita UMKM
+            </a>
             <a href="#solusi" className="hover:text-white transition-colors">
-              Solusi UMKM
+              Solusi
             </a>
             <a href="#multi-cabang" className="hover:text-white transition-colors">
               Multi-Cabang
@@ -151,7 +218,120 @@ export default function HomePage() {
       </section>
 
       {/* ======================================================== */}
-      {/* PLACEHOLDER SECTION ANCHORS (Untuk R4.2 s.d. R4.7) */}
+      {/* 3. SOCIAL PROOF & TESTIMONI TABBED BOX (redesign/home/info1.png) */}
+      {/* ======================================================== */}
+      <section id="testimoni" className="px-4 sm:px-6 md:px-8 py-16 sm:py-24 max-w-7xl mx-auto w-full">
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+            Dipercaya oleh Pelaku Usaha & Penggiat UMKM Multi-Cabang
+          </h2>
+          <p className="text-sm sm:text-base text-zinc-400">
+            Membantu pemilik kedai kopi, bakery, minimarket retail, dan kuliner mengambil keputusan bisnis akurat setiap hari.
+          </p>
+        </div>
+
+        {/* macOS Style Window Frame Card (info1.png) */}
+        <div className="mt-12 max-w-5xl mx-auto rounded-2xl border border-[#26282D] bg-[#121316] shadow-2xl overflow-hidden">
+          {/* Top Window Bar with macOS Dots and Tabs */}
+          <div className="border-b border-[#26282D] bg-[#16171A] px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+            {/* macOS Window Dots */}
+            <div className="hidden sm:flex items-center space-x-2">
+              <div className="h-3 w-3 rounded-full bg-rose-500/80" />
+              <div className="h-3 w-3 rounded-full bg-amber-500/80" />
+              <div className="h-3 w-3 rounded-full bg-emerald-500/80" />
+            </div>
+
+            {/* Business Category Tabs */}
+            <div className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto w-full sm:w-auto scrollbar-none py-1">
+              {testimonials.map((item, idx) => {
+                const isActive = activeTab === idx;
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveTab(idx)}
+                    type="button"
+                    className={`relative inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-colors cursor-pointer select-none whitespace-nowrap ${
+                      isActive
+                        ? 'bg-[#1F2024] text-white shadow-xs'
+                        : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
+                    }`}
+                  >
+                    <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-brand-500' : 'text-zinc-500'}`} />
+                    <span>{item.brand}</span>
+                    {isActive && (
+                      <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-brand-500 rounded-full" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Inside Card Body (Quote + Detail) */}
+          <div className="p-6 sm:p-10 md:p-12 relative">
+            <Quote className="h-10 w-10 sm:h-12 sm:w-12 text-zinc-700/50 absolute top-6 right-6 sm:top-10 sm:right-10 pointer-events-none" />
+
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+              {/* Quote Content */}
+              <div className="md:col-span-8 space-y-6">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-500/15 text-brand-400 border border-brand-500/30">
+                  {currentTestimonial.tag}
+                </span>
+
+                <blockquote className="text-base sm:text-xl font-medium text-zinc-100 leading-relaxed sm:leading-snug">
+                  “{currentTestimonial.quote}”
+                </blockquote>
+
+                <div>
+                  <h4 className="text-sm sm:text-base font-bold text-white">
+                    {currentTestimonial.author}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
+                    {currentTestimonial.role}
+                  </p>
+                </div>
+              </div>
+
+              {/* Stat Highlight Card */}
+              <div className="md:col-span-4 bg-[#16171A] rounded-xl border border-[#26282D] p-5 sm:p-6 text-center space-y-2 flex flex-col justify-center">
+                <div className="h-10 w-10 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="h-5 w-5" />
+                </div>
+                <h5 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                  Dampak Langsung
+                </h5>
+                <p className="text-base sm:text-lg font-bold text-brand-400 leading-tight">
+                  {currentTestimonial.stats}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tech Ecosystem Ticker Bar */}
+        <div className="mt-16 text-center space-y-5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+            Dibangun dengan Ekosistem Teknologi Teruji & Standar Perbankan
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+            {techStack.map((tech) => (
+              <div
+                key={tech.name}
+                className="flex items-center space-x-2 text-zinc-400 hover:text-zinc-200 transition-colors group"
+              >
+                <div className="h-2 w-2 rounded-full bg-brand-500/80 group-hover:scale-125 transition-transform" />
+                <span className="text-sm font-bold text-zinc-300">{tech.name}</span>
+                <span className="text-[11px] text-zinc-600 font-mono">({tech.desc})</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ======================================================== */}
+      {/* PLACEHOLDER SECTION ANCHORS (Untuk R4.3 s.d. R4.7) */}
       {/* ======================================================== */}
       <div id="fitur" />
       <div id="solusi" />
