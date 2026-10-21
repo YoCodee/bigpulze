@@ -875,3 +875,35 @@
 - `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
 
 **Status Tahap R4.5:** Selesai (Bento Grid Fitur Unggulan 100% siap)
+
+### R4.6 — Landing Page: Jaringan Multi-Cabang Terhubung (`redesign/home/about.png`) ✅
+**Selesai:** 2026-10-21
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/page.tsx` — Penambahan section visual peta konektivitas multi-cabang UMKM Indonesia mengacu pada referensi `about.png` di dalam arsitektur Blueprint Grid:
+  - **Section Header:** *"Jaringan Cerdas Multi-Cabang"* dengan subjudul arsitektur terintegrasi kasir gerai, gudang persediaan, dan pemilik usaha.
+  - **Navigasi Navbar:** Penambahan tautan `#cabang` pada navbar desktop.
+  - **Wadah Visual Peta Jaringan Multi-Cabang (Radar / Globe Canvas):**
+    - Bingkai kanvas gelap `#0A0A0C` dengan border `#26282D`, sudut siku tajam dilengkapi `<CornerMarks>`.
+    - Pola lingkaran orbit konsentris putus-putus dan ambient glow oranye.
+    - Kurva busur SVG putus-putus oranye `#F6821F` menghubungkan node pusat dan cabang.
+    - 3 Node Cabang Terkoneksi:
+      - **Pusat Kendali Owner (Jakarta):** Ikon `Building2` dalam lingkaran oranye menyala dengan efek pulsing ping.
+      - **Cabang Bandung (Kopi Senja Dago):** Ikon `Store` dengan status POS aktif (Kasir 1 & 2).
+      - **Cabang Surabaya (Kopi Senja Gubeng):** Ikon `Coffee` dengan status POS aktif (Kasir 1).
+    - **2 Kotak Anotasi `<Callout>` (Berborder Putus-Putus Oranye):**
+      - Kiri: *"2 Detik / Transaksi"* — Smart Voice POS lokal tanpa dependensi API external, 4.5x lebih cepat dari ketik manual.
+      - Kanan: *"99.9% Keandalan Operasional"* — Kasir tetap bertransaksi saat internet padam; sinkronisasi otomatis saat pulih.
+  - **Deretan 3-Sel Fitur Bawah (`<FeatureGrid>` & `<FeatureCell>`):**
+    - **Operasi di Mana Saja:** Ikon `Smartphone` — Akses aman dari ponsel pemilik, tablet kasir, maupun laptop kantor.
+    - **Sinkronisasi Seketika:** Ikon `RefreshCw` — Setiap transaksi langsung memperbarui stok gudang dan kalkulasi laba kotor.
+    - **Siap Berskala Besar:** Ikon `TrendingUp` — Dari 1 gerai rintisan hingga 5 cabang terpadu tanpa konfigurasi ulang server.
+  - Diapit oleh garis putus-putus horizontal `<DashedRule>` selebar layar.
+
+**Hasil verifikasi:**
+- `npm run test`      : **Lulus** (11 test files, 106 tests passed, 0 failed)
+- `npm run typecheck` : **Lulus** (0 error)
+- `npm run lint`      : **Lulus** (0 warning, 0 error)
+- `npm run build`     : **Lulus** (34 static & dynamic routes compiled)
+
+**Status Tahap R4.6:** Selesai (Jaringan Multi-Cabang Terhubung 100% siap)
