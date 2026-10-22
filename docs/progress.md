@@ -1498,3 +1498,77 @@
 - `npm run test`      : **Lulus 100%** (12 test files, 110 tests passed, 0 failed)
 
 **Status Tahap R15:** Selesai 100% (Aksi Anomali & Rekomendasi Terpadu di Pertanyaan 3)
+
+---
+
+## Tahap R16: Rekomendasi Stok Berbasis Tren Penjualan (Tab Baru di `/stock`) ✅
+
+**Selesai:** 2026-10-22
+
+**Permintaan owner:** tab baru di `/stock` berisi daftar item beserta rekomendasi stok berdasarkan data tren penjualan, dengan pilihan periode (7 hari / 30 hari / bulan depan), grafik tren, dan aksi mencatat restock.
+
+### R16.1 — Mesin Forecast Holt-Winters & Stock Planner (Pure Functions) ✅
+
+**Dibuat:**
+- `frontend/src/server/ml/forecast.ts` — Modul forecast deret penjualan harian sesuai PRD §10.3:
+  - Holt-Winters aditif periode 7 (α 0.3, β 0.05, γ 0.2) dengan inisialisasi level/tren musiman dan residual in-sample.
+  - Fallback bertingkat otomatis: riwayat ≥ 21 hari → Holt-Winters, 7–20 hari → seasonal naive (rata-rata pada posisi siklus minggu yang sama), < 7 hari → rata-rata bergerak.
+  - Interval prediksi 80% (`± 1.28 × sigma residual`), nilai dipotong minimum 0, simpangan baku residual sebagai output.
+  - `calculateWape()` untuk backtest 7 hari (latih tanpa 7 hari terakhir), mengembalikan `null` bila data < 7 hari atau total aktual nol.
+  - `forecastSeries()` sebagai pintu masuk tunggal yang memilih model dan menghasilkan titik prediksi + interval.
+- `frontend/src/server/ml/stock-planner.ts` — Perencanaan stok sesuai rumus PRD §10.3:
+  - `target_stock = ceil(forecast_total) + min_stock_alert`, `deficit = max(0, target_stock − stock)`, `surplus = max(0, stock − target_stock)`, `days_of_cover = stock / average_daily` (`null` bila tidak ada penjualan).
+  - Status stok kritis: `stock ≤ min_stock_alert` atau `days_of_cover < 3`; keparahan `CRITICAL` bila `days_of_cover < 1.5` atau stok 0.
+  - `summarizeStockPlans()` untuk metrik ringkasan dan `sortStockPlans()` untuk urutan prioritas (kritis → defisit terbesar).
+  - Alasan otomatis berbahasa Indonesia per item (mis. "Target stok 255 unit (termasuk stok minimum 10), sehingga perlu restock 243 unit.").
+- `frontend/tests/server/ml/forecast.test.ts` — 16 unit test: pemilihan model per panjang riwayat, seasonal naive sejajar siklus kalender, HW non-negatif, interval menutupi nilai tengah, WAPE < 20% pada deret musiman sintetis, kasus data kosong.
+- `frontend/tests/server/ml/stock-planner.test.ts` — 12 unit test: rumus target/defisit/surplus, keparahan CRITICAL/WARNING/INFO, status BALANCED/SURPLUS/RESTOCK, kasus tanpa riwayat penjualan, horizon 30 hari, ringkasan metrik, dan urutan prioritas.
+
+**Hasil verifikasi:**
+- `npm run test` : **Lulus** (2 test file baru, 28 test baru)
+
+### R16.2 — Endpoint API Rekomendasi Stok ✅
+
+**Dibuat:**
+- `frontend/src/app/api/stock/restock-recommendations/route.ts` — Endpoint `GET` khusus Owner:
+  - Query tervalidasi Zod (`period`: `7d | 30d | next_month`, `branch_id` opsional UUID) di `frontend/src/lib/validators/stock.ts`.
+  - Pengambilan data sesi (RLS aktif): produk aktif, cabang aktif, dan `transaction_items` join `transactions` (`status = 'COMPLETED'`, rentang 90 hari, transaksi VOID otomatis tidak terhitung).
+  - Deret harian per produk (hari tanpa penjualan diisi 0) → forecast → stock plan → tabel + data grafik (30 hari historis + titik prediksi beserta interval).
+  - Respons `snake_case` sesuai PRD D12: `period_label`, `horizon_days`, `start_date`, `end_date`, `summary` (termasuk `products_without_history`), dan `recommendations` lengkap dengan `reason` berbahasa Indonesia, `model`, serta `wape_pct` per item.
+  - Guard akses: tanpa sesi → `UNAUTHENTICATED`, Kasir → `FORBIDDEN`, parameter salah → `VALIDATION_ERROR`.
+
+**Hasil verifikasi (uji langsung ke Supabase demo):**
+- Periode `7d` / `30d` / `next_month` menghasilkan horison 7 / 30 / 40 hari dengan tanggal WIB benar.
+- Model aktif `holt_winters_7` dengan WAPE 0–6,12% pada data uji 30 hari.
+- Usulan restock mengikuti periode (7 hari: 277 unit → 30 hari: 1.818 unit → bulan depan: 2.554 unit).
+- Filter cabang terbukti menyaring item per cabang; Kasir mendapat 403; tanpa login mendapat 401.
+
+### R16.3 — Tab "Rekomendasi Stok" di Halaman `/stock` ✅
+
+**Dibuat / Dimodifikasi:**
+- `frontend/src/app/(app)/stock/page.tsx` — Tab ke-4 **"Rekomendasi Stok"** pada segmented control (Inventory, Transfer, Rekomendasi Stok, Log Riwayat), plus handler `handleRequestRestock()` yang membuka modal Restock yang sudah ada dengan qty usulan, HPP, dan catatan cabang terisi otomatis (tanpa RPC baru).
+- `frontend/src/components/stock/restock-recommendation-panel.tsx` — Panel rekomendasi (komponen fokus, terpisah dari file halaman yang sudah panjang):
+  - Pemilih periode 3 opsi + filter cabang + toggle "Hanya item perlu restock".
+  - Strip 4 metrik: Item Perlu Restock, Total Unit Usulan, Item Kritis, Estimasi Modal Belanja (`qty × HPP`, format Rupiah).
+  - Tabel densitas tinggi: Produk, Cabang, Stok Saat Ini, Rata-rata/Hari, Prediksi Periode, Target Stok, Usulan Restock, Hari Cakupan (warna sesuai urgensi), Status, dan Aksi **Catat Restock** + **Detail**.
+  - Modal detail berisi 4 metrik ringkas, grafik tren, dan penjelasan perhitungan; WAPE ditampilkan jujur sebagai metrik akurasi.
+  - State loading (spinner), error (banner), dan kosong (`EmptyState` dengan aksi "Tampilkan Semua Item").
+- `frontend/src/components/stock/stock-forecast-chart.tsx` — Grafik Recharts (garis aktual biru enterprise, garis prediksi oranye putus-putus, pita interval oranye, garis referensi "Mulai prediksi", tooltip Rupiah/unit, responsif).
+
+### R16.4 — Perbaikan Teknis Lintas Proyek (Build Pulih) ✅
+
+**Dimodifikasi (perbaikan lint lama yang memblokir `npm run build`):**
+- `frontend/src/app/(app)/layout.tsx`, `frontend/src/app/(app)/staff/page.tsx`, `frontend/src/app/api/staff/route.ts`, `frontend/src/app/api/staff/[id]/route.ts` — hapus import tidak terpakai dan ganti `any` dengan tipe eksplisit.
+- `frontend/src/components/ui/badge.tsx` — properti `dot` kini dibuang dari spread DOM (menjadi `data-dot`) agar tidak memicu peringatan React, tanpa mengubah tampilan visual badge.
+
+**Hasil Verifikasi Akhir (Seluruh Proyek):**
+- `npm run typecheck` : **Lulus 100%** (0 TypeScript error)
+- `npm run lint`      : **Lulus 100%** (0 warning, 0 error) — sebelumnya gagal karena 16 error bawaan
+- `npm run test`      : **Lulus 100%** (14 test files, 138 tests passed, 0 failed; naik dari 110 test)
+- `npm run build`     : **Lulus 100%** (35 route terkompilasi, termasuk `/stock` dengan tab baru)
+
+**Catatan Median (Belum Teruji):**
+- Uji manual di browser pada lebar 360 px / 768 px / 1280 px belum dilakukan (tidak ada browser terautomasi di lingkungan ini); kolom tabel memakai `overflow-x-auto` agar tetap aman di layar sempit.
+- Data demo org "Kopi Senja" saat ini hanya berisi 6 item transaksi (3 hari), sehingga hasil rekomendasi pada data demo saat ini masih minim. Seeder lengkap PRD §11.1 (`frontend/src/server/demo/seed.ts` + `POST /api/demo/seed`) **belum ada** di repo dan menjadi prasyarat agar fitur ini terlihat meyakinkan saat demo juri. Verifikasi algoritma dilakukan dengan 30 hari transaksi uji sementara yang sudah dibersihkan kembali (keadaan demo dipulihkan ke 6 item / 5 transaksi).
+
+**Status Tahap R16:** Selesai 100% (Rekomendasi Stok Berbasis Tren Penjualan + Perbaikan Build)

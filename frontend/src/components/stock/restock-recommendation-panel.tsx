@@ -12,6 +12,7 @@ import {
   X,
 } from 'lucide-react';
 import { formatRupiah } from '@/lib/format';
+import { formatDateId } from '@/lib/date';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -79,6 +80,12 @@ const PERIOD_OPTIONS: { id: PeriodKey; label: string }[] = [
   { id: '30d', label: '30 Hari ke Depan' },
   { id: 'next_month', label: 'Bulan Depan' },
 ];
+
+const MODEL_LABEL: Record<string, string> = {
+  holt_winters_7: 'Holt-Winters (musiman 7 hari)',
+  seasonal_naive: 'Seasonal Naive (pola hari yang sama)',
+  moving_avg: 'Rata-rata Bergerak',
+};
 
 interface RestockRecommendationPanelProps {
   branches: BranchOption[];
@@ -152,6 +159,15 @@ export function RestockRecommendationPanel({
 
   const summary = data?.summary;
 
+  // Label model pada header mencerminkan model yang benar-benar dipakai per item.
+  const modelLabel = useMemo(() => {
+    const items = data?.recommendations ?? [];
+    if (items.length === 0) return MODEL_LABEL.holt_winters_7;
+    const used = Array.from(new Set(items.map((item) => item.model)));
+    if (used.length === 1) return MODEL_LABEL[used[0]] ?? MODEL_LABEL.holt_winters_7;
+    return 'Holt-Winters + fallback';
+  }, [data]);
+
   return (
     <div className="space-y-4">
       {/* Header + Filter */}
@@ -167,12 +183,14 @@ export function RestockRecommendationPanel({
                   Rekomendasi Stok Berbasis Tren Penjualan
                 </h2>
                 <Badge variant="brand" className="text-[10px]">
-                  {data?.model_label ?? 'Holt-Winters'}
+                  {modelLabel}
                 </Badge>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
                 {data
-                  ? `Estimasi kebutuhan stok ${data.period_label} (${data.start_date} s.d. ${data.end_date}).`
+                  ? `Estimasi kebutuhan stok ${data.period_label} (${formatDateId(
+                      data.start_date
+                    )} s.d. ${formatDateId(data.end_date)}).`
                   : 'Menghitung estimasi kebutuhan stok dari riwayat penjualan harian.'}
               </p>
             </div>
