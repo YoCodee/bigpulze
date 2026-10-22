@@ -1,16 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { RoleGuard } from '@/components/role-guard';
 import {
   ShieldCheck,
-  Lock,
   Store,
   UserCheck,
   KeyRound,
-  ArrowRight,
-  Receipt,
   UserPlus,
   Search,
   Key,
@@ -19,7 +15,6 @@ import {
   AlertCircle,
   X,
   Loader2,
-  User,
   Power,
   RefreshCw,
 } from 'lucide-react';
@@ -114,8 +109,8 @@ export default function StaffPage() {
       if (activeBranches.length > 0) {
         setAddBranchId((prev) => (prev ? prev : activeBranches[0].id));
       }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Terjadi kesalahan jaringan.');
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : 'Terjadi kesalahan jaringan.');
     } finally {
       setLoading(false);
     }
@@ -176,8 +171,8 @@ export default function StaffPage() {
       setAddEmail('');
       setAddPassword('');
       loadData();
-    } catch (err: any) {
-      setErrorMsg(err.message);
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : 'Terjadi kesalahan jaringan.');
     } finally {
       setSubmittingAdd(false);
     }
@@ -210,8 +205,8 @@ export default function StaffPage() {
       setSuccessMsg(`Data kasir "${editName}" berhasil diperbarui.`);
       setEditingCashier(null);
       loadData();
-    } catch (err: any) {
-      setErrorMsg(err.message);
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : 'Terjadi kesalahan jaringan.');
     } finally {
       setSubmittingEdit(false);
     }
@@ -242,8 +237,8 @@ export default function StaffPage() {
       setSuccessMsg(`Kata sandi untuk kasir "${passwordCashier.full_name}" berhasil diubah.`);
       setPasswordCashier(null);
       setNewPassword('');
-    } catch (err: any) {
-      setErrorMsg(err.message);
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : 'Terjadi kesalahan jaringan.');
     } finally {
       setSubmittingPassword(false);
     }
@@ -271,8 +266,8 @@ export default function StaffPage() {
         `Status kasir "${cashier.full_name}" diubah menjadi ${!cashier.is_active ? 'Aktif' : 'Nonaktif'}.`
       );
       loadData();
-    } catch (err: any) {
-      setErrorMsg(err.message);
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : 'Terjadi kesalahan jaringan.');
     }
   }
 
@@ -426,7 +421,7 @@ export default function StaffPage() {
             <select
               aria-label="Filter Status Kasir"
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value as any)}
+              onChange={(e) => setFilterStatus(e.target.value as 'ALL' | 'ACTIVE' | 'INACTIVE')}
               className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 focus:outline-none focus:border-enterprise-600"
             >
               <option value="ALL">Semua Status</option>

@@ -74,7 +74,7 @@ export async function PATCH(
     }
 
     // 5. Update data profil
-    const updates: Record<string, any> = {};
+    const updates: Record<string, unknown> = {};
     if (full_name !== undefined) updates.full_name = full_name;
     if (branch_id !== undefined) updates.branch_id = branch_id;
     if (is_active !== undefined) updates.is_active = is_active;

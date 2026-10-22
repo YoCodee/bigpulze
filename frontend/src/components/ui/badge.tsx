@@ -33,6 +33,7 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
           variantStyles[variant],
           className
         )}
+        data-dot={dot ? 'true' : undefined}
         {...props}
       >
         {children}
