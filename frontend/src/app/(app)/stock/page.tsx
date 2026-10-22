@@ -21,9 +21,14 @@ import {
   PackageCheck,
   Check,
   ArrowRight,
+  TrendingUp,
   X,
 } from 'lucide-react';
 import { StockTransferRecommendation } from '@/lib/stock/transfer-recommender';
+import {
+  RestockRecommendationItem,
+  RestockRecommendationPanel,
+} from '@/components/stock/restock-recommendation-panel';
 import { MetricStrip } from '@/components/ui/metric-strip';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -68,7 +73,9 @@ interface StockMovement {
 }
 
 export default function StockPage() {
-  const [activeTab, setActiveTab] = useState<'inventory' | 'transfer' | 'history'>('inventory');
+  const [activeTab, setActiveTab] = useState<
+    'inventory' | 'transfer' | 'recommendation' | 'history'
+  >('inventory');
 
   // Master Data
   const [branches, setBranches] = useState<Branch[]>([]);
@@ -111,6 +118,9 @@ export default function StockPage() {
   const [historyBranchId, setHistoryBranchId] = useState<string>('ALL');
   const [historyType, setHistoryType] = useState<string>('ALL');
   const [movementsLoading, setMovementsLoading] = useState(false);
+
+  // Stock Recommendation State
+  const [recommendationRefreshKey, setRecommendationRefreshKey] = useState(0);
 
   // Fetch Branches
   const fetchBranches = useCallback(async () => {
@@ -388,6 +398,26 @@ export default function StockPage() {
     }
   };
 
+  // Catat Restock dari rekomendasi stok (PRD FR-4.3): buka modal restock
+  // yang sudah terisi qty usulan dari hasil analisis tren penjualan.
+  const handleRequestRestock = (item: RestockRecommendationItem) => {
+    setRestockProduct({
+      id: item.product_id,
+      branch_id: item.branch_id,
+      sku: item.sku,
+      name: item.name,
+      category: item.category,
+      cost_price: item.cost_price,
+      selling_price: item.selling_price,
+      stock: item.current_stock,
+      min_stock_alert: item.min_stock_alert,
+      is_active: true,
+    });
+    setRestockQty(item.suggested_qty);
+    setRestockCost(item.cost_price);
+    setRestockNote(`Rekomendasi stok ${item.branch_name} (${item.sku})`);
+  };
+
   // 1-Click Execute Stock Transfer from Recommendation
   const handleExecuteRecommendation = async (rec: StockTransferRecommendation) => {
     try {
@@ -503,6 +533,9 @@ export default function StockPage() {
                 fetchProducts();
                 if (activeTab === 'transfer') fetchRecommendations();
                 if (activeTab === 'history') fetchMovements();
+                if (activeTab === 'recommendation') {
+                  setRecommendationRefreshKey((key) => key + 1);
+                }
               }}
               className="flex items-center gap-1.5"
             >
@@ -542,6 +575,18 @@ export default function StockPage() {
                 {recommendations.length}
               </span>
             )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('recommendation')}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+              activeTab === 'recommendation'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <TrendingUp className="w-3.5 h-3.5" />
+            Rekomendasi Stok
           </button>
           <button
             type="button"
@@ -1146,7 +1191,16 @@ export default function StockPage() {
           </div>
         )}
 
-        {/* TAB 3: MOVEMENTS AUDIT LOG */}
+        {/* TAB 3: REKOMENDASI STOK BERBASIS TREN PENJUALAN */}
+        {activeTab === 'recommendation' && (
+          <RestockRecommendationPanel
+            branches={branches}
+            refreshKey={recommendationRefreshKey}
+            onRequestRestock={handleRequestRestock}
+          />
+        )}
+
+        {/* TAB 4: MOVEMENTS AUDIT LOG */}
         {activeTab === 'history' && (
           <div className="space-y-4">
             {/* Filter Bar */}
