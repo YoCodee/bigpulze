@@ -51,6 +51,23 @@ export const transferStockSchema = z
     path: ['to_product_id'],
   });
 
+export const restockRecommendationPeriodSchema = z.enum([
+  '7d',
+  '30d',
+  'next_month',
+]);
+
+export const restockRecommendationQuerySchema = z.object({
+  period: restockRecommendationPeriodSchema.default('7d'),
+  branch_id: z
+    .string()
+    .uuid('Format ID cabang tidak valid')
+    .optional()
+    .nullable(),
+});
+
+export type RestockRecommendationInput = z.infer<typeof restockRecommendationQuerySchema>;
+
 export type RestockProductInput = z.infer<typeof restockProductSchema>;
 export type AdjustStockInput = z.infer<typeof adjustStockSchema>;
 export type TransferStockInput = z.infer<typeof transferStockSchema>;
