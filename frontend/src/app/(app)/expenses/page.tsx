@@ -597,6 +597,7 @@ export default function ExpensesPage() {
               'beli kresek dan sedotan 25rb',
               'gaji harian barista seratus ribu',
               'servis mesin espresso 350 ribu',
+              'beli genset darurat satu juta lima ratus ribu',
             ].map((sample) => (
               <button
                 key={sample}

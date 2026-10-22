@@ -105,6 +105,41 @@ export async function POST(request: NextRequest) {
 
     const expenseDate = parsed.data.expense_date || getBusinessDate();
 
+    // Calculate anomaly score (PRD §10.1 & FR-3.2)
+    let isAnomaly = false;
+    let anomalyScore = 0;
+    let anomalyReason: string | null = null;
+    let benchmarkMean = 0;
+
+    // Fetch historical expenses in the same org
+    const { data: pastExpenses } = await supabase
+      .from('expenses')
+      .select('amount, category')
+      .eq('org_id', profile.org_id)
+      .limit(100);
+
+    const histList = pastExpenses || [];
+    const sameCategory = histList.filter((e) => e.category === parsed.data.category);
+    const benchmarkList = sameCategory.length > 0 ? sameCategory : histList;
+
+    if (benchmarkList.length > 0) {
+      const amounts = benchmarkList.map((e) => Number(e.amount));
+      benchmarkMean = amounts.reduce((a, b) => a + b, 0) / amounts.length;
+      const minThresholdFloor = 50000;
+      const multiplier = 3.0;
+      const threshold = Math.max(minThresholdFloor, benchmarkMean * multiplier);
+
+      if (parsed.data.amount > threshold) {
+        isAnomaly = true;
+        const ratio = benchmarkMean > 0 ? (parsed.data.amount / benchmarkMean).toFixed(1) : '3.0';
+        const sumSquares = amounts.reduce((acc, v) => acc + Math.pow(v - benchmarkMean, 2), 0);
+        const stdDev = amounts.length > 1 ? Math.sqrt(sumSquares / (amounts.length - 1)) : benchmarkMean * 0.3;
+        const zScore = stdDev > 0 ? (parsed.data.amount - benchmarkMean) / stdDev : 3.5;
+        anomalyScore = Math.min(99.99, Math.round(zScore * 100) / 100);
+        anomalyReason = `Rp ${Number(parsed.data.amount).toLocaleString('id-ID')}, sekitar ${ratio}x dari rata-rata biasanya (Rp ${Math.round(benchmarkMean).toLocaleString('id-ID')}) untuk kategori ${parsed.data.category}.`;
+      }
+    }
+
     const { data: inserted, error: insertError } = await supabase
       .from('expenses')
       .insert({
@@ -117,12 +152,43 @@ export async function POST(request: NextRequest) {
         amount: parsed.data.amount,
         input_method: parsed.data.input_method || 'MANUAL',
         voice_transcript: parsed.data.voice_transcript ?? null,
+        is_anomaly: isAnomaly,
+        anomaly_score: anomalyScore,
+        anomaly_reason: anomalyReason,
       })
       .select()
       .single();
 
     if (insertError) {
       return handleApiError(insertError);
+    }
+
+    // If an anomaly is detected, record it to ml_recommendations for dashboard Attention panel (PRD §10.5)
+    if (isAnomaly && inserted) {
+      try {
+        const severity = parsed.data.amount > benchmarkMean * 5 ? 'CRITICAL' : 'WARNING';
+        await supabase.from('ml_recommendations').insert({
+          org_id: profile.org_id,
+          branch_id: parsed.data.branch_id,
+          briefing_date: expenseDate,
+          question_category: 'ATTENTION',
+          rec_type: 'ANOMALY_EXPENSE',
+          severity,
+          title: `Lonjakan Biaya ${parsed.data.category} (${(parsed.data.amount / (benchmarkMean || 1)).toFixed(1)}x Rata-rata)`,
+          description: `Pengeluaran "${parsed.data.description}" sebesar Rp ${Number(parsed.data.amount).toLocaleString('id-ID')} melampaui batas wajar rata-rata historis.`,
+          payload: {
+            expense_id: inserted.id,
+            metric_value: parsed.data.amount,
+            baseline_value: Math.round(benchmarkMean),
+            z_score: anomalyScore,
+            suggested_action: 'Periksa nota fisik dan verifikasi persetujuan pengeluaran dengan staf cabang.',
+          },
+          predicted_value: parsed.data.amount,
+          is_resolved: false,
+        });
+      } catch {
+        // Silently continue if recommendation write encounters conflict
+      }
     }
 
     return apiSuccess(inserted, undefined, 201);

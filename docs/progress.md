@@ -1478,3 +1478,23 @@
 - `npm run test`      : **Lulus 100%** (12 test files, 110 tests passed, 0 failed)
 
 **Status Tahap R14:** Selesai 100% (Kasir Demo & Dropdown Cabang Berfungsi Penuh)
+
+---
+
+## Tahap R15: Sinkronisasi Aksi Anomali ke Pertanyaan 3 & Deteksi Anomali Otomatis pada CRUD Pengeluaran ✅
+**Selesai:** 2026-10-22
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/api/expenses/route.ts` — Implementasi kalkulasi deteksi anomali otomatis (Modified Z-Score & 3x threshold benchmark historis) pada endpoint `POST /api/expenses`. Otomatis mengisi kolom `is_anomaly`, `anomaly_score`, dan `anomaly_reason`, serta mendaftarkan anomali langsung ke tabel `ml_recommendations` kategori `ATTENTION`.
+- `frontend/src/app/api/expenses/[id]/route.ts` — Implementasi rekalkulasi anomali pada endpoint `PATCH /api/expenses/[id]` saat nominal atau kategori pengeluaran diubah.
+- `frontend/src/app/(app)/dashboard/page.tsx` — Transformasi kartu **Pertanyaan 3: Apa yang Harus Dilakukan?** menjadi *Unified Action Board*:
+  - Mengintegrasikan seluruh anomali terbuka dari Pertanyaan 2 sebagai kartu tindakan audit finansial berprioritas tinggi lengkap dengan nominal, cabang, saran tindakan, dan tombol aksi langsung `Selesaikan Investigasi Audit`.
+  - Menggabungkan tindakan audit biaya dengan rekomendasi transfer persediaan antarcabang, sehingga owner mendapatkan daftar tugas terpadu (*Prescriptive Action Tasks*).
+  - Badge kuantitas tindakan di header otomatis menghitung total tindakan siap (`{anomalies.length + recommendations.length} Tindakan Siap`).
+- `frontend/src/app/(app)/expenses/page.tsx` — Menambahkan tombol chip simulasi cepat `"beli genset darurat satu juta lima ratus ribu"` pada banner simulasi suara AI agar penguji/juri dapat menguji pemicuan anomali secara instan dalam 1-klik.
+
+**Hasil Verifikasi:**
+- `npm run typecheck` : **Lulus 100%** (0 TypeScript error)
+- `npm run test`      : **Lulus 100%** (12 test files, 110 tests passed, 0 failed)
+
+**Status Tahap R15:** Selesai 100% (Aksi Anomali & Rekomendasi Terpadu di Pertanyaan 3)

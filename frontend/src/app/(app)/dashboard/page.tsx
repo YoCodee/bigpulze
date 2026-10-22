@@ -348,7 +348,7 @@ export default function DashboardPage() {
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Pusat Kendali Eksekutif, Budi Santoso 👋
+              Pusat Kendali Eksekutif, Budi Santoso 
             </h1>
 
             <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
@@ -609,12 +609,12 @@ export default function DashboardPage() {
                         <CardTitle>Pertanyaan 3: Apa yang Harus Dilakukan?</CardTitle>
                       </div>
                       <CardDescription className="mt-1">
-                        Rekomendasi transfer persediaan antarcabang cerdas untuk menyelamatkan potensi omzet hilang dengan perhitungan laba bersih setelah biaya logistik.
+                        Daftar tindakan eksekusi cerdas: resolusi audit anomali biaya cabang dan rekomendasi transfer persediaan antarcabang.
                       </CardDescription>
                     </div>
 
                     <Badge variant="brand" dot className="shrink-0">
-                      {recommendations.length} Mutasi Siap
+                      {anomalies.length + recommendations.length} Tindakan Siap
                     </Badge>
                   </CardHeader>
 
@@ -622,16 +622,63 @@ export default function DashboardPage() {
                     {loading ? (
                       <div className="p-8 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
                         <Loader2 className="w-4 h-4 animate-spin text-enterprise-600" />
-                        <span>Menghitung optimasi transfer stok antarcabang...</span>
+                        <span>Menghitung optimasi tindakan dan transfer stok antarcabang...</span>
                       </div>
-                    ) : recommendations.length === 0 ? (
+                    ) : anomalies.length === 0 && recommendations.length === 0 ? (
                       <EmptyState
                         icon={PackageCheck}
-                        title="Persediaan Seluruh Cabang Terseimbang"
-                        description="Tidak ada cabang dengan persediaan bahan kritis yang memerlukan mutasi antarcabang saat ini. Seluruh stok gerai dalam batas aman."
+                        title="Seluruh Operasional & Persediaan Prima"
+                        description="Tidak ada audit biaya mendesak maupun defisit stok antarcabang saat ini. Seluruh gerai beroperasi dalam batas aman."
                       />
                     ) : (
                       <div className="space-y-4">
+                        {/* 1. ANOMALY AUDIT ACTION ITEMS */}
+                        {anomalies.map((anom) => (
+                          <div
+                            key={`action-anom-${anom.id}`}
+                            className="p-4 rounded-xl border border-amber-200 bg-amber-50/40 text-xs space-y-3 shadow-2xs hover:border-amber-300 transition-all"
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                                  <ShieldAlert className="w-4 h-4 text-amber-600" />
+                                  Tindakan Audit: {anom.title}
+                                </span>
+                                <span className="text-[10px] text-slate-500 font-mono">
+                                  ({anom.branch_name || 'Cabang'})
+                                </span>
+                              </div>
+
+                              <Badge
+                                variant={anom.severity === 'CRITICAL' ? 'danger' : 'warning'}
+                              >
+                                {anom.severity === 'CRITICAL' ? 'Audit Kritis' : 'Perlu Tindakan'}
+                              </Badge>
+                            </div>
+
+                            <p className="text-slate-600 leading-relaxed text-xs">
+                              {anom.suggested_action || 'Periksa nota fisik dan verifikasi persetujuan pengeluaran dengan staf cabang.'}
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 border-t border-amber-100/80">
+                              <span className="text-slate-500 text-[11px]">
+                                Beban Terindikasi: <strong className="text-rose-700 font-mono font-bold">{formatRupiah(anom.metric_value)}</strong>
+                              </span>
+
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => setSelectedAnomaly(anom)}
+                                className="bg-white border-amber-300 text-amber-900 hover:bg-amber-100 font-semibold text-xs gap-1.5 shadow-2xs"
+                              >
+                                <span>Selesaikan Investigasi Audit</span>
+                                <ArrowRight className="w-3.5 h-3.5 text-amber-600" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+
+                        {/* 2. STOCK TRANSFER ACTION ITEMS */}
                         {recommendations.map((rec) => (
                           <div
                             key={rec.id}
