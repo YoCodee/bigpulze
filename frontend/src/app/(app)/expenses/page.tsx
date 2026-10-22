@@ -498,13 +498,13 @@ export default function ExpensesPage() {
         </div>
 
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-2 rounded-xl border border-indigo-100 bg-indigo-50/60 px-3 py-1.5 shadow-2xs">
+          <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 shadow-2xs">
             <VoiceMicButton onTranscriptComplete={handleVoiceTranscript} disabled={loading} />
             <div className="text-left hidden sm:block">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 flex items-center gap-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-enterprise-700 flex items-center gap-1">
                 <Sparkles className="w-2.5 h-2.5" /> Smart Voice
               </div>
-              <div className="text-[10px] text-indigo-600">Bicara catat biaya</div>
+              <div className="text-[10px] text-slate-500">Bicara catat biaya</div>
             </div>
           </div>
 
@@ -575,10 +575,10 @@ export default function ExpensesPage() {
       />
 
       {/* Quick Voice Simulation Banner */}
-      <div className="rounded-xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 via-purple-50/50 to-blue-50/40 p-3.5 shadow-2xs">
+      <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-2xs">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-2xs">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-enterprise-600 text-white shadow-2xs">
               <Volume2 className="h-4 w-4" />
             </div>
             <div>
@@ -602,7 +602,7 @@ export default function ExpensesPage() {
                 key={sample}
                 type="button"
                 onClick={() => handleVoiceTranscript(sample)}
-                className="rounded-lg border border-indigo-200/80 bg-white px-2.5 py-1 text-[11px] font-medium text-indigo-900 shadow-2xs hover:bg-indigo-50 hover:border-indigo-300 transition-colors cursor-pointer"
+                className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700 shadow-2xs hover:bg-slate-100 hover:border-slate-300 transition-colors cursor-pointer"
               >
                 &ldquo;{sample}&rdquo;
               </button>
@@ -978,7 +978,7 @@ export default function ExpensesPage() {
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
-            <div className="px-6 py-4 bg-gradient-to-r from-indigo-600 to-enterprise-600 text-white flex items-center justify-between">
+            <div className="px-6 py-4 bg-enterprise-600 text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center">
                   <Mic className="w-5 h-5 text-white" />
@@ -986,7 +986,7 @@ export default function ExpensesPage() {
                 <div>
                   <h3 className="text-sm font-bold flex items-center gap-1.5">
                     Konfirmasi Pengeluaran Suara
-                    <span className="px-2 py-0.5 rounded-full text-[10px] bg-white/20 font-mono">
+                    <span className="px-2 py-0.5 rounded-md text-[10px] bg-white/20 font-mono">
                       AI Voice
                     </span>
                   </h3>
@@ -1007,13 +1007,13 @@ export default function ExpensesPage() {
             {/* AI Parsing Explanation & Confidence */}
             {voiceExpenseData && (
               <div className="px-6 pt-4 pb-1">
-                <div className="p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl flex items-start gap-2.5">
-                  <Sparkles className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-start gap-2.5">
+                  <Sparkles className="w-4 h-4 text-enterprise-600 shrink-0 mt-0.5" />
                   <div className="flex-1 text-xs">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="font-bold text-indigo-950">Hasil Analisis Suara</span>
+                      <span className="font-bold text-slate-900">Hasil Analisis Suara</span>
                       <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${
                           voiceExpenseData.confidence >= 0.8
                             ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                             : 'bg-amber-100 text-amber-800 border border-amber-200'
@@ -1022,7 +1022,7 @@ export default function ExpensesPage() {
                         Akurasi {Math.round(voiceExpenseData.confidence * 100)}%
                       </span>
                     </div>
-                    <p className="text-indigo-900 text-[11px] leading-relaxed">
+                    <p className="text-slate-600 text-[11px] leading-relaxed">
                       {voiceExpenseData.explanation}
                     </p>
                   </div>
@@ -1076,7 +1076,7 @@ export default function ExpensesPage() {
                     Kategori Pengeluaran <span className="text-rose-500">*</span>
                   </label>
                   {voiceExpenseData?.matched_keyword && (
-                    <span className="text-[10px] text-indigo-600 font-medium">
+                    <span className="text-[10px] text-enterprise-600 font-medium">
                       Kata kunci: &ldquo;{voiceExpenseData.matched_keyword}&rdquo;
                     </span>
                   )}
@@ -1129,7 +1129,7 @@ export default function ExpensesPage() {
                   className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
                 />
                 {typeof voiceAmount === 'number' && voiceAmount > 0 && (
-                  <p className="text-[11px] text-indigo-600 font-semibold mt-1">
+                  <p className="text-[11px] text-enterprise-600 font-semibold mt-1">
                     Terbaca: {formatRupiah(voiceAmount)}
                   </p>
                 )}

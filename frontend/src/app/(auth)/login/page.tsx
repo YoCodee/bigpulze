@@ -125,7 +125,7 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">
+            <span className="text-[11px] font-medium text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md">
               Owner Demo
             </span>
             {activeDemoRole === 'OWNER' ? (
@@ -157,7 +157,7 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+            <span className="text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
               Kasir Demo
             </span>
             {activeDemoRole === 'CASHIER' ? (

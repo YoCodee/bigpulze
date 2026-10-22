@@ -479,8 +479,7 @@ export default function PosPage() {
           </div>
 
           <div className="flex items-center gap-2.5 text-xs">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-semibold">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-medium">
               Kasir Siap Transaksi
             </span>
 
@@ -664,12 +663,12 @@ export default function PosPage() {
 
         {/* Voice Order Active Indicator Banner */}
         {activeInputMethod === 'VOICE' && voiceTranscriptToSave && (
-          <div className="bg-purple-50 border-b border-purple-200 p-2.5 px-4 text-xs text-purple-950 flex items-center justify-between">
+          <div className="bg-blue-50/70 border-b border-blue-200 p-2.5 px-4 text-xs text-slate-900 flex items-center justify-between">
             <div className="flex items-center gap-2 truncate">
-              <Mic className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+              <Mic className="w-3.5 h-3.5 text-enterprise-600 shrink-0" />
               <span className="truncate italic font-medium">&quot;{voiceTranscriptToSave}&quot;</span>
             </div>
-            <span className="text-[10px] font-bold bg-purple-200/80 text-purple-900 px-2 py-0.5 rounded-full shrink-0 ml-2">
+            <span className="text-[10px] font-medium bg-blue-100 text-enterprise-900 px-2 py-0.5 rounded-md shrink-0 ml-2">
               Voice POS
             </span>
           </div>
@@ -1098,20 +1097,20 @@ export default function PosPage() {
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
             {/* Header */}
-            <div className="p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border-b border-purple-100 flex items-center justify-between text-purple-950">
+            <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-slate-900">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                <div className="w-8 h-8 rounded-lg bg-enterprise-600 text-white flex items-center justify-center shrink-0 shadow-xs">
                   <Mic className="w-4 h-4" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold flex items-center gap-1.5">
                     Hasil Deteksi Perintah Suara
-                    <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-200/70 text-purple-800">
-                      <Sparkles className="w-2.5 h-2.5 text-purple-600" />
+                    <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[10px] font-medium bg-blue-100 text-enterprise-800">
+                      <Sparkles className="w-2.5 h-2.5 text-enterprise-600" />
                       Akurasi {Math.round(voiceParseResult.confidence * 100)}%
                     </span>
                   </h3>
-                  <p className="text-[11px] text-purple-700">
+                  <p className="text-[11px] text-slate-500">
                     Bahasa Alami Kasir Bahasa Indonesia
                   </p>
                 </div>
@@ -1177,7 +1176,7 @@ export default function PosPage() {
                     {voiceItems.map((vItem) => (
                       <div
                         key={vItem.product_id}
-                        className="p-3 bg-white border border-slate-200 rounded-xl flex items-center justify-between gap-3 shadow-xs hover:border-purple-300 transition-colors"
+                        className="p-3 bg-white border border-slate-200 rounded-xl flex items-center justify-between gap-3 shadow-xs hover:border-slate-300 transition-colors"
                       >
                         <div className="flex-1">
                           <h4 className="text-xs font-bold text-slate-900">
@@ -1187,7 +1186,7 @@ export default function PosPage() {
                             <span className="font-mono text-[10px] text-slate-400">
                               {vItem.sku}
                             </span>
-                            <span className="text-[10px] text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded font-semibold border border-purple-100">
+                            <span className="text-[10px] text-enterprise-700 bg-blue-50 px-1.5 py-0.5 rounded font-semibold border border-blue-200">
                               Cocok: {vItem.matched_by}
                             </span>
                             <span className="text-xs font-medium text-slate-600 font-mono">
@@ -1241,11 +1240,11 @@ export default function PosPage() {
 
               {/* Payment Method Detected */}
               {voiceParseResult.payment_method && (
-                <div className="p-3 bg-purple-50/70 border border-purple-200 rounded-xl text-xs flex items-center justify-between">
-                  <span className="text-purple-900 font-medium">
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs flex items-center justify-between">
+                  <span className="text-slate-900 font-medium">
                     Metode Pembayaran Terdeteksi:
                   </span>
-                  <span className="font-bold text-purple-700 bg-white px-2.5 py-1 rounded-lg border border-purple-200">
+                  <span className="font-bold text-enterprise-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
                     {voiceParseResult.payment_method === 'CASH' ? 'Tunai (CASH)' : 'QRIS Simulasi'}
                   </span>
                 </div>
@@ -1267,7 +1266,7 @@ export default function PosPage() {
                 size="touch"
                 disabled={voiceItems.length === 0}
                 onClick={handleConfirmVoiceOrder}
-                className="bg-purple-600 hover:bg-purple-700 gap-1.5 shadow-md shadow-purple-500/20"
+                className="bg-enterprise-600 hover:bg-enterprise-700 gap-1.5 shadow-sm"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Tambahkan ke Keranjang Kasir</span>

@@ -538,7 +538,7 @@ export default function StockPage() {
             <ArrowLeftRight className="w-3.5 h-3.5" />
             Transfer Antarcabang
             {recommendations.length > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-enterprise-600 text-white">
+              <span className="px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-enterprise-600 text-white">
                 {recommendations.length}
               </span>
             )}
@@ -800,10 +800,10 @@ export default function StockPage() {
         {activeTab === 'transfer' && (
           <div className="max-w-4xl mx-auto space-y-6">
             {/* Smart Balancing Recommendations Section */}
-            <div className="rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 via-blue-50/50 to-slate-50 p-5 shadow-2xs">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-2xs">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-2xs shrink-0">
+                  <div className="w-9 h-9 rounded-xl bg-enterprise-600 text-white flex items-center justify-center shadow-2xs shrink-0">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <div>
@@ -867,7 +867,7 @@ export default function StockPage() {
                           >
                             {rec.urgency === 'CRITICAL' ? 'Kritis / Habis' : 'Disarankan'}
                           </Badge>
-                          <span className="text-[11px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          <span className="text-[11px] font-mono font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                             Net: +{formatRupiah(rec.net_benefit)}
                           </span>
                         </div>
@@ -886,7 +886,7 @@ export default function StockPage() {
                             <span className="font-bold text-slate-800">{rec.from_branch_name}</span>
                           </div>
                           <div className="flex flex-col items-center px-2">
-                            <span className="text-[10px] font-bold text-enterprise-700 bg-enterprise-100 px-2 py-0.5 rounded-full">
+                            <span className="text-[10px] font-medium text-enterprise-700 bg-enterprise-100 px-2 py-0.5 rounded-md">
                               {rec.transfer_qty} unit
                             </span>
                             <ArrowRight className="w-3.5 h-3.5 text-slate-400 my-0.5" />

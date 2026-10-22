@@ -210,11 +210,11 @@ export default function DemoGuidePage() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12">
       {/* Page Header (Jury Evaluation Banner) */}
-      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 p-6 sm:p-8 rounded-2xl text-white shadow-xl relative overflow-hidden border border-slate-800">
+      <div className="bg-[#121316] p-6 sm:p-8 rounded-2xl text-white shadow-xl relative overflow-hidden border border-slate-800">
         <div className="absolute right-0 top-0 w-96 h-96 bg-enterprise-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-semibold backdrop-blur-xs">
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-white/10 border border-white/20 text-white text-xs font-medium backdrop-blur-xs">
               <Sparkles className="w-3.5 h-3.5 text-brand-400" /> GTNIC 2026 Web Development • Finalis
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
@@ -396,8 +396,8 @@ export default function DemoGuidePage() {
 
             {/* Live Parsing Result Preview Card */}
             {liveAnalysis && (
-              <div className="p-4 bg-gradient-to-br from-slate-50 to-indigo-50/40 rounded-xl border border-indigo-100 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-indigo-100">
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
                   <div className="flex items-center gap-2">
                     <Badge
                       variant={liveAnalysis.type === 'POS' ? 'enterprise' : 'brand'}
@@ -648,9 +648,9 @@ export default function DemoGuidePage() {
               </div>
 
               {/* Skenario 4 */}
-              <div className="p-5 bg-indigo-50/70 rounded-xl border border-indigo-200 space-y-2">
+              <div className="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-indigo-700 uppercase tracking-wide">
+                  <span className="font-bold text-xs text-enterprise-700 uppercase tracking-wide">
                     Skenario 4: Smart Voice POS &amp; AI Expense
                   </span>
                   <Badge variant="brand" dot className="text-[10px]">
@@ -659,7 +659,7 @@ export default function DemoGuidePage() {
                 </div>
                 <h3 className="text-sm font-bold text-slate-900">Pencatatan Lisan Bahasa Indonesia UMKM</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Uji tombol mikrofon di <Link href="/pos" className="text-indigo-600 underline font-semibold">/pos</Link> dan <Link href="/expenses" className="text-indigo-600 underline font-semibold">/expenses</Link>. Sistem secara cerdas menerjemahkan kata bilangan (&quot;setengah lusin&quot;, &quot;25rb&quot;), alias kedai, metode bayar, dan klasifikasi kategori biaya otomatis.
+                  Uji tombol mikrofon di <Link href="/pos" className="text-enterprise-600 underline font-semibold">/pos</Link> dan <Link href="/expenses" className="text-enterprise-600 underline font-semibold">/expenses</Link>. Sistem secara cerdas menerjemahkan kata bilangan (&quot;setengah lusin&quot;, &quot;25rb&quot;), alias kedai, metode bayar, dan klasifikasi kategori biaya otomatis.
                 </p>
               </div>
 
@@ -721,10 +721,10 @@ export default function DemoGuidePage() {
                 <p className="text-[11px] text-slate-400">Cari produk, klik qty, pilih opsi bayar</p>
               </div>
 
-              <div className="p-5 bg-indigo-50/70 rounded-xl border border-indigo-200 text-center space-y-1 shadow-2xs">
-                <p className="text-xs text-indigo-700 font-bold">BizPulse Voice AI POS</p>
-                <p className="text-2xl font-bold font-mono text-indigo-700">2 – 3 dtk</p>
-                <p className="text-[11px] text-indigo-600 font-medium">Bicara lisan 1 kalimat &amp; konfirmasi</p>
+              <div className="p-5 bg-blue-50/70 rounded-xl border border-blue-200 text-center space-y-1 shadow-2xs">
+                <p className="text-xs text-enterprise-700 font-bold">BizPulse Voice AI POS</p>
+                <p className="text-2xl font-bold font-mono text-enterprise-700">2 – 3 dtk</p>
+                <p className="text-[11px] text-enterprise-600 font-medium">Bicara lisan 1 kalimat &amp; konfirmasi</p>
               </div>
 
               <div className="p-5 bg-emerald-50 rounded-xl border border-emerald-200 text-center space-y-1 shadow-2xs">

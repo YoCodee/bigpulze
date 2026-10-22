@@ -91,7 +91,7 @@ export function VoiceMicButton({
         className={`relative flex items-center justify-center p-2.5 rounded-xl font-bold transition-all shadow-sm ${
           isListening
             ? 'bg-rose-600 text-white shadow-rose-500/30 ring-4 ring-rose-500/30 animate-pulse'
-            : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-indigo-500/20'
+            : 'bg-enterprise-600 hover:bg-enterprise-700 text-white shadow-sm'
         } disabled:opacity-50 disabled:cursor-not-allowed`}
       >
         {isListening ? (
@@ -116,7 +116,7 @@ export function VoiceMicButton({
       {/* Live Interim Caption Bubble */}
       {isListening && (
         <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 z-50 bg-slate-900/95 backdrop-blur-md text-white px-3.5 py-2 rounded-xl text-xs shadow-xl border border-slate-700 min-w-[220px] max-w-sm animate-in fade-in slide-in-from-top-1">
-          <div className="flex items-center gap-1.5 text-[10px] text-purple-300 font-semibold uppercase mb-1">
+          <div className="flex items-center gap-1.5 text-[10px] text-blue-300 font-semibold uppercase mb-1">
             <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
             Mendengarkan Bahasa Indonesia:
           </div>
@@ -147,12 +147,12 @@ export function VoiceMicButton({
       {fallbackInputOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-4 bg-purple-50 border-b border-purple-100 flex items-center justify-between text-purple-900">
+            <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-slate-900">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-purple-600" />
+                <Sparkles className="w-5 h-5 text-enterprise-600" />
                 <div>
                   <h3 className="text-sm font-bold">Simulasi Perintah Suara</h3>
-                  <p className="text-[11px] text-purple-700">
+                  <p className="text-[11px] text-slate-500">
                     Input kalimat pesanan seolah diucapkan kasir
                   </p>
                 </div>
@@ -177,7 +177,7 @@ export function VoiceMicButton({
                   value={fallbackText}
                   onChange={(e) => setFallbackText(e.target.value)}
                   placeholder="Contoh: kopi susu dua, donat satu, bayar tunai"
-                  className="w-full p-2.5 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  className="w-full p-2.5 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-enterprise-500 focus:outline-none"
                 />
               </div>
 
@@ -221,7 +221,7 @@ export function VoiceMicButton({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md shadow-purple-500/20"
+                  className="px-4 py-1.5 rounded-xl bg-enterprise-600 hover:bg-enterprise-700 text-white text-xs font-bold shadow-sm"
                 >
                   Kirim Perintah Suara
                 </button>

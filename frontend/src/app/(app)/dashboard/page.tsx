@@ -671,7 +671,7 @@ export default function DashboardPage() {
 
                               {/* Center Arrow & Qty */}
                               <div className="flex flex-col items-center px-2">
-                                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-enterprise-700 font-bold text-xs border border-blue-200 font-mono">
+                                <span className="px-2 py-0.5 rounded-md bg-blue-50 text-enterprise-700 font-medium text-[11px] border border-blue-200 font-mono">
                                   +{rec.transfer_qty} unit
                                 </span>
                                 <span className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
@@ -950,7 +950,7 @@ export default function DashboardPage() {
             </Card>
 
             {/* 3. Panduan Cepat Skenario Juri GTNIC 2026 */}
-            <Card className="bg-gradient-to-br from-slate-900 to-slate-950 text-white border-slate-800">
+            <Card className="bg-[#121316] text-white border-slate-800">
               <CardHeader className="border-b border-slate-800/80 pb-3">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-brand-400" />

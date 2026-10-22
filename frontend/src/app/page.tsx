@@ -740,7 +740,7 @@ export default function HomePage() {
                   plan.popular
                     ? 'bg-[#121316] border-brand-500/60 shadow-lg shadow-brand-500/10'
                     : plan.isJuri
-                    ? 'bg-[#14121a] border-purple-500/40'
+                    ? 'bg-[#101524] border-enterprise-500/40'
                     : 'bg-[#0E0F12] border-[#26282D]'
                 }`}
               >
@@ -749,7 +749,7 @@ export default function HomePage() {
                     plan.popular
                       ? 'border-brand-500'
                       : plan.isJuri
-                      ? 'border-purple-400'
+                      ? 'border-enterprise-400'
                       : 'border-zinc-600'
                   }
                 />
@@ -761,7 +761,7 @@ export default function HomePage() {
                         plan.popular
                           ? 'bg-brand-500/20 text-brand-400 border border-brand-500/40'
                           : plan.isJuri
-                          ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
+                          ? 'bg-enterprise-500/20 text-enterprise-300 border border-enterprise-500/40'
                           : 'bg-zinc-800 text-zinc-400'
                       }`}
                     >
@@ -812,7 +812,7 @@ export default function HomePage() {
                       plan.popular
                         ? 'bg-brand-500 text-white hover:bg-brand-600 shadow-md shadow-brand-500/30'
                         : plan.isJuri
-                        ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-md'
+                        ? 'bg-enterprise-600 text-white hover:bg-enterprise-700 shadow-md'
                         : 'border border-zinc-700 text-zinc-200 hover:bg-white hover:text-slate-900'
                     }`}
                   >

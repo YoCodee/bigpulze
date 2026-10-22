@@ -161,14 +161,6 @@ export default function AppLayout({
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
-      {/* Banner Mode Demo jika akun demo aktif */}
-      {profile?.is_demo && (
-        <div className="bg-amber-500 text-amber-950 px-4 py-1.5 text-xs font-semibold text-center flex items-center justify-center space-x-2 border-b border-amber-600 shrink-0">
-          <Sparkles className="w-3.5 h-3.5 shrink-0" />
-          <span>MODE DEMO: Anda sedang mengevaluasi data contoh Kopi Senja untuk GTNIC 2026.</span>
-        </div>
-      )}
-
       <div className="flex-1 flex">
         {/* ======================================================== */}
         {/* SIDEBAR DESKTOP (256px - Mengacu ke redesign/dashboard/sidebar (1).png) */}
@@ -254,7 +246,7 @@ export default function AppLayout({
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
                           {item.badge && (
-                            <span className="rounded-full bg-brand-50 px-1.5 py-0.2 text-[10px] font-bold text-brand-700 border border-brand-200/60">
+                            <span className="rounded-md bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-700 border border-brand-200/60">
                               {item.badge}
                             </span>
                           )}
@@ -330,20 +322,20 @@ export default function AppLayout({
                 <span>Panduan Demo</span>
               </Link>
 
-              <Badge
-                variant={profile?.role === 'CASHIER' ? 'success' : 'enterprise'}
-                dot
-              >
-                {profile?.role === 'CASHIER' ? 'Kasir' : 'Owner'}
-              </Badge>
-
               <div className="h-4 w-px bg-slate-200" />
 
-              <div className="flex items-center space-x-1.5 text-xs text-slate-600">
-                <User className="h-3.5 w-3.5 text-slate-400" />
-                <span className="font-medium truncate max-w-[140px]">
-                  {profile?.full_name || 'Akun'}
-                </span>
+              <div className="flex items-center space-x-2 text-xs text-slate-600">
+                <div className="h-6 w-6 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 font-bold text-[10px] uppercase shrink-0">
+                  {profile?.full_name ? profile.full_name.charAt(0) : 'U'}
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="font-semibold text-slate-900 truncate max-w-[140px] leading-tight">
+                    {profile?.full_name || 'Akun'}
+                  </span>
+                  <span className="text-[10px] text-slate-400 leading-tight">
+                    {profile?.role === 'CASHIER' ? 'Kasir' : 'Owner'}
+                  </span>
+                </div>
               </div>
 
               <Button
@@ -389,12 +381,9 @@ export default function AppLayout({
             </div>
 
             <div className="flex items-center space-x-2">
-              <Badge
-                variant={profile?.role === 'CASHIER' ? 'success' : 'enterprise'}
-                dot
-              >
+              <span className="text-xs font-medium text-slate-500">
                 {profile?.role === 'CASHIER' ? 'Kasir' : 'Owner'}
-              </Badge>
+              </span>
               <Button
                 variant="ghost"
                 size="icon"
@@ -439,7 +428,7 @@ export default function AppLayout({
                             <span>{item.name}</span>
                           </div>
                           {item.badge && (
-                            <span className="rounded-full bg-brand-50 px-1.5 py-0.2 text-[10px] font-bold text-brand-700">
+                            <span className="rounded-md bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-700">
                               {item.badge}
                             </span>
                           )}

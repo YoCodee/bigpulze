@@ -632,9 +632,9 @@ export default function ProductsPage() {
                             p.aliases.map((a, idx) => (
                               <span
                                 key={idx}
-                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-200/60"
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200"
                               >
-                                <Mic className="w-2.5 h-2.5 text-indigo-500" />
+                                <Mic className="w-2.5 h-2.5 text-slate-500" />
                                 {a}
                               </span>
                             ))
@@ -847,14 +847,14 @@ export default function ProductsPage() {
                       {aliases.map((a, idx) => (
                         <span
                           key={idx}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-indigo-50 text-indigo-700 border border-indigo-200"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs bg-slate-100 text-slate-700 border border-slate-200"
                         >
-                          <Tag className="w-3 h-3 text-indigo-500" />
+                          <Tag className="w-3 h-3 text-slate-500" />
                           {a}
                           <button
                             type="button"
                             onClick={() => removeAlias(a)}
-                            className="ml-1 text-indigo-500 hover:text-indigo-800 font-bold"
+                            className="ml-1 text-slate-400 hover:text-slate-700 font-bold"
                           >
                             &times;
                           </button>

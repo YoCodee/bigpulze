@@ -1392,3 +1392,89 @@
 - `npm run build`     : **Lulus 100%** (34 static & dynamic routes compiled)
 
 **Status Tahap R10:** Selesai 100% (Desain Login & Register Cloudflare Siap)
+
+---
+
+## Tahap R11: Pembersihan Banner Mode Demo & Standarisasi Warna Solid (Anti-Gradient Ungu-Biru) ✅
+**Selesai:** 2026-10-22
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/layout.tsx` — Menghapus banner peringatan oranye/amber *Mode Demo* di atas *top bar*. Tampilan *top bar* kini bersih murni seperti referensi SaaS Enterprise Cloudflare.
+- `frontend/src/components/voice-mic-button.tsx` — Mengganti gradien ungu-ke-biru (`bg-gradient-to-r from-purple-600 to-indigo-600`) menjadi warna solid *Enterprise Blue* (`bg-enterprise-600 hover:bg-enterprise-700`). Modal simulasi suara juga distandarisasi menggunakan palet solid netral dan enterprise.
+- `frontend/src/app/(app)/expenses/page.tsx` — Menghilangkan gradien ungu-biru pada banner simulasi input suara dan header modal konfirmasi pengeluaran suara; beralih ke warna solid netral/enterprise.
+- `frontend/src/app/(app)/pos/page.tsx` — Menghilangkan gradien ungu-biru pada header modal deteksi suara kasir serta indikator suara aktif di keranjang kasir; digantikan warna solid yang konsisten.
+- `frontend/src/app/(app)/staff/page.tsx` & `stock/page.tsx` — Menghilangkan background gradien indigo-biru pada banner panduan dan rekomendasi mutasi stok; menggunakan kontainer putih bergaris tepi solid `border-slate-200`.
+- `frontend/src/app/(app)/demo-guide/page.tsx` & `dashboard/page.tsx` — Menghapus sisa gradien pada header panduan juri dan kartu panduan; menggunakan warna solid obsidian (`#121316`).
+- `frontend/src/app/page.tsx` & `transactions/page.tsx` — Standarisasi warna aksen evaluasi juri dan badge suara ke Enterprise Blue solid.
+
+**Hasil Verifikasi:**
+- `npm run typecheck` : **Lulus 100%** (0 TypeScript error)
+- Zero sisa gradien ungu-biru di seluruh file source code
+
+**Status Tahap R11:** Selesai 100% (Banner Mode Demo Dihapus, Warna Solid Diterapkan)
+
+---
+
+## Tahap R12: Pembersihan Badge Pill "Kasir" di Top Bar & Simplifikasi Desain Badge Global ✅
+**Selesai:** 2026-10-22
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/layout.tsx` — Menghapus elemen pill badge `• Kasir` / `• Owner` (`<Badge dot>`) dari desktop top bar dan mobile top bar. Area kanan top bar kini bersih murni dengan avatar inisial, nama pengguna, role teks halus, dan tombol keluar.
+- `frontend/src/components/ui/badge.tsx` — Transformasi total style `Badge`:
+  - Menghilangkan bullet dot bundar (`•`) yang membuat badge terkesan ramai/kembung.
+  - Mengubah radius dari kapsul lonjong (`rounded-full`) menjadi sudut persegi modern halus (`rounded-md`).
+  - Mengubah tipografi dan padding menjadi mikro dan elegan (`text-[11px] font-medium px-2 py-0.5 border`).
+  - Warna status kini lebih lembut dan profesional (*soft pastel tint* dengan border 1px).
+- `frontend/src/app/(app)/pos/page.tsx` — Menyederhanakan badge status "Kasir Siap Transaksi" dan "Voice POS" menjadi style flat `rounded-md` tanpa bullet dot berkedip.
+- `frontend/src/app/(auth)/login/page.tsx` — Menyederhanakan chip role "Owner Demo" dan "Kasir Demo" pada kartu quick login menjadi rectangular chip `rounded-md font-medium`.
+- `frontend/src/app/(app)/products/page.tsx`, `stock/page.tsx`, `transactions/page.tsx`, `expenses/page.tsx`, `dashboard/page.tsx` — Menstandarisasi seluruh tag/badge kustom ke format `rounded-md` yang minimalis dan konsisten dengan referensi Cloudflare.
+
+**Hasil Verifikasi:**
+- `npm run typecheck` : **Lulus 100%** (0 TypeScript error)
+- `npm run test`      : **Lulus 100%** (11 test files, 106 tests passed, 0 failed)
+
+**Status Tahap R12:** Selesai 100% (Badge Pill Dihapus dari Top Bar & Style Badge Disederhanakan)
+
+---
+
+## Tahap R13: Implementasi Penuh Fitur Kelola Kasir (FR-1.5) Khusus Owner ✅
+**Selesai:** 2026-10-22
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/lib/validators/staff.ts` — Skema validasi Zod untuk `createCashierSchema` (nama, email, password min 6 char, branch_id UUID) dan `updateCashierSchema` (nama, branch_id, is_active, password).
+- `frontend/tests/lib/validators-staff.test.ts` — Unit test komprehensif untuk validasi pendaftaran dan perubahan kasir.
+- `frontend/src/app/api/staff/route.ts` — Endpoint GET (daftar kasir cabang di organisasi owner lengkap dengan email & relasi cabang) dan POST (pendaftaran kasir baru menggunakan Supabase Admin service role `auth.admin.createUser` auto-confirmed + insert `profiles` dengan isolasi `branch_id`).
+- `frontend/src/app/api/staff/[id]/route.ts` — Endpoint PATCH (edit nama, rotasi cabang tugas, toggle status aktif/nonaktif, dan reset password kasir oleh owner).
+- `frontend/src/app/(app)/staff/page.tsx` — Transformasi total halaman Kelola Kasir:
+  - Header dengan tombol CTA `+ Tambah Kasir Baru` dan tombol Segarkan data.
+  - 4-KPI Metric Strip ringkasan akun kasir (Total Kasir, Kasir Aktif, Cabang Terpetakan, Isolasi RLS).
+  - Search input (pencarian nama, email, cabang) & Dropdown filter cabang serta filter status.
+  - Tabel kasir responsif gaya Cloudflare SaaS: avatar kasir, nama & email, cabang penugasan & lokasi, status badge, tgl terdaftar, dan aksi cepat (Edit penugasan, Ganti sandi, Toggle aktif/nonaktif).
+  - Modal interaktif `Tambah Kasir Baru` dengan dropdown cabang aktif.
+  - Modal interaktif `Edit Penugasan Kasir` (rotasi cabang & switch status).
+  - Modal interaktif `Ubah Kata Sandi Kasir`.
+  - Kartu arsitektur keamanan RBAC & PostgreSQL RLS tetap dipertahankan di bagian bawah sebagai referensi penilaian juri GTNIC 2026.
+
+**Hasil Verifikasi:**
+- `npm run typecheck` : **Lulus 100%** (0 TypeScript error)
+- `npm run test`      : **Lulus 100%** (12 test files, 110 tests passed, 0 failed)
+
+**Status Tahap R13:** Selesai 100% (Fitur Kelola & Tambah Kasir Siap Pakai)
+
+---
+
+## Tahap R14: Perbaikan Pemuatan Cabang & Sinkronisasi Kasir Demo Kopi Senja ✅
+**Selesai:** 2026-10-22
+
+**Dibuat & Dimodifikasi:**
+- `frontend/src/app/(app)/staff/page.tsx` — Memperbaiki logika penanganan respons API di `loadData`, `handleCreateCashier`, `handleUpdateCashier`, `handleResetPassword`, dan `handleToggleStatus`:
+  - Mengubah pengecekan dari `json.success` (yang tidak dikembalikan `apiSuccess`) menjadi standard HTTP `if (!res.ok)`.
+  - Mengaktifkan pemuatan `branches` sehingga dropdown pilihan cabang di modal penugasan kasir otomatis terisi dengan seluruh cabang aktif organisasi (cth: *Cabang Senopati (Pusat)* & *Cabang Sudirman*).
+  - Menampilkan kasir bawaan demo Kopi Senja (**Siti Rahma - Kasir Sudirman**) yang sebelumnya tidak ter-render karena pengecekan status falsy.
+- `frontend/src/app/api/branches/route.ts` — Menambahkan `export const dynamic = 'force-dynamic'` untuk mencegah stale caching Next.js pada route GET branches.
+
+**Hasil Verifikasi:**
+- `npm run typecheck` : **Lulus 100%** (0 TypeScript error)
+- `npm run test`      : **Lulus 100%** (12 test files, 110 tests passed, 0 failed)
+
+**Status Tahap R14:** Selesai 100% (Kasir Demo & Dropdown Cabang Berfungsi Penuh)

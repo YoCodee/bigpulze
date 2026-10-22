@@ -244,25 +244,25 @@ export default function TransactionsPage() {
     switch (method) {
       case 'VOICE':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
-            <Mic className="w-3 h-3 text-purple-600" /> Voice
+          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-enterprise-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
+            <Mic className="w-3 h-3 text-enterprise-600" /> Voice
           </span>
         );
       case 'IMPORT':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
             <FileSpreadsheet className="w-3 h-3 text-blue-600" /> Import
           </span>
         );
       case 'DEMO':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
             <Sparkles className="w-3 h-3 text-amber-600" /> Demo
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">
+          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
             <MousePointer className="w-3 h-3 text-slate-500" /> Manual
           </span>
         );
@@ -699,11 +699,11 @@ export default function TransactionsPage() {
 
               {/* Voice Transcript (if available) */}
               {selectedTx.voice_transcript && (
-                <div className="bg-purple-50 border border-purple-200 rounded-xl p-3 text-xs">
-                  <span className="font-bold text-purple-900 block mb-1">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs">
+                  <span className="font-bold text-slate-900 block mb-1">
                     Transkrip Suara Kasir:
                   </span>
-                  <p className="text-purple-800 italic font-medium">
+                  <p className="text-slate-700 italic font-medium">
                     &quot;{selectedTx.voice_transcript}&quot;
                   </p>
                 </div>
