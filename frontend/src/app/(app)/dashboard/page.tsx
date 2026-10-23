@@ -37,7 +37,11 @@ import {
   BarChart3,
   Lock,
   Boxes,
+  Volume2,
 } from 'lucide-react';
+import { useMorningBriefing } from '@/hooks/use-morning-briefing';
+import { MorningBriefingPlayer } from '@/components/dashboard/morning-briefing-player';
+
 
 interface AnomalyItem {
   id: string;
@@ -160,6 +164,10 @@ export default function DashboardPage() {
   // Executing Transfer State
   const [executingId, setExecutingId] = useState<string | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
+
+  // AI Voice Morning Briefing State
+  const [showBriefingPlayer, setShowBriefingPlayer] = useState(false);
+  const morningBriefing = useMorningBriefing();
 
   // Fetch Dashboard Intelligence
   const fetchDashboardData = useCallback(async () => {
@@ -356,7 +364,35 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                const nextState = !showBriefingPlayer;
+                setShowBriefingPlayer(nextState);
+                if (nextState && morningBriefing.status === 'idle') {
+                  morningBriefing.play();
+                }
+              }}
+              className={`gap-1.5 border-enterprise-200 text-enterprise-700 hover:bg-enterprise-50 transition-all ${
+                showBriefingPlayer
+                  ? 'bg-enterprise-50 border-enterprise-400 ring-2 ring-enterprise-200 text-enterprise-900 font-semibold'
+                  : ''
+              }`}
+            >
+              <Volume2
+                className={`w-3.5 h-3.5 text-enterprise-600 ${
+                  morningBriefing.status === 'speaking' ? 'animate-bounce text-enterprise-700' : ''
+                }`}
+              />
+              <span>
+                {morningBriefing.status === 'speaking'
+                  ? 'Sedang Membacakan...'
+                  : 'Dengarkan Briefing Pagi'}
+              </span>
+            </Button>
+
             <Button
               variant="secondary"
               size="sm"
@@ -376,6 +412,17 @@ export default function DashboardPage() {
             </Link>
           </div>
         </div>
+
+        {/* AI Voice Morning Briefing Player Panel */}
+        {showBriefingPlayer && (
+          <MorningBriefingPlayer
+            briefing={morningBriefing}
+            onClose={() => {
+              morningBriefing.stop();
+              setShowBriefingPlayer(false);
+            }}
+          />
+        )}
 
         {/* ======================================================== */}
         {/* 2. 3 QUICK ACTION SHORTCUT CARDS (refrence1 (2).png) */}
