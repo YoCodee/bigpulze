@@ -17,11 +17,15 @@ import {
   Loader2,
   Power,
   RefreshCw,
+  Building2,
+  Users,
+  Upload,
 } from 'lucide-react';
 import { MetricStrip } from '@/components/ui/metric-strip';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDateId } from '@/lib/date';
+import { SubNavTabs } from '@/components/ui/sub-nav-tabs';
 
 interface BranchOption {
   id: string;
@@ -274,6 +278,15 @@ export default function StaffPage() {
   return (
     <RoleGuard allowedRoles={['OWNER']}>
       <div className="space-y-6 pb-12">
+        {/* Sub Nav Tabs Konsolidasi Manajemen Organisasi */}
+        <SubNavTabs
+          tabs={[
+            { name: 'Daftar Cabang', href: '/branches', icon: Building2 },
+            { name: 'Staf & Kasir', href: '/staff', icon: Users },
+            { name: 'Impor Data CSV', href: '/import', icon: Upload },
+          ]}
+        />
+
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>

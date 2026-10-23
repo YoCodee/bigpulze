@@ -22,6 +22,8 @@ import {
   ChevronsUpDown,
   Search,
   ChevronRight,
+  Building2,
+  Boxes,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -42,6 +44,7 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
   ownerOnly: boolean;
   badge?: string;
+  matchPrefixes?: string[];
 }
 
 interface NavGroup {
@@ -51,7 +54,7 @@ interface NavGroup {
 
 const navGroups: NavGroup[] = [
   {
-    groupName: 'Utama',
+    groupName: 'Operasional Kasir',
     items: [
       { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, ownerOnly: true },
       { name: 'Kasir (POS)', href: '/pos', icon: ShoppingCart, ownerOnly: false },
@@ -59,26 +62,29 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    groupName: 'Operasional',
+    groupName: 'Finansial & Inventaris',
     items: [
+      {
+        name: 'Inventaris & Stok',
+        href: '/products',
+        icon: Boxes,
+        ownerOnly: false,
+        matchPrefixes: ['/products', '/stock'],
+      },
       { name: 'Pengeluaran', href: '/expenses', icon: ArrowDownCircle, ownerOnly: false },
-      { name: 'Produk & Stok', href: '/products', icon: Package, ownerOnly: false },
-      { name: 'Mutasi Stok', href: '/stock', icon: ArrowLeftRight, ownerOnly: true },
+      { name: 'Laporan Keuangan', href: '/reports', icon: FileSpreadsheet, ownerOnly: true },
     ],
   },
   {
-    groupName: 'Finansial & Data',
+    groupName: 'Manajemen Bisnis',
     items: [
-      { name: 'Laba-Rugi', href: '/reports', icon: FileSpreadsheet, ownerOnly: true },
-      { name: 'Impor Data', href: '/import', icon: Upload, ownerOnly: true },
-    ],
-  },
-  {
-    groupName: 'Kelola & Bantuan',
-    items: [
-      { name: 'Kelola Cabang', href: '/branches', icon: Store, ownerOnly: true },
-      { name: 'Kelola Kasir', href: '/staff', icon: Users, ownerOnly: true },
-      { name: 'Panduan Demo', href: '/demo-guide', icon: HelpCircle, ownerOnly: false, badge: 'Juri' },
+      {
+        name: 'Manajemen Organisasi',
+        href: '/branches',
+        icon: Building2,
+        ownerOnly: true,
+        matchPrefixes: ['/branches', '/staff', '/import'],
+      },
     ],
   },
 ];
@@ -153,9 +159,22 @@ export default function AppLayout({
     })
     .filter((group) => group.items.length > 0);
 
+  // Helper untuk mengecek apakah item navigasi sedang aktif
+  function isItemActive(item: NavItem): boolean {
+    if (pathname === item.href) return true;
+    if (item.matchPrefixes && item.matchPrefixes.some((prefix) => pathname.startsWith(prefix))) {
+      return true;
+    }
+    return false;
+  }
+
   // Cari nama halaman aktif untuk breadcrumb topbar
   const allFlattenedItems = navGroups.flatMap((g) => g.items);
-  const currentItem = allFlattenedItems.find((item) => item.href === pathname);
+  const currentItem =
+    allFlattenedItems.find((item) => pathname === item.href) ||
+    allFlattenedItems.find((item) =>
+      item.matchPrefixes?.some((prefix) => pathname.startsWith(prefix))
+    );
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
@@ -220,7 +239,7 @@ export default function AppLayout({
                 </p>
                 <div className="space-y-0.5">
                   {group.items.map((item) => {
-                    const isActive = pathname === item.href;
+                    const isActive = isItemActive(item);
                     const Icon = item.icon;
                     return (
                       <Link
@@ -262,6 +281,26 @@ export default function AppLayout({
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Panduan Demo Link di Sidebar Footer */}
+          <div className="shrink-0 px-3 py-2 border-t border-slate-100 bg-white">
+            <Link
+              href="/demo-guide"
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                pathname === '/demo-guide'
+                  ? 'bg-slate-100/90 text-slate-900 font-semibold'
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+              }`}
+            >
+              <div className="flex items-center min-w-0">
+                <HelpCircle className="mr-2.5 h-4 w-4 shrink-0 text-slate-400" />
+                <span className="truncate">Panduan Demo</span>
+              </div>
+              <span className="rounded-md bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-700 border border-brand-200/60">
+                Juri
+              </span>
+            </Link>
           </div>
 
           {/* Footer Sidebar: Profil Pengguna & Keluar */}
@@ -404,7 +443,7 @@ export default function AppLayout({
                   </p>
                   <div className="space-y-0.5">
                     {group.items.map((item) => {
-                      const isActive = pathname === item.href;
+                      const isActive = isItemActive(item);
                       const Icon = item.icon;
                       return (
                         <Link
@@ -436,6 +475,27 @@ export default function AppLayout({
                   </div>
                 </div>
               ))}
+
+              {/* Panduan Demo di Mobile Drawer */}
+              <div className="pt-2 border-t border-slate-100">
+                <Link
+                  href="/demo-guide"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium ${
+                    pathname === '/demo-guide'
+                      ? 'bg-slate-100 text-slate-900 font-semibold'
+                      : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <HelpCircle className="mr-3 h-4 w-4 text-slate-400" />
+                    <span>Panduan Demo</span>
+                  </div>
+                  <span className="rounded-md bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-700">
+                    Juri
+                  </span>
+                </Link>
+              </div>
             </div>
           )}
 
