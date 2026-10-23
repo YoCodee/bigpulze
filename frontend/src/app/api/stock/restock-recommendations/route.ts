@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { apiSuccess, apiError, handleApiError } from '@/lib/api-response';
 import { getBusinessDate, getYesterday, getRelativeBusinessDate, nowWib } from '@/lib/date';
 import { restockRecommendationQuerySchema } from '@/lib/validators/stock';
+import { fetchAllRows } from '@/lib/supabase/paginate';
 import { forecastSeries, calculateWape, ForecastModel } from '@/server/ml/forecast';
 import {
   planStock,
@@ -187,22 +188,30 @@ export async function GET(request: NextRequest) {
 
     const productList = (products || []) as ProductRow[];
 
-    // 4. Riwayat qty terjual harian per produk
+    // 4. Riwayat qty terjual harian per produk.
+    // Diambil berhalaman karena PostgREST membatasi 1000 baris per permintaan.
     const windowStart = getRelativeBusinessDate(-(HISTORY_WINDOW_DAYS - 1));
 
-    const { data: items, error: itemError } = await supabase
-      .from('transaction_items')
-      .select('product_id, quantity, transactions!inner(business_date, status, org_id)')
-      .eq('org_id', profile.org_id)
-      .eq('transactions.org_id', profile.org_id)
-      .eq('transactions.status', 'COMPLETED')
-      .gte('transactions.business_date', windowStart)
-      .lte('transactions.business_date', yesterday);
-
-    if (itemError) return handleApiError(itemError);
+    let items: TransactionItemRow[];
+    try {
+      items = await fetchAllRows<TransactionItemRow>((from, to) =>
+        supabase
+          .from('transaction_items')
+          .select('product_id, quantity, transactions!inner(business_date, status, org_id)')
+          .eq('org_id', profile.org_id)
+          .eq('transactions.org_id', profile.org_id)
+          .eq('transactions.status', 'COMPLETED')
+          .gte('transactions.business_date', windowStart)
+          .lte('transactions.business_date', yesterday)
+          .order('id', { ascending: true })
+          .range(from, to)
+      );
+    } catch (error) {
+      return handleApiError(error);
+    }
 
     const dailyQty = new Map<string, Map<string, number>>();
-    ((items as unknown as TransactionItemRow[]) || []).forEach((item) => {
+    items.forEach((item) => {
       const date = extractBusinessDate(item);
       if (!date) return;
       let perProduct = dailyQty.get(item.product_id);
@@ -261,6 +270,18 @@ export async function GET(request: NextRequest) {
     // 6. Susun respons (tabel + data grafik tren)
     const summary = summarizeStockPlans(analyses.map((analysis) => analysis.plan));
 
+    // WAPE rata-rata backtest seluruh produk ber-riwayat (PRD §11.3 S5:
+    // "WAPE tampil (target < 25%)").
+    const wapeSamples = analyses
+      .map((analysis) => analysis.wape)
+      .filter((value): value is number => value !== null);
+    const avgWape =
+      wapeSamples.length > 0
+        ? Math.round(
+            (wapeSamples.reduce((sum, value) => sum + value, 0) / wapeSamples.length) * 10
+          ) / 10
+        : null;
+
     const recommendations = sortStockPlans(analyses.map((analysis) => analysis.plan)).map(
       (plan) => {
         const analysis = analyses.find((item) => item.plan.product_id === plan.product_id);
@@ -309,6 +330,7 @@ export async function GET(request: NextRequest) {
       summary: {
         ...summary,
         products_without_history: productsWithoutHistory,
+        avg_wape_pct: avgWape,
       },
       recommendations,
     });

@@ -12,6 +12,7 @@ import {
   getYesterday,
   getRelativeBusinessDate,
 } from '@/lib/date';
+import { fetchAllRows } from '@/lib/supabase/paginate';
 
 export async function GET(request: NextRequest) {
   try {
@@ -110,39 +111,8 @@ export async function GET(request: NextRequest) {
     branches.forEach((b) => branchNameMap.set(b.id, b.name));
 
     // 2. Fetch completed & void transactions in period
-    let txQuery = supabase
-      .from('transactions')
-      .select(`
-        id,
-        branch_id,
-        business_date,
-        payment_method,
-        status,
-        total_revenue,
-        total_cogs,
-        gross_profit,
-        transaction_items (
-          product_id,
-          product_name,
-          quantity,
-          unit_cost,
-          unit_price,
-          subtotal
-        )
-      `)
-      .eq('org_id', profile.org_id)
-      .gte('business_date', startDate)
-      .lte('business_date', endDate);
-
-    if (targetBranchId) {
-      txQuery = txQuery.eq('branch_id', targetBranchId);
-    }
-
-    const { data: txData, error: txError } = await txQuery;
-    if (txError) {
-      return handleApiError(txError);
-    }
-
+    // 2. Fetch completed & void transactions in period.
+    // Dijalankan berhalaman karena PostgREST membatasi 1000 baris per permintaan.
     type RawTxItem = {
       product_id: string;
       product_name: string;
@@ -164,7 +134,45 @@ export async function GET(request: NextRequest) {
       transaction_items?: RawTxItem[];
     };
 
-    const ledgerTransactions: LedgerTransaction[] = ((txData as unknown as RawTx[]) || []).map((t) => ({
+    let txData: RawTx[];
+    try {
+      txData = await fetchAllRows<RawTx>((from, to) => {
+        let txQuery = supabase
+          .from('transactions')
+          .select(`
+            id,
+            branch_id,
+            business_date,
+            payment_method,
+            status,
+            total_revenue,
+            total_cogs,
+            gross_profit,
+            transaction_items (
+              product_id,
+              product_name,
+              quantity,
+              unit_cost,
+              unit_price,
+              subtotal
+            )
+          `)
+          .eq('org_id', profile.org_id)
+          .gte('business_date', startDate)
+          .lte('business_date', endDate)
+          .order('id', { ascending: true })
+          .range(from, to);
+
+        if (targetBranchId) {
+          txQuery = txQuery.eq('branch_id', targetBranchId);
+        }
+        return txQuery;
+      });
+    } catch (error) {
+      return handleApiError(error);
+    }
+
+    const ledgerTransactions: LedgerTransaction[] = txData.map((t) => ({
       id: t.id,
       branch_id: t.branch_id,
       branch_name: branchNameMap.get(t.branch_id) || 'Cabang',
@@ -184,23 +192,7 @@ export async function GET(request: NextRequest) {
       })),
     }));
 
-    // 3. Fetch expenses in period
-    let expQuery = supabase
-      .from('expenses')
-      .select('id, branch_id, expense_date, category, description, amount, is_anomaly')
-      .eq('org_id', profile.org_id)
-      .gte('expense_date', startDate)
-      .lte('expense_date', endDate);
-
-    if (targetBranchId) {
-      expQuery = expQuery.eq('branch_id', targetBranchId);
-    }
-
-    const { data: expData, error: expError } = await expQuery;
-    if (expError) {
-      return handleApiError(expError);
-    }
-
+    // 3. Fetch expenses in period (berhalaman, lihat catatan paginasi di atas)
     type RawExp = {
       id: string;
       branch_id: string;
@@ -211,7 +203,28 @@ export async function GET(request: NextRequest) {
       is_anomaly?: boolean;
     };
 
-    const ledgerExpenses: LedgerExpense[] = ((expData as unknown as RawExp[]) || []).map((e) => ({
+    let expData: RawExp[];
+    try {
+      expData = await fetchAllRows<RawExp>((from, to) => {
+        let expQuery = supabase
+          .from('expenses')
+          .select('id, branch_id, expense_date, category, description, amount, is_anomaly')
+          .eq('org_id', profile.org_id)
+          .gte('expense_date', startDate)
+          .lte('expense_date', endDate)
+          .order('id', { ascending: true })
+          .range(from, to);
+
+        if (targetBranchId) {
+          expQuery = expQuery.eq('branch_id', targetBranchId);
+        }
+        return expQuery;
+      });
+    } catch (error) {
+      return handleApiError(error);
+    }
+
+    const ledgerExpenses: LedgerExpense[] = expData.map((e) => ({
       id: e.id,
       branch_id: e.branch_id,
       branch_name: branchNameMap.get(e.branch_id) || 'Cabang',

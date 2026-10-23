@@ -49,7 +49,10 @@ export function MetricStrip({
           metrics.length === 1 && 'grid-cols-1',
           metrics.length === 2 && 'grid-cols-1 sm:grid-cols-2',
           metrics.length === 3 && 'grid-cols-1 sm:grid-cols-3',
-          metrics.length >= 4 && 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+          metrics.length >= 4 && 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+          // Ditempatkan setelah aturan >=4; tailwind-merge mempertahankan
+          // aturan terakhir sehingga 5 metrik tampil penuh dalam satu baris.
+          metrics.length === 5 && 'lg:grid-cols-5'
         )}
       >
         {metrics.map((m, idx) => (

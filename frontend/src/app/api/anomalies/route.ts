@@ -9,6 +9,7 @@ import {
   AnomalySeverity,
 } from '@/lib/anomaly/anomaly-detector';
 import { isLiveAnomalyResolved, resolvedLiveAnomalies } from '@/lib/anomaly/anomaly-cache';
+import { fetchAllRows } from '@/lib/supabase/paginate';
 
 export async function GET(request: NextRequest) {
   try {
@@ -230,17 +231,32 @@ export async function GET(request: NextRequest) {
     }
 
     // 5. Live Detection: Check daily revenue drops
-    let revQuery = supabase
-      .from('transactions')
-      .select('branch_id, business_date, total_revenue, status')
-      .eq('org_id', profile.org_id)
-      .eq('status', 'COMPLETED');
+    // Dijalankan berhalaman karena PostgREST membatasi 1000 baris per permintaan;
+    // agregat omzet per hari harus memuat seluruh transaksi.
+    let txList: { branch_id: string; business_date: string; total_revenue: number }[];
+    try {
+      txList = await fetchAllRows<{
+        branch_id: string;
+        business_date: string;
+        total_revenue: number;
+      }>((from, to) => {
+        let query = supabase
+          .from('transactions')
+          .select('branch_id, business_date, total_revenue, status')
+          .eq('org_id', profile.org_id)
+          .eq('status', 'COMPLETED')
+          .order('id', { ascending: true })
+          .range(from, to);
 
-    if (targetBranchId) {
-      revQuery = revQuery.eq('branch_id', targetBranchId);
+        if (targetBranchId) {
+          query = query.eq('branch_id', targetBranchId);
+        }
+        return query;
+      });
+    } catch (error) {
+      return handleApiError(error);
     }
 
-    const { data: txList } = await revQuery;
     if (txList && txList.length > 0) {
       // Aggregate revenue by branch and date
       const branchDateMap = new Map<string, number>();

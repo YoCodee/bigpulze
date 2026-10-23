@@ -64,6 +64,7 @@ interface RestockRecommendationResponse {
     total_suggested_qty: number;
     estimated_capital: number;
     products_without_history: number;
+    avg_wape_pct: number | null;
   };
   recommendations: RestockRecommendationItem[];
 }
@@ -313,6 +314,18 @@ export function RestockRecommendationPanel({
               value: formatRupiah(summary.estimated_capital),
               subtext: 'Usulan qty × harga modal (HPP)',
               badge: <Badge variant="neutral">HPP</Badge>,
+            },
+            {
+              label: 'Akurasi Backtest (WAPE)',
+              value:
+                summary.avg_wape_pct === null ? '-' : `${summary.avg_wape_pct}%`,
+              subtext: 'Rata-rata seluruh produk · target < 25%',
+              badge:
+                summary.avg_wape_pct !== null && summary.avg_wape_pct < 25 ? (
+                  <Badge variant="success">Sesuai target</Badge>
+                ) : (
+                  <Badge variant="warning">Di atas target</Badge>
+                ),
             },
           ]}
         />

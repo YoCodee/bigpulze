@@ -6,6 +6,7 @@ import {
   BranchProductStock,
   StockTransferRecommendation,
 } from '@/lib/stock/transfer-recommender';
+import { fetchAllRows } from '@/lib/supabase/paginate';
 
 export async function GET(request: NextRequest) {
   try {
@@ -60,15 +61,25 @@ export async function GET(request: NextRequest) {
     fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
     const fourteenDaysAgoStr = fourteenDaysAgo.toISOString().split('T')[0];
 
-    const { data: recentItems } = await supabase
-      .from('transaction_items')
-      .select('product_id, quantity, transactions!inner(business_date, status, org_id)')
-      .eq('transactions.org_id', profile.org_id)
-      .eq('transactions.status', 'COMPLETED')
-      .gte('transactions.business_date', fourteenDaysAgoStr);
+    let recentItems: { product_id: string; quantity: number }[] = [];
+    try {
+      // Diambil berhalaman karena PostgREST membatasi 1000 baris per permintaan.
+      recentItems = await fetchAllRows<{ product_id: string; quantity: number }>((from, to) =>
+        supabase
+          .from('transaction_items')
+          .select('product_id, quantity, transactions!inner(business_date, status, org_id)')
+          .eq('transactions.org_id', profile.org_id)
+          .eq('transactions.status', 'COMPLETED')
+          .gte('transactions.business_date', fourteenDaysAgoStr)
+          .order('id', { ascending: true })
+          .range(from, to)
+      );
+    } catch (error) {
+      return handleApiError(error);
+    }
 
     const velocityMap = new Map<string, number>();
-    (recentItems || []).forEach((item) => {
+    recentItems.forEach((item) => {
       const current = velocityMap.get(item.product_id) || 0;
       velocityMap.set(item.product_id, current + Number(item.quantity));
     });
