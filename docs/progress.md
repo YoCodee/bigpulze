@@ -1572,3 +1572,66 @@
 - Data demo org "Kopi Senja" saat ini hanya berisi 6 item transaksi (3 hari), sehingga hasil rekomendasi pada data demo saat ini masih minim. Seeder lengkap PRD §11.1 (`frontend/src/server/demo/seed.ts` + `POST /api/demo/seed`) **belum ada** di repo dan menjadi prasyarat agar fitur ini terlihat meyakinkan saat demo juri. Verifikasi algoritma dilakukan dengan 30 hari transaksi uji sementara yang sudah dibersihkan kembali (keadaan demo dipulihkan ke 6 item / 5 transaksi).
 
 **Status Tahap R16:** Selesai 100% (Rekomendasi Stok Berbasis Tren Penjualan + Perbaikan Build)
+
+### R17.1 — Seeder Data Demo PRD §11.1 (`POST /api/demo/seed`) ✅
+
+**Dibuat:**
+- `frontend/src/server/demo/seed.ts` — modul seeder data demo:
+  - PRNG deterministik `mulberry32` (seed 2026) dengan tanggal relatif D-30 s.d. D-1 (WIB), sesuai PRD §11.1.
+  - Reset data bisnis org demo bertahap sesuai ketergantungan FK (tabel anak dulu), **kecuali** `organizations` dan `profiles`.
+  - Master data sesuai PRD: 3 cabang **Malioboro / Condongcatur / Bantul** (target harian Rp 3.000.000 / 2.500.000 / 2.000.000) dan 12 produk **KP-001 … MK-005** per cabang = **36 produk**. Cabang lama (Senopati, Sudirman) dihapus; profil kasir dipindahkan ke Malioboro **sebelum** penghapusan (check constraint `role = 'CASHIER' → branch_id wajib terisi`).
+  - 30 hari transaksi: 15–30 transaksi/hari/cabang, musiman mingguan (0,9–1,3), noise ±15%, bayar 70% CASH / 30% QRIS_SIM, 10% `input_method = 'VOICE'`. Qty harian per produk dibentuk dari pola lalu dibagi ke dalam transaksi agar deret harian tetap terbaca model (WAPE memenuhi target S5).
+  - Pengeluaran harian 4 kategori per cabang, termasuk **skenario S1**: Perlengkapan Operasional Condongcatur D-1 = Rp 850.000, ditandai `is_anomaly = true` dengan `anomaly_score`/`anomaly_reason` yang baseline-nya dihitung saat seed (format sama dengan detektor aplikasi).
+  - Mutasi stok `SALE` direkap **per produk per hari** (1.080 baris) dengan `stock_after` berjalan maju sehingga konsisten dengan stok akhir; `created_at` transaksi diisi sama dengan waktu penjualannya.
+  - Insert batch paralel (gelombang 4 permintaan, batch 1.000 baris).
+- `frontend/src/app/api/demo/seed/route.ts` — `POST` khusus **OWNER** org dengan `organizations.is_demo = true` (403 untuk kasir/non-demo, 401 tanpa login), pembatas laju 1× per menit per org (in-memory), `export const maxDuration = 30`.
+- Volume & durasi seed terakhir: **2.216 transaksi / 7.386 item / 1.080 mutasi / 360 pengeluaran / 36 produk / 3 cabang**, durasi **8–13 detik** (target PRD < 15 detik).
+
+**Dimodifikasi:**
+- `frontend/src/app/(app)/demo-guide/page.tsx` — tombol **"Muat Ulang Data Demo"** pada header banner (hanya tampil untuk OWNER org demo, dibaca dari `/api/auth/me`), dengan konfirmasi, status sukses (jumlah baris + durasi) atau pesan galat. Memenuhi skenario PRD §11.2 "Muat ulang data demo".
+
+**Dihapus:**
+- `frontend/scripts/seed-demo.mjs` — skrip ad-hoc lama yang membuat struktur demo versi lama (cabang Senopati/Sudirman, 5 SKU) dan tidak direferensikan di mana pun. Penulisan data demo kini hanya lewat endpoint seeder. `scripts/create-demo-users.ts` tetap dipertahankan (PRD §11.1: pembuatan akun demo sekali jalan).
+
+### R17.2 — Perbaikan Paginasi Batas PostgREST 1.000 Baris ✅
+
+**Masalah:** proyek ini memakai `db-max-rows = 1000` — setiap SELECT maksimal 1.000 baris tanpa error. Dengan volume data seed, beberapa query agregat terpotong diam-diam (riwayat rekomendasi hanya berisi ±7 hari pertama → forecast 0; laporan laba-rugi dan deteksi anomali menghitung data separuh).
+
+**Dibuat:**
+- `frontend/src/lib/supabase/paginate.ts` — helper `fetchAllRows()` yang mengulang query per halaman 1.000 baris (`.range`, urutan `id` deterministik) sampai habis.
+
+**Dimodifikasi (query agregat kini memuat seluruh baris):**
+- `frontend/src/app/api/stock/restock-recommendations/route.ts` — riwayat penjualan 90 hari.
+- `frontend/src/app/api/stock/recommendations/route.ts` — velocity 14 hari untuk rekomendasi mutasi (skenario S3).
+- `frontend/src/app/api/reports/pnl/route.ts` — transaksi + item, dan pengeluaran pada periode laporan.
+- `frontend/src/app/api/anomalies/route.ts` — agregat omzet harian per cabang (sebelumnya memunculkan `REVENUE_DROP`/`REVENUE_SURGE` palsu akibat agregat separuh).
+- Dicek, sudah terpaginasi dan tidak diubah: `GET /api/transactions` (`.range`, `page_size ≤ 100`) dan `GET /api/stock/movements` (`.limit ≤ 100`).
+
+**Penyempurnaan UI (akurasi forecast terlihat):**
+- `frontend/src/app/api/stock/restock-recommendations/route.ts` — `summary.avg_wape_pct` (rata-rata WAPE backtest seluruh produk ber-riwayat) untuk memenuhi "WAPE tampil (target < 25%)" pada skenario S5.
+- `frontend/src/components/stock/restock-recommendation-panel.tsx` — kartu metrik ke-5 "Akurasi Backtest (WAPE)" dengan badge Sesuai target / Di atas target.
+- `frontend/src/components/ui/metric-strip.tsx` — dukungan grid 5 metrik (aturan `lg:grid-cols-5` ditempatkan setelah aturan ≥4 agar menang di tailwind-merge).
+
+### R17.3 — Hasil Verifikasi & Skenario Penerimaan PRD §11.3 ✅
+
+| Skenario | Bukti pada data seed |
+|---|---|
+| S1 Anomali pengeluaran | `EXPENSE_SPIKE` **CRITICAL** — Perlengkapan Operasional Condongcatur Rp 850.000 vs baseline Rp 113.260 (7,5×) |
+| S2 Stok kritis | Es Kopi Susu **Bantul stok 12**, cakupan 0,40 hari → `RESTOCK / CRITICAL` |
+| S3 Usulan mutasi | Transfer **Malioboro → Bantul** Es Kopi Susu (surplus Malioboro 19 unit) |
+| S4 Omzet turun | Condongcatur D-1 Rp 1.454.000 vs rata-rata Rp 2.710.172 (Z −3,13) → `REVENUE_DROP` CRITICAL |
+| S5 Pola akhir pekan + WAPE | Grafik 7 hari: Sab 50 / Min 53 unit vs Sen 31; **WAPE rata-rata 11,2% (maksimum 19,1%)** — target < 25%, kini tampil di strip ringkasan |
+| S6 Leaderboard | Turunan dari data (di luar cakupan tab ini) |
+
+- **Tab Rekomendasi Stok (periode 7 hari):** 36 baris — 22 `RESTOCK` / 14 `SURPLUS`; urgensi 6 CRITICAL / 16 WARNING / 14 INFO; seluruh baris model `holt_winters_7`; riwayat 30 titik + prediksi 7 titik; estimasi modal usulan ± Rp 8,79 juta.
+- **Konsistensi laporan:** `GET /api/reports/pnl` (30 hari) == agregat mentah DB: 2.216 transaksi, pendapatan Rp 243.632.000, HPP Rp 90.952.000, beban Rp 34.032.000, laba Rp 118.648.000 — **100% cocok**.
+- **Otorisasi:** seed → Kasir **403**, tanpa login **401**; rekomendasi stok → tanpa login **401**, param salah **400**.
+- **Deteksi duplikat:** tidak ada alarm `DUPLICATE_TRANSACTION` palsu (slot menit genap ≥ 2 menit antar transaksi pada cabang sama + `created_at` = waktu penjualan).
+
+**DoD Tahap R17:**
+- `npm run typecheck` : **Lulus 100%** (0 error)
+- `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+- `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
+- `npm run build`     : **Lulus 100%** (36 route, termasuk `POST /api/demo/seed`)
+
+**Status Tahap R17:** Selesai 100% (Data Demo Dummy Skala Penuh + Seeder PRD §11.1 + Perbaikan Paginasi)
