@@ -20,6 +20,7 @@ import {
   ShoppingCart,
   TrendingUp,
   Cpu,
+  RefreshCw,
 } from 'lucide-react';
 import { MetricStrip } from '@/components/ui/metric-strip';
 import { Badge } from '@/components/ui/badge';
@@ -146,6 +147,56 @@ export default function DemoGuidePage() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [demoProducts, setDemoProducts] = useState<ProductCandidate[]>([]);
 
+  // Muat ulang data demo (PRD §11.2 — hanya owner org demo)
+  const [canReloadDemo, setCanReloadDemo] = useState(false);
+  const [reloadingDemo, setReloadingDemo] = useState(false);
+  const [reloadStatus, setReloadStatus] = useState<{ ok: boolean; message: string } | null>(null);
+
+  useEffect(() => {
+    async function loadSeedAccess() {
+      try {
+        const res = await fetch('/api/auth/me');
+        const json = await res.json();
+        if (res.ok && json.data?.role === 'OWNER' && json.data?.is_demo) {
+          setCanReloadDemo(true);
+        }
+      } catch {
+        // Tombol cukup disembunyikan bila status peran tidak terbaca.
+      }
+    }
+    loadSeedAccess();
+  }, []);
+
+  const handleReloadDemoData = async () => {
+    const confirmed = window.confirm(
+      'Seluruh data bisnis demo (transaksi, pengeluaran, mutasi stok, produk, dan cabang) akan dihapus lalu diisi ulang 30 hari data segar sesuai PRD §11.1. Lanjutkan?'
+    );
+    if (!confirmed) return;
+
+    setReloadingDemo(true);
+    setReloadStatus(null);
+    try {
+      const res = await fetch('/api/demo/seed', { method: 'POST' });
+      const json = await res.json();
+      if (!res.ok) {
+        setReloadStatus({
+          ok: false,
+          message: json?.error?.message || 'Gagal memuat ulang data demo.',
+        });
+        return;
+      }
+      const result = json.data;
+      setReloadStatus({
+        ok: true,
+        message: `Data demo segar siap: ${result.transactions} transaksi, ${result.transaction_items} item, ${result.expenses} pengeluaran dalam ${(result.duration_ms / 1000).toFixed(1)} detik.`,
+      });
+    } catch {
+      setReloadStatus({ ok: false, message: 'Gagal menghubungi server. Coba lagi.' });
+    } finally {
+      setReloadingDemo(false);
+    }
+  };
+
   // Fetch sample products for live parser
   useEffect(() => {
     async function loadSampleProducts() {
@@ -235,8 +286,31 @@ export default function DemoGuidePage() {
                 <Wallet className="w-4 h-4" /> Buka Pengeluaran
               </Button>
             </Link>
+            {canReloadDemo && (
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={handleReloadDemoData}
+                disabled={reloadingDemo}
+                className="flex items-center gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20"
+              >
+                <RefreshCw className={`w-4 h-4 ${reloadingDemo ? 'animate-spin' : ''}`} />
+                {reloadingDemo ? 'Memuat Ulang…' : 'Muat Ulang Data Demo'}
+              </Button>
+            )}
           </div>
         </div>
+
+        {reloadStatus && (
+          <p
+            className={`relative z-10 text-xs mt-4 leading-relaxed ${
+              reloadStatus.ok ? 'text-emerald-400' : 'text-rose-400'
+            }`}
+          >
+            {reloadStatus.ok ? '✓ ' : '✕ '}
+            {reloadStatus.message}
+          </p>
+        )}
 
         {/* Navigation Tabs (Segmented Control inside Banner) */}
         <div className="flex flex-wrap items-center gap-2 mt-8 pt-6 border-t border-white/10">
