@@ -1766,23 +1766,21 @@
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
   - `npm run build`     : **Lulus 100%** (33 static pages generated successfully)
 
-### R18.9 — Redesign Social Proof: 3D Executive Impact Ledger (Anti-AI Slop) ✅
+### R18.10 — Redesign Social Proof: Clean, Simple & Editorial Elegance (Non-3D) ✅
 **Selesai:** 2026-10-24
 
-- **Eliminasi Elemen "AI Slop" / Template Generik:**
-  - Menghapus kontrol jendela macOS palsu (titik merah-kuning-hijau) yang tidak memiliki alasan fungsional pada aplikasi bisnis akuntansi/kasir UMKM.
-  - Mengintegrasikan blok callout oranye putus-putus yang sebelumnya mengambang canggung menjadi *Verification Strip* terpadu dengan lencana status aktif berdenyut.
-  - Mengganti kotak "Dampak Nyata" kecil yang kosong menjadi **3D Tangible Impact Ledger**.
-- **Fitur Baru & Pengalaman Interaktif 3D:**
-  - **Segmented Dock Bar:** Tab navigasi 4 industri bisnis (`Kopi Senja`, `Roti Manis Nusantara`, `Toko Berkah Mart`, `Dapur Selera Nusantara`) dengan ikon bisnis, badge skala cabang aktif, dan transisi aktif halus.
-  - **Perspective 3D Tilt Card (`PerspectiveTiltCard`):** Kartu bukti audit interaktif yang merespons posisi kursor mouse dengan perhitungan rotasi 3D spasial (`perspective: 1100px`, `rotateX`, `rotateY`), efek pantulan kilau dinamis (*glare sheen*), dan elevasi multi-layer (`translateZ`).
-  - **Visual Before-vs-After Comparison Meter:** Menampilkan progres konkret (Sebelum vs Sesudah) untuk setiap jenis UMKM (misal durasi tutup buku 120 menit ➔ 5 menit, zero food waste, instan lolos verifikasi KUR, input suara pengeluaran 2 detik).
-  - **Detail Audit Kredibel:** Dilengkapi kode audit serial (`AUD-2026-KS01`), stempel `SAK EMKM & Bank Compliant`, stempel verifikasi SHA-256, dan badge mitra terverifikasi.
+- **Penyederhanaan & Penghapusan Efek 3D Berlebihan:**
+  - Menghapus komponen `PerspectiveTiltCard`, rotasi perspektif spasial, pantulan kilau dinamis, dan kalkulasi mousemove yang terasa terlalu ramai/berat (*over*).
+  - Menghapus track scrollbar horizontal pada tab industri, digantikan dengan tombol pil kapsul elegan (`rounded-full`) yang terpusat dan rapi di semua ukuran layar.
+- **Struktur Kartu Tunggal Berbobot Editorial:**
+  - Mengadopsi tata letak kartu tunggal bernapas lega (`p-6 sm:p-10 md:p-12 border border-slate-200 bg-white shadow-xs`) dengan aksen sudut CAD `CornerMarks`.
+  - Kutipan editorial dalam font **Instrument Sans** ukuran besar (`text-lg sm:text-2xl font-normal leading-relaxed text-slate-900`) yang fokus pada cerita nyata pelanggan.
+  - Baris bawah terbagi seimbang: Profil pendiri (avatar inisial, nama, dan skala usaha) di kiri, dan 3 kolom metrik dampak utama (**90%**, **3x**, **Rp 0**) dengan angka besar dan label bersih di kanan.
 - **Hasil Verifikasi:**
   - `npm run typecheck` : **Lulus 100%** (0 error)
   - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
-  - `npm run build`     : **Lulus 100%** (33 static pages generated successfully)
+
 
 
 
