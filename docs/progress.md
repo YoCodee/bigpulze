@@ -1917,6 +1917,22 @@
   - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
 
+### G7.2 — Animasi Landing Page: Section Fondasi & Komparasi ✅
+**Selesai:** 2026-10-24
+
+- **Section 4 (Fondasi Arsitektur Skala Enterprise):**
+  - Komponen `<FeatureGrid>` di `blueprint-grid.tsx` dilengkapi `useGSAP` ScrollTrigger: ketiga sel pilar (*Kecepatan Transaksi 2 Detik*, *Auto-Ledger & 3 Pagi*, dan *Isolasi Tenant & Stok Atomik*) muncul dengan efek *stagger* halus (`y: 14px → 0`, `opacity: 0 → 1`, stagger 0.1s).
+- **Section 5 (Komparasi Masalah Tradisional vs Solusi BizPulse):**
+  - Dua kartu komparasi (*Masalah Tradisional* dan *Solusi Gesit BizPulse*) dibungkus `<Stagger>` sehingga meluncur masuk berdampingan secara halus (`distance: 18px`, `stagger: 0.14s`) saat masuk ke viewport.
+  - Heading transisi penutup section (*"Investasi Terjangkau, Tumbuh Bersama Usaha Anda"*) dibungkus `<Reveal>` untuk kemunculan fade-up terkoordinasi.
+- **Aksesibilitas & Performa:**
+  - Mematuhi `prefers-reduced-motion` via `gsap.matchMedia()` (tampilan statis instan tanpa penundaan jika preferensi aktif).
+- **Hasil Verifikasi:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
+
+
 
 
 

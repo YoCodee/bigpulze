@@ -43,6 +43,8 @@ import {
   SecurityCardDemo,
   AnomalyTerminalDemo,
   HeroMotion,
+  Stagger,
+  Reveal,
 } from '@/components/landing/motion';
 
 const testimonials = [
@@ -588,7 +590,7 @@ export default function HomePage() {
           </SectionHeader>
 
           {/* 2-Column Side-by-Side Comparison Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+          <Stagger className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch" distance={18} stagger={0.14}>
             {/* Kartu Kiri: Masalah Tradisional (Dark Card with Friction Tags) */}
             <div className="landing-card-hover relative rounded-none border border-slate-200 bg-slate-50/80 shadow-sm p-6 sm:p-8 flex flex-col justify-between space-y-6">
               <CornerMarks />
@@ -673,17 +675,19 @@ export default function HomePage() {
                 <span className="font-bold text-white">06.00 WIB Setiap Pagi</span>
               </div>
             </div>
-          </div>
+          </Stagger>
 
           {/* Section Transition Heading (Mengacu ke teks transisi info2.png) */}
-          <div className="pt-10 text-center space-y-1.5">
-            <h3 className="text-xl sm:text-3xl font-medium tracking-tight text-slate-900">
-              Investasi Terjangkau, Tumbuh Bersama Usaha Anda
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600">
-              (Mulai gratis untuk gerai pertama, siap berskala saat cabang bertambah.)
-            </p>
-          </div>
+          <Reveal distance={16} delay={0.1}>
+            <div className="pt-10 text-center space-y-1.5">
+              <h3 className="text-xl sm:text-3xl font-medium tracking-tight text-slate-900">
+                Investasi Terjangkau, Tumbuh Bersama Usaha Anda
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600">
+                (Mulai gratis untuk gerai pertama, siap berskala saat cabang bertambah.)
+              </p>
+            </div>
+          </Reveal>
         </div>
       </section>
 

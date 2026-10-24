@@ -219,8 +219,43 @@ export function FeatureGrid({
   children: React.ReactNode;
   className?: string;
 }) {
+  const gridRef = React.useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (!gridRef.current) return;
+      const cells = gridRef.current.querySelectorAll('.landing-card-hover');
+      if (!cells || cells.length === 0) return;
+
+      const mm = gsap.matchMedia();
+      mm.add(MOTION_CONFIG.mediaQueries.reducedMotion, () => {
+        gsap.set(cells, { opacity: 1, y: 0, clearProps: 'transform,opacity' });
+      });
+      mm.add(MOTION_CONFIG.mediaQueries.noReducedMotion, () => {
+        gsap.fromTo(
+          cells,
+          { opacity: 0, y: 14 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: MOTION_CONFIG.durations.normal,
+            stagger: 0.1,
+            ease: MOTION_CONFIG.easings.out,
+            scrollTrigger: {
+              trigger: gridRef.current,
+              start: 'top 85%',
+              once: true,
+            },
+          }
+        );
+      });
+    },
+    { scope: gridRef }
+  );
+
   return (
     <div
+      ref={gridRef}
       className={cn(
         'relative rounded-none border border-slate-200 bg-white shadow-none overflow-visible',
         className
