@@ -1798,6 +1798,25 @@
   - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
 
+### G2 — Animasi Landing Page: Judul Section & Garis Blueprint (Poin A & B) ✅
+**Selesai:** 2026-10-24
+
+- **Komponen Pembungkus Judul Section `<SectionHeader>`:**
+  - `frontend/src/components/landing/motion/section-header.tsx`: Menganimasikan baris judul (badge pill, heading H2, sub-heading paragraf) secara berurutan masuk viewport (y 14px → 0, opacity 0 → 1, stagger 0.08s, power2.out) sekali saja (`once: true`).
+  - Diterapkan pada 6 section utama di `frontend/src/app/page.tsx` (Cerita UMKM, Fondasi Arsitektur, Mengapa Memilih BizPulse, Pilihan Paket, Dirancang Khusus untuk Alur Kerja UMKM, dan Jaringan Multi-Cabang).
+- **Animasi Garis & Dekorasi Blueprint (`blueprint-grid.tsx`):**
+  - `CornerMarks`: Selection mark siku 8x8px CAD di setiap sudut kartu/grid dianimasikan scale 0 → 1 dengan stagger 0.05s saat kontainer memasuki viewport.
+  - `DashedRule`: Garis pemisah horizontal putus-putus tergambar dari tengah ke sisi kiri-kanan (`scaleX: 0 -> 1`, `transform-origin: center`) saat masuk viewport.
+  - `BlueprintCanvas`: Garis pemandu vertikal latar belakang tergambar dari atas ke bawah (`scaleY: 0 -> 1`, `transform-origin: top`) dan koridor dot matrix gutter fade-in lembut (`opacity: 0 -> 1`).
+- **Aksesibilitas & Performa:**
+  - Seluruh animasi Blueprint dan Header mematuhi `prefers-reduced-motion` via `gsap.matchMedia()` (instan tampil tanpa gerak bila pengguna mengaktifkan reduced motion).
+  - Hanya menganimasikan `transform` dan `opacity` (tanpa layout shift, CLS = 0).
+- **Hasil Verifikasi:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
+
+
 
 
 

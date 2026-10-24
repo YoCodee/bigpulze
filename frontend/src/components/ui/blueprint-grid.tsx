@@ -1,9 +1,14 @@
+'use client';
+
 import * as React from 'react';
 import { cn } from '@/lib/utils';
+import { gsap, useGSAP } from '@/lib/gsap';
+import { MOTION_CONFIG } from '@/lib/motion.config';
 
 /**
  * 1. CornerMarks:
- * Kotak kecil (8px x 8px) di setiap sudut grid/kartu seperti selection handle di CAD/Figma
+ * Kotak kecil (8px x 8px) di setiap sudut grid/kartu seperti selection handle di CAD/Figma.
+ * Menganimasikan pop-in (scale: 0 -> 1) berurutan saat elemen masuk viewport.
  */
 export interface CornerMarksProps {
   className?: string;
@@ -17,13 +22,44 @@ export function CornerMarks({
   borderClass = 'border-slate-300',
   bgClass = 'bg-white',
 }: CornerMarksProps) {
+  const ref = React.useRef<(HTMLSpanElement | null)[]>([]);
+
+  useGSAP(() => {
+    const elements = ref.current.filter((el): el is HTMLSpanElement => Boolean(el));
+    if (elements.length === 0) return;
+
+    const mm = gsap.matchMedia();
+    mm.add(MOTION_CONFIG.mediaQueries.reducedMotion, () => {
+      gsap.set(elements, { scale: 1, opacity: 1, clearProps: 'transform,opacity' });
+    });
+    mm.add(MOTION_CONFIG.mediaQueries.noReducedMotion, () => {
+      gsap.fromTo(
+        elements,
+        { scale: 0, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 0.35,
+          stagger: 0.05,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: elements[0]?.parentElement || elements[0],
+            start: 'top 88%',
+            once: true,
+          },
+        }
+      );
+    });
+  });
+
   return (
     <>
       {/* Top Left */}
       <span
+        ref={(el) => { ref.current[0] = el; }}
         aria-hidden="true"
         className={cn(
-          'absolute -top-1 -left-1 h-2 w-2 border z-10 pointer-events-none transition-colors',
+          'absolute -top-1 -left-1 h-2 w-2 border z-10 pointer-events-none transition-colors origin-center',
           borderClass,
           bgClass,
           className
@@ -31,9 +67,10 @@ export function CornerMarks({
       />
       {/* Top Right */}
       <span
+        ref={(el) => { ref.current[1] = el; }}
         aria-hidden="true"
         className={cn(
-          'absolute -top-1 -right-1 h-2 w-2 border z-10 pointer-events-none transition-colors',
+          'absolute -top-1 -right-1 h-2 w-2 border z-10 pointer-events-none transition-colors origin-center',
           borderClass,
           bgClass,
           className
@@ -41,9 +78,10 @@ export function CornerMarks({
       />
       {/* Bottom Left */}
       <span
+        ref={(el) => { ref.current[2] = el; }}
         aria-hidden="true"
         className={cn(
-          'absolute -bottom-1 -left-1 h-2 w-2 border z-10 pointer-events-none transition-colors',
+          'absolute -bottom-1 -left-1 h-2 w-2 border z-10 pointer-events-none transition-colors origin-center',
           borderClass,
           bgClass,
           className
@@ -51,9 +89,10 @@ export function CornerMarks({
       />
       {/* Bottom Right */}
       <span
+        ref={(el) => { ref.current[3] = el; }}
         aria-hidden="true"
         className={cn(
-          'absolute -bottom-1 -right-1 h-2 w-2 border z-10 pointer-events-none transition-colors',
+          'absolute -bottom-1 -right-1 h-2 w-2 border z-10 pointer-events-none transition-colors origin-center',
           borderClass,
           bgClass,
           className
@@ -65,7 +104,8 @@ export function CornerMarks({
 
 /**
  * 2. DashedRule:
- * Garis putus-putus horizontal selebar layar (full-bleed) yang memotong garis pandu vertikal
+ * Garis putus-putus horizontal selebar layar (full-bleed) yang memotong garis pandu vertikal.
+ * Tergambar dari tengah ke samping (scaleX: 0 -> 1) saat masuk viewport.
  */
 export function DashedRule({
   className,
@@ -74,11 +114,41 @@ export function DashedRule({
   className?: string;
   accent?: boolean;
 }) {
+  const lineRef = React.useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (!lineRef.current) return;
+
+    const mm = gsap.matchMedia();
+    mm.add(MOTION_CONFIG.mediaQueries.reducedMotion, () => {
+      gsap.set(lineRef.current, { scaleX: 1, opacity: 1, clearProps: 'transform,opacity' });
+    });
+    mm.add(MOTION_CONFIG.mediaQueries.noReducedMotion, () => {
+      gsap.fromTo(
+        lineRef.current,
+        { scaleX: 0, opacity: 0 },
+        {
+          scaleX: 1,
+          opacity: 1,
+          duration: MOTION_CONFIG.durations.slow,
+          ease: MOTION_CONFIG.easings.out,
+          scrollTrigger: {
+            trigger: lineRef.current,
+            start: 'top 92%',
+            once: true,
+          },
+        }
+      );
+    });
+  }, { scope: lineRef });
+
   return (
     <div
+      ref={lineRef}
       aria-hidden="true"
+      style={{ transformOrigin: 'center' }}
       className={cn(
-        'w-full border-b border-dashed select-none pointer-events-none',
+        'w-full border-b border-dashed select-none pointer-events-none origin-center',
         accent ? 'border-brand-500/60' : 'border-slate-200',
         className
       )}
@@ -199,6 +269,7 @@ export function FeatureCell({
  * - Koridor dot-gutter 105px di kiri dan kanan
  * - Garis pandu vertikal dalam (910px) pembatas konten utama
  * - Menembus kontinu dari atas sampai bawah tanpa terputus
+ * - Garis vertikal tergambar dari atas ke bawah (scaleY: 0 -> 1) dan dot gutter fade-in
  */
 export function BlueprintCanvas({
   children,
@@ -207,8 +278,53 @@ export function BlueprintCanvas({
   children: React.ReactNode;
   className?: string;
 }) {
+  const canvasRef = React.useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (!canvasRef.current) return;
+
+    const verticalLines = canvasRef.current.querySelectorAll('.blueprint-v-line');
+    const dotGutters = canvasRef.current.querySelectorAll('.blueprint-gutter');
+
+    const mm = gsap.matchMedia();
+    mm.add(MOTION_CONFIG.mediaQueries.reducedMotion, () => {
+      gsap.set([...Array.from(verticalLines), ...Array.from(dotGutters)], {
+        scaleY: 1,
+        opacity: 1,
+        clearProps: 'transform,opacity',
+      });
+    });
+    mm.add(MOTION_CONFIG.mediaQueries.noReducedMotion, () => {
+      if (verticalLines.length > 0) {
+        gsap.fromTo(
+          verticalLines,
+          { scaleY: 0 },
+          {
+            scaleY: 1,
+            duration: MOTION_CONFIG.durations.slow,
+            stagger: 0.08,
+            ease: MOTION_CONFIG.easings.out,
+            transformOrigin: 'top',
+          }
+        );
+      }
+      if (dotGutters.length > 0) {
+        gsap.fromTo(
+          dotGutters,
+          { opacity: 0 },
+          {
+            opacity: 1,
+            duration: MOTION_CONFIG.durations.slow,
+            delay: 0.2,
+            ease: MOTION_CONFIG.easings.out,
+          }
+        );
+      }
+    });
+  }, { scope: canvasRef });
+
   return (
-    <div className={cn('relative w-full overflow-x-clip bg-white', className)}>
+    <div ref={canvasRef} className={cn('relative w-full overflow-x-clip bg-white', className)}>
       {/* Continuous Vertical Guides Layer (Fixed in background spanning full height) */}
       <div
         aria-hidden="true"
@@ -217,11 +333,11 @@ export function BlueprintCanvas({
         {/* Sisi Kiri: Garis Luar + Gutter 105px + Garis Dalam */}
         <div className="hidden md:flex h-full">
           {/* Garis Vertikal Luar Kiri */}
-          <div className="h-full border-r border-dashed border-slate-200" />
+          <div className="blueprint-v-line h-full border-r border-dashed border-slate-200" style={{ transformOrigin: 'top' }} />
           {/* Koridor Dot Matrix Gutter Kiri (105px pada xl, 48px pada md) */}
-          <div className="w-12 xl:w-[105px] h-full bg-dot-matrix-light" />
+          <div className="blueprint-gutter w-12 xl:w-[105px] h-full bg-dot-matrix-light" />
           {/* Garis Vertikal Dalam Kiri */}
-          <div className="h-full border-r border-dashed border-slate-200" />
+          <div className="blueprint-v-line h-full border-r border-dashed border-slate-200" style={{ transformOrigin: 'top' }} />
         </div>
 
         {/* Kolom Konten Dalam (±910px) dibiarkan transparan bersih di tengah */}
@@ -230,11 +346,11 @@ export function BlueprintCanvas({
         {/* Sisi Kanan: Garis Dalam + Gutter 105px + Garis Luar */}
         <div className="hidden md:flex h-full">
           {/* Garis Vertikal Dalam Kanan */}
-          <div className="h-full border-l border-dashed border-slate-200" />
+          <div className="blueprint-v-line h-full border-l border-dashed border-slate-200" style={{ transformOrigin: 'top' }} />
           {/* Koridor Dot Matrix Gutter Kanan (105px pada xl, 48px pada md) */}
-          <div className="w-12 xl:w-[105px] h-full bg-dot-matrix-light" />
+          <div className="blueprint-gutter w-12 xl:w-[105px] h-full bg-dot-matrix-light" />
           {/* Garis Vertikal Luar Kanan */}
-          <div className="h-full border-l border-dashed border-slate-200" />
+          <div className="blueprint-v-line h-full border-l border-dashed border-slate-200" style={{ transformOrigin: 'top' }} />
         </div>
       </div>
 

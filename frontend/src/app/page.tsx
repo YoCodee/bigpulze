@@ -38,6 +38,7 @@ import {
   FeatureGrid,
   FeatureCell,
 } from '@/components/ui/blueprint-grid';
+import { SectionHeader } from '@/components/landing/motion';
 
 const testimonials = [
   {
@@ -403,7 +404,7 @@ export default function HomePage() {
       <section id="testimoni" className="relative w-full py-16 sm:py-24">
         <div className="max-w-[920px] mx-auto px-4 sm:px-6">
           {/* Section Header */}
-          <div className="text-center max-w-2xl mx-auto space-y-3">
+          <SectionHeader className="text-center max-w-2xl mx-auto space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-medium">
               <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
               <span>Cerita Sukses Pelaku UMKM</span>
@@ -415,7 +416,7 @@ export default function HomePage() {
             <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
               Membantu pemilik kedai kopi, bakery, minimarket, dan resto mengambil keputusan bisnis akurat setiap hari.
             </p>
-          </div>
+          </SectionHeader>
 
           {/* Simple Capsule Switcher (No scrollbar track) */}
           <div className="flex flex-wrap items-center justify-center gap-2 mt-8">
@@ -531,14 +532,14 @@ export default function HomePage() {
       {/* ======================================================== */}
       <section id="fondasi" className="relative w-full py-16 sm:py-24">
         <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-8">
-          <div className="text-center max-w-2xl mx-auto space-y-2.5">
+          <SectionHeader className="text-center max-w-2xl mx-auto space-y-2.5">
             <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-900">
               Fondasi Arsitektur Skala Enterprise untuk UMKM
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 tracking-tight">
               Tiga pilar ketangguhan sistem yang menjamin ketersediaan data, kecepatan transaksi, dan akurasi finansial mutlak.
             </p>
-          </div>
+          </SectionHeader>
 
           {/* Feature Grid dengan CornerMarks Siku Tajam (detail-blueprint-grid.png) */}
           <FeatureGrid className="mt-8">
@@ -570,14 +571,14 @@ export default function HomePage() {
       <section id="solusi" className="relative w-full py-16 sm:py-24">
         <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-10">
           {/* Section Header */}
-          <div className="text-center max-w-2xl mx-auto space-y-2.5">
+          <SectionHeader className="text-center max-w-2xl mx-auto space-y-2.5">
             <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-900">
               Mengapa Memilih BizPulse?
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 tracking-tight">
               Menghilangkan friksi pencatatan manual dan memberi kepastian angka bagi pemilik usaha setiap hari.
             </p>
-          </div>
+          </SectionHeader>
 
           {/* 2-Column Side-by-Side Comparison Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
@@ -685,14 +686,14 @@ export default function HomePage() {
       <section id="paket" className="relative w-full py-16 sm:py-24">
         <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-12">
           {/* Section Header */}
-          <div className="text-center max-w-2xl mx-auto space-y-3">
+          <SectionHeader className="text-center max-w-2xl mx-auto space-y-3">
             <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-900">
               Pilihan Paket <span className="text-brand-700 underline decoration-brand-500/40 underline-offset-8">Sesuai Skala Usaha</span>
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 tracking-tight">
               Investasi transparan tanpa biaya royalti tersembunyi. Dari 1 gerai rintisan hingga 5 cabang terpadu.
             </p>
-          </div>
+          </SectionHeader>
 
           {/* Capsule Tab Switcher (info3.png) */}
           <div className="flex flex-wrap items-center justify-center gap-2">
@@ -866,14 +867,14 @@ export default function HomePage() {
       <section id="keunggulan" className="relative w-full py-16 sm:py-24">
         <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-10">
           {/* Section Header */}
-          <div className="text-center max-w-2xl mx-auto space-y-2.5">
+          <SectionHeader className="text-center max-w-2xl mx-auto space-y-2.5">
             <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-900">
               Dirancang Khusus untuk Alur Kerja UMKM
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 tracking-tight">
               Mudah digunakan oleh kasir baru di gerai pertama, cukup tangguh untuk kendali multi-cabang skala enterprise.
             </p>
-          </div>
+          </SectionHeader>
 
           {/* 2x2 Asymmetric Bento Grid Container (Outer Blueprint Frame) */}
           <div className="relative rounded-none border border-slate-200 bg-white shadow-sm">
@@ -1076,14 +1077,14 @@ export default function HomePage() {
       <section id="cabang" className="relative w-full py-16 sm:py-24 overflow-hidden">
         <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-12">
           {/* Section Header (Region: Earth in about.png) */}
-          <div className="text-center max-w-2xl mx-auto space-y-2.5">
+          <SectionHeader className="text-center max-w-2xl mx-auto space-y-2.5">
             <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-900">
               Jaringan Cerdas Multi-Cabang
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 tracking-tight">
               Satu arsitektur terintegrasi yang menghubungkan kasir gerai, gudang persediaan, dan pemilik usaha — sedekat jangkauan tangan, secepat komputasi lokal.
             </p>
-          </div>
+          </SectionHeader>
 
           {/* Central Visual: Multi-Branch Vector Network Globe / Radar Canvas */}
           <div className="relative rounded-none border border-slate-200 bg-slate-50/70 p-6 sm:p-10 min-h-[440px] sm:min-h-[500px] flex flex-col justify-between items-center overflow-hidden">
