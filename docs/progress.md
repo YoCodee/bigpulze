@@ -1932,6 +1932,23 @@
   - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
 
+### G7.3 — Animasi Landing Page: Section Paket UMKM ✅
+**Selesai:** 2026-10-24
+
+- **Diagram Alur Solusi Arsitektur:**
+  - Kelima langkah pipeline aliran data (*Suara Kasir* → *Web Speech API* → *Rule-Based NLP* → *Keranjang Kasir* → *Struk Sah*) dibungkus `<Stagger>` (`distance: 10px`, `stagger: 0.06s`) sehingga muncul beruntun dari kiri ke kanan saat masuk viewport.
+  - Kotak kontainer alur arsitektur diberi kelas `.landing-card-hover` untuk responsivitas interaksi konsisten.
+- **Grid Kartu Pilihan Paket (4 Kolom):**
+  - Keempat kartu paket (*Rintisan*, *Tumbuh*, *Enterprise*, dll.) dibungkus `<Stagger>` (`distance: 16px`, `stagger: 0.09s`) sehingga meluncur naik berurutan saat di-scroll ke viewport.
+  - Masing-masing kartu paket dilengkapi kelas `.landing-card-hover` untuk hover elevasi `y: -2px` dan aksen border.
+- **Aksesibilitas & Performa:**
+  - Mematuhi `prefers-reduced-motion` (tampilan statis instan tanpa stagger).
+- **Hasil Verifikasi:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
+
+
 
 
 

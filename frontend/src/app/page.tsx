@@ -730,7 +730,7 @@ export default function HomePage() {
           </div>
 
           {/* Architecture Overview Flow Box (info3.png top box) */}
-          <div className="relative rounded-none border border-slate-200 bg-slate-50/70 p-6 sm:p-8 space-y-6">
+          <div className="landing-card-hover relative rounded-none border border-slate-200 bg-slate-50/70 p-6 sm:p-8 space-y-6">
             <CornerMarks />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -752,7 +752,7 @@ export default function HomePage() {
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 text-right">
                   Aliran Data Real-Time
                 </p>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
+                <Stagger className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center" distance={10} stagger={0.06}>
                   {currentFlow.steps.map((st, i) => (
                     <div
                       key={i}
@@ -766,7 +766,7 @@ export default function HomePage() {
                       </p>
                     </div>
                   ))}
-                </div>
+                </Stagger>
                 <p className="text-xs text-slate-500 text-center mt-3">
                   Diproses seketika di tingkat perangkat & Supabase tanpa jeda antrean
                 </p>
@@ -775,11 +775,11 @@ export default function HomePage() {
           </div>
 
           {/* 4-Tier Pricing Cards Grid (info3.png bottom 4 columns) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+          <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch" distance={16} stagger={0.09}>
             {pricingPlans.map((plan) => (
               <div
                 key={plan.name}
-                className={`relative rounded-none border p-5 sm:p-6 flex flex-col justify-between space-y-6 transition-all ${
+                className={`landing-card-hover relative rounded-none border p-5 sm:p-6 flex flex-col justify-between space-y-6 transition-all ${
                   plan.popular
                     ? 'bg-white border-2 border-brand-500 shadow-xl shadow-brand-500/10'
                     : plan.isJuri
@@ -865,7 +865,7 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
 
