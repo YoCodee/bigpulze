@@ -1112,7 +1112,7 @@ export default function HomePage() {
                     <Building2 className="h-6 w-6" />
                   </div>
                 </div>
-                <div className="mt-2 text-center bg-[#121316]/90 px-3 py-1 rounded-full border border-brand-500/40 backdrop-blur-xs">
+                <div className="mt-2 text-center bg-slate-900/90 px-3 py-1 rounded-full border border-brand-500/50 backdrop-blur-xs">
                   <p className="text-xs font-bold text-white leading-none">Pusat Kendali Owner</p>
                   <p className="text-[10px] text-brand-400 font-mono mt-0.5">Jakarta • Server Supabase</p>
                 </div>
@@ -1120,23 +1120,23 @@ export default function HomePage() {
 
               {/* 2. Cabang 1 (Bandung Dago - Kopi Senja) */}
               <div className="absolute bottom-[8%] sm:bottom-[12%] left-[4%] sm:left-[16%] flex flex-col items-center group cursor-default">
-                <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-[#16171A] text-brand-400 border border-brand-500/60 flex items-center justify-center shadow-md">
+                <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-slate-900 text-brand-400 border border-brand-500/60 flex items-center justify-center shadow-md">
                   <Store className="h-5 w-5" />
                 </div>
-                <div className="mt-2 text-center bg-[#121316]/90 px-2.5 py-1 rounded-full border border-[#26282D] backdrop-blur-xs">
-                  <p className="text-[11px] font-bold text-zinc-200 leading-none">Cabang Bandung</p>
-                  <p className="text-[9px] text-zinc-500 font-mono mt-0.5">POS Aktif • Kasir 1 & 2</p>
+                <div className="mt-2 text-center bg-slate-900/90 px-2.5 py-1 rounded-full border border-slate-700 backdrop-blur-xs">
+                  <p className="text-[11px] font-bold text-slate-200 leading-none">Cabang Bandung</p>
+                  <p className="text-[10px] text-slate-400 font-mono mt-0.5">POS Aktif • Kasir 1 & 2</p>
                 </div>
               </div>
 
               {/* 3. Cabang 2 (Surabaya Gubeng - Kopi Senja) */}
               <div className="absolute bottom-[8%] sm:bottom-[12%] right-[4%] sm:right-[16%] flex flex-col items-center group cursor-default">
-                <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-[#16171A] text-brand-400 border border-brand-500/60 flex items-center justify-center shadow-md">
+                <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-slate-900 text-brand-400 border border-brand-500/60 flex items-center justify-center shadow-md">
                   <Coffee className="h-5 w-5" />
                 </div>
-                <div className="mt-2 text-center bg-[#121316]/90 px-2.5 py-1 rounded-full border border-[#26282D] backdrop-blur-xs">
-                  <p className="text-[11px] font-bold text-zinc-200 leading-none">Cabang Surabaya</p>
-                  <p className="text-[9px] text-zinc-500 font-mono mt-0.5">POS Aktif • Kasir 1</p>
+                <div className="mt-2 text-center bg-slate-900/90 px-2.5 py-1 rounded-full border border-slate-700 backdrop-blur-xs">
+                  <p className="text-[11px] font-bold text-slate-200 leading-none">Cabang Surabaya</p>
+                  <p className="text-[10px] text-slate-400 font-mono mt-0.5">POS Aktif • Kasir 1</p>
                 </div>
               </div>
 

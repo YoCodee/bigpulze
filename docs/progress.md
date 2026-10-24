@@ -1705,5 +1705,20 @@
   - `npm run lint`      : Lulus (0 warning, 0 error)
   - `npm run test`      : Lulus (14 test files, 138 tests)
 
+### R18.5 — Landing Page Dark → Light Theme: L4 Section Konten & Blueprint Grid ✅
+**Selesai:** 2026-10-24
+
+- **Harmonisasi Pola Blueprint Grid:**
+  - Garis pembatas horizontal putus-putus (`DashedRule`) menggunakan warna abu-abu halus `border-slate-200`.
+  - Handle seleksi sudut CAD (`CornerMarks`) terstandarisasi ke `border-slate-300 bg-white` di seluruh section konten.
+  - Anotasi `Callout` berbingkai putus-putus aksen oranye halus `border-brand-500/40 bg-brand-50/70 text-brand-700` dengan kontras tipografi WCAG AA 5.18:1.
+  - Modul 3-kolom `FeatureGrid` & `FeatureCell` kanvas putih bersih dengan garis pembatas tipis `divide-slate-200` dan teks berkontras tinggi.
+- **Pembersihan Warna Hardcoded:**
+  - Menghapus sisa-sisa kelas latar dan garis gelap hardcode (`#121316`, `#16171A`, `#26282D`) pada label node dan container jaringan cabang, diganti dengan token semantik (`bg-slate-900/90`, `border-slate-700`).
+- **Hasil verifikasi:**
+  - `npm run typecheck` : Lulus (0 error)
+  - `npm run lint`      : Lulus (0 warning, 0 error)
+  - `npm run test`      : Lulus (14 test files, 138 tests)
+
 
 
