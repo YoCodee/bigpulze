@@ -1997,3 +1997,29 @@
   - `npm run typecheck` : **Lulus 100%** (0 error)
   - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
+
+### G8 — Pemeriksaan Akhir, Audit Aksesibilitas, & Verifikasi Produksi ✅
+**Selesai:** 2026-10-24
+
+- **Audit Aksesibilitas (`prefers-reduced-motion`):**
+  - Seluruh komponen gerak (`Reveal`, `Stagger`, `TransactionFeedDemo`, `SyncCardDemo`, `SecurityCardDemo`, `AnomalyTerminalDemo`, `HeroMotion`, `NetworkRadarMotion`, `CtaBannerMotion`, `BlueprintGrid`) menerapkan `gsap.matchMedia()` dengan target media query `(prefers-reduced-motion: reduce)`.
+  - Ketika preferensi aktif: semua loop dinonaktifkan seketika, `opacity` diatur ke 1, `transform` ke posisi asal (`y: 0`, `x: 0`, `scale: 1`), dan `clip-path` ke status terungkap penuh (`inset(0 0% 0 0)`), tanpa penundaan/animasi.
+  - CSS `globals.css` memiliki aturan `@media (prefers-reduced-motion: reduce)` yang mematikan transisi hover `.landing-card-hover`.
+- **Isolasi Bundle GSAP (Zero-Leakage ke App Internal):**
+  - Pemeriksaan `git grep` membuktikan `gsap`, `@gsap/react`, dan komponen gerak hanya diimpor di rute landing page (`/`).
+  - Halaman internal aplikasi (`/dashboard`, `/pos`, `/inventory`, `/reports`, `/expenses`, `/stock`, `/suppliers`, `/branches`, `/staff`) **0% memuat bundle GSAP**.
+  - Ukuran JS bersama (*shared bundle*) Next.js tetap ramping di 87.5 kB (hanya runtime Next.js, React, utils), sedangkan bundle GSAP diisolasi khusus pada chunk halaman `/` (First Load JS 172 kB).
+- **Audit CLS (Cumulative Layout Shift = 0):**
+  - Seluruh animasi dibatasi secara ketat hanya pada properti GPU-accelerated: `transform` (`y`, `x`, `scale`), `opacity`, dan visual `clipPath: inset()`.
+  - Tidak ada animasi dimensi kotak (`width`, `height`, `margin`, `padding`, `top`, `left`).
+  - Seluruh konten teks tetap utuh dirender di server (SSR/SSG DOM), mempertahankan keramahan SEO dan kompatibilitas screen reader.
+- **Kompilasi Produksi Next.js (`next build`):**
+  - Berhasil mengompilasi seluruh 33 halaman (33/33 static pages generated).
+  - Prerendering static/SSR berhasil tanpa peringatan maupun kegagalan webpack.
+- **Hasil Verifikasi Rangkaian Pengujian:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 file tes, 138 tes lolos)
+  - `npm run build`     : **Lulus 100%** (33/33 halaman terkompilasi sukses)
+
+---
