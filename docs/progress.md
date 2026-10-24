@@ -1690,4 +1690,20 @@
   - `npm run lint`      : Lulus (0 warning, 0 error)
   - `npm run test`      : Lulus (14 test files, 138 tests)
 
+### R18.4 — Landing Page Dark → Light Theme: L3 Navbar dan Hero ✅
+**Selesai:** 2026-10-24
+
+- **Top Navbar:**
+  - Latar header diubah dari `bg-[#0A0A0C]/90 border-[#26282D]` ke `bg-white/95 backdrop-blur-md border-b border-slate-200`.
+  - Tipografi logo merek BizPulse diubah ke `text-slate-900` dengan ikon SVG tetap berada di dalam badge aksen oranye `bg-brand-500 text-white`.
+  - Tautan navigasi desktop diubah ke `text-slate-600 hover:text-slate-900` (kontras teks jelas di atas putih).
+- **Hero Container:**
+  - Kontainer lengkung `bg-hero-gradient` tetap dipertahankan dengan oranye berenergi tinggi, bayangan halus `shadow-brand-500/20`, pola titik halus halftone murni CSS `bg-dot-grid`, dan glow lembut di bagian bawah.
+  - Ticker metrik bawah hero distandarisasikan ke ukuran `text-xs` (minimal 12px) dengan kontras teks putih kontras tinggi terhadap oranye.
+- **Hasil verifikasi:**
+  - `npm run typecheck` : Lulus (0 error)
+  - `npm run lint`      : Lulus (0 warning, 0 error)
+  - `npm run test`      : Lulus (14 test files, 138 tests)
+
+
 

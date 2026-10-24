@@ -240,7 +240,7 @@ export default function HomePage() {
       {/* ======================================================== */}
       {/* 1. TOP NAVBAR (Full-bleed Header) */}
       {/* ======================================================== */}
-      <header className="sticky top-0 z-50 bg-[#0A0A0C]/90 backdrop-blur-md border-b border-[#26282D]">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-[1120px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center space-x-2.5 group">
@@ -257,21 +257,21 @@ export default function HomePage() {
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
               </svg>
             </div>
-            <span className="text-xl font-extrabold tracking-tight text-white">BizPulse</span>
+            <span className="text-xl font-extrabold tracking-tight text-slate-900">BizPulse</span>
           </Link>
 
           {/* Desktop Navigation Links (Clean & Ringkas) */}
-          <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-zinc-300">
-            <a href="#solusi" className="hover:text-white transition-colors">
+          <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600">
+            <a href="#solusi" className="hover:text-slate-900 transition-colors">
               Solusi
             </a>
-            <a href="#fondasi" className="hover:text-white transition-colors">
+            <a href="#fondasi" className="hover:text-slate-900 transition-colors">
               Pilar Fondasi
             </a>
-            <a href="#testimoni" className="hover:text-white transition-colors">
+            <a href="#testimoni" className="hover:text-slate-900 transition-colors">
               Cerita UMKM
             </a>
-            <a href="#paket" className="hover:text-white transition-colors">
+            <a href="#paket" className="hover:text-slate-900 transition-colors">
               Paket
             </a>
           </nav>
@@ -347,7 +347,7 @@ export default function HomePage() {
           </div>
 
           {/* Trust Ticker Badges di Bagian Bawah Kartu Hero (1 Baris Utuh) */}
-          <div className="relative z-10 mt-10 sm:mt-12 flex items-center justify-center gap-3 sm:gap-6 lg:gap-8 text-[11px] sm:text-xs font-medium text-white/90 pt-6 border-t border-white/20 max-w-4xl mx-auto w-full overflow-x-auto scrollbar-none py-1">
+          <div className="relative z-10 mt-10 sm:mt-12 flex items-center justify-center gap-3 sm:gap-6 lg:gap-8 text-xs font-medium text-white/90 pt-6 border-t border-white/20 max-w-4xl mx-auto w-full overflow-x-auto scrollbar-none py-1">
             <div className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0">
               <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-white" />
               <span>100% Client-Side Voice NLP (Rp 0 API)</span>
