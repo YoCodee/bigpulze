@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import {
   Sparkles,
@@ -29,6 +29,8 @@ import {
   Lock,
   Server,
   FileText,
+  MapPin,
+  Star,
 } from 'lucide-react';
 import {
   BlueprintCanvas,
@@ -42,47 +44,111 @@ import {
 const testimonials = [
   {
     id: 'kopi-senja',
-    tag: 'Kedai Kopi',
+    tag: 'Kedai Kopi & Roastery',
     brand: 'Kopi Senja',
+    location: 'Jakarta & Bandung',
+    scopeBadge: '3 Cabang Aktif',
     icon: Coffee,
     quote:
       'Tutup buku kasir yang dulunya butuh waktu 2 jam per cabang sekarang selesai dalam 5 menit. Fitur Smart Voice POS membuat barista kami melayani pesanan 3x lebih cepat di jam sibuk, dan deteksi anomali langsung memberi tahu saat ada nota ganda atau lonjakan beban es batu.',
     author: 'Budi Santoso',
-    role: 'Pemilik Usaha Kopi Senja (3 Cabang di Jakarta & Bandung)',
-    stats: 'Hemat 90% waktu tutup buku harian',
+    role: 'Pemilik Usaha Kopi Senja',
+    initials: 'BS',
+    verifiedSince: 'Mitra sejak Jan 2026',
+    auditCode: 'AUD-2026-KS01',
+    metricHeadline: 'Hemat 90% Waktu Tutup Buku',
+    metricBadge: '-115 Menit / Hari',
+    beforeLabel: 'Manual Kasir Kertas',
+    beforeVal: '120 Menit',
+    beforeWidth: '92%',
+    afterLabel: 'Smart Voice BizPulse',
+    afterVal: '5 Menit',
+    afterWidth: '12%',
+    highlights: [
+      { label: '3x Kecepatan Antrean Jam Sibuk', icon: Zap },
+      { label: '0 Selisih Kas Register', icon: ShieldCheck },
+    ],
   },
   {
     id: 'roti-manis',
     tag: 'Bakery & Pastry',
     brand: 'Roti Manis Nusantara',
+    location: 'Surabaya & Malang',
+    scopeBadge: '4 Gerai Aktif',
     icon: Store,
     quote:
       'Rekomendasi mutasi stok antarcabang menyelamatkan puluhan loyang adonan premium kami dari kadaluwarsa. Sistem langsung mendeteksi cabang mana yang surplus dan cabang mana yang kekurangan dengan perhitungan untung bersih setelah ongkir kurir.',
     author: 'Siti Rahmawati',
-    role: 'Operational Lead Roti Manis (4 Gerai)',
-    stats: 'Zero food waste dari stok berlebih',
+    role: 'Operational Lead Roti Manis',
+    initials: 'SR',
+    verifiedSince: 'Mitra sejak Nov 2025',
+    auditCode: 'AUD-2026-RM04',
+    metricHeadline: 'Zero Food Waste dari Stok Berlebih',
+    metricBadge: '100% Bahan Terpakai',
+    beforeLabel: 'Adonan Basi / Kadaluwarsa',
+    beforeVal: '18% Terbuang',
+    beforeWidth: '82%',
+    afterLabel: 'Mutasi Antarcabang Otomatis',
+    afterVal: '0% Waste',
+    afterWidth: '8%',
+    highlights: [
+      { label: 'Hemat Bahan Rp 4.2 Jt/Bln', icon: TrendingUp },
+      { label: 'Rebalance Surplus Otomatis', icon: Boxes },
+    ],
   },
   {
     id: 'toko-berkah',
     tag: 'Minimarket Retail',
     brand: 'Toko Berkah Mart',
+    location: 'Semarang & Solo',
+    scopeBadge: '2 Cabang Ritel',
     icon: ShoppingBag,
     quote:
       'Format ekspor PDF laba-rugi BizPulse resmi kami gunakan untuk pengajuan pinjaman modal usaha KUR ke bank tanpa perlu menyewa akuntan eksternal. Struktur laporan income statement dan cashflow-nya sangat rapi dan langsung disetujui pihak analis perbankan.',
     author: 'Hendra Wijaya',
-    role: 'Owner Toko Berkah Mart (2 Cabang)',
-    stats: 'Laporan standar bank 100% otomatis',
+    role: 'Owner Toko Berkah Mart',
+    initials: 'HW',
+    verifiedSince: 'Mitra sejak Des 2025',
+    auditCode: 'AUD-2026-BM02',
+    metricHeadline: 'Laporan Standar Bank 100% Otomatis',
+    metricBadge: 'Disetujui KUR Bank Mandiri / BRI',
+    beforeLabel: 'Rekap Manual & Konsultan Luar',
+    beforeVal: '3 Minggu Survei',
+    beforeWidth: '88%',
+    afterLabel: '1-Klik PDF Standar SAK EMKM',
+    afterVal: 'Instan Bank Ready',
+    afterWidth: '10%',
+    highlights: [
+      { label: 'P&L Sesuai Standar Akuntansi', icon: FileText },
+      { label: 'Hemat Biaya Akuntan Eksternal', icon: CheckCircle2 },
+    ],
   },
   {
     id: 'dapur-selera',
     tag: 'Resto & Kuliner',
     brand: 'Dapur Selera Nusantara',
+    location: 'Yogyakarta',
+    scopeBadge: 'Resto & Catering',
     icon: Utensils,
     quote:
       'Fitur pencatatan pengeluaran via suara sangat praktis. Kasir kami tinggal ucapkan "catat beli gas melon 40 ribu" dan sistem langsung mengklasifikasikan ke kategori Utilitas dengan akurasi 95%. Tidak ada lagi nota tercecer di laci kasir!',
     author: 'Dewi Lestari',
     role: 'Manajer Resto Dapur Selera',
-    stats: 'Input pengeluaran 2 detik bebas repot',
+    initials: 'DL',
+    verifiedSince: 'Mitra sejak Feb 2026',
+    auditCode: 'AUD-2026-DS03',
+    metricHeadline: 'Input Pengeluaran 2 Detik Bebas Repot',
+    metricBadge: 'Akurasi NLP 95%',
+    beforeLabel: 'Tumpukan Nota Hilang di Laci',
+    beforeVal: '15 Mnt Rekap Kasir',
+    beforeWidth: '78%',
+    afterLabel: 'Smart Voice NLP BizPulse',
+    afterVal: '2 Detik Ucap',
+    afterWidth: '10%',
+    highlights: [
+      { label: 'Zero Nota Tercecer / Rusak', icon: Mic },
+      { label: 'Auto Klasifikasi Kategori Beban', icon: TrendingUp },
+    ],
   },
 ];
 
@@ -212,6 +278,151 @@ const pricingPlans = [
     isJuri: true,
   },
 ];
+
+function PerspectiveTiltCard({ item }: { item: (typeof testimonials)[0] }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = useState({ rotateX: 0, rotateY: 0, glareX: 50, glareY: 50 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateY = ((x - centerX) / centerX) * 8;
+    const rotateX = -((y - centerY) / centerY) * 8;
+    const glareX = (x / rect.width) * 100;
+    const glareY = (y / rect.height) * 100;
+
+    setCoords({ rotateX, rotateY, glareX, glareY });
+  };
+
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setCoords({ rotateX: 0, rotateY: 0, glareX: 50, glareY: 50 });
+  };
+
+  return (
+    <div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{ perspective: '1100px' }}
+      className="relative w-full h-full min-h-[360px] flex items-center"
+    >
+      <div
+        style={{
+          transform: isHovered
+            ? `rotateX(${coords.rotateX}deg) rotateY(${coords.rotateY}deg) scale3d(1.02, 1.02, 1.02)`
+            : 'rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
+          transformStyle: 'preserve-3d',
+          transition: isHovered ? 'transform 0.08s ease-out' : 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+        className="relative w-full rounded-2xl border border-slate-200 bg-gradient-to-b from-white via-slate-50/70 to-orange-50/20 p-5 sm:p-6 shadow-xl overflow-hidden flex flex-col justify-between space-y-4"
+      >
+        {/* Subtle dynamic sheen light overlay */}
+        {isHovered && (
+          <div
+            style={{
+              background: `radial-gradient(circle at ${coords.glareX}% ${coords.glareY}%, rgba(246, 130, 31, 0.15), transparent 60%)`,
+            }}
+            className="pointer-events-none absolute inset-0 z-30 transition-opacity duration-300"
+          />
+        )}
+
+        {/* Card Header: Audit slip code & verified pill */}
+        <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
+          <div className="flex items-center space-x-2">
+            <Receipt className="h-4 w-4 text-brand-600" />
+            <span className="font-mono text-xs font-bold text-slate-700 tracking-wider">
+              {item.auditCode}
+            </span>
+          </div>
+
+          <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
+            <span>AUDIT TERVERIFIKASI</span>
+          </div>
+        </div>
+
+        {/* Primary Metric Headline */}
+        <div className="space-y-1">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+            Dampak Efisiensi Nyata
+          </p>
+          <h4 className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">
+            {item.metricHeadline}
+          </h4>
+          <span className="inline-block mt-1 text-xs font-bold text-brand-700 bg-orange-100/70 border border-orange-200/80 px-2.5 py-0.5 rounded-md">
+            {item.metricBadge}
+          </span>
+        </div>
+
+        {/* Visual Before vs After Progress Comparison */}
+        <div className="space-y-3 bg-white/80 rounded-xl border border-slate-200/80 p-3.5 shadow-sm">
+          <div className="space-y-1">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-slate-500 font-medium">{item.beforeLabel}</span>
+              <span className="font-mono font-semibold text-rose-600">{item.beforeVal}</span>
+            </div>
+            <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+              <div
+                style={{ width: item.beforeWidth }}
+                className="h-full bg-rose-400/80 rounded-full transition-all duration-500"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-slate-800 font-semibold flex items-center gap-1">
+                <Sparkles className="h-3 w-3 text-brand-600" />
+                <span>{item.afterLabel}</span>
+              </span>
+              <span className="font-mono font-bold text-emerald-700">{item.afterVal}</span>
+            </div>
+            <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+              <div
+                style={{ width: item.afterWidth }}
+                className="h-full bg-gradient-to-r from-brand-500 to-emerald-500 rounded-full transition-all duration-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Floating 3D Highlight Badges */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+          {item.highlights.map((hl, i) => {
+            const HlIcon = hl.icon;
+            return (
+              <div
+                key={i}
+                className="flex items-center space-x-2 px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200/70 text-[11px] text-slate-700 shadow-sm"
+              >
+                <HlIcon className="h-3.5 w-3.5 text-brand-600 shrink-0" />
+                <span className="font-medium truncate">{hl.label}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Footer Audit Seal */}
+        <div className="border-t border-slate-200/80 pt-2.5 flex items-center justify-between text-[10px] text-slate-400 font-mono">
+          <div className="flex items-center space-x-1.5">
+            <ShieldCheck className="h-3.5 w-3.5 text-brand-600" />
+            <span>SAK EMKM &amp; Bank Compliant</span>
+          </div>
+          <span>#SHA256: 9f8a...c4b2</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState(0);
@@ -370,42 +581,34 @@ export default function HomePage() {
       <DashedRule />
 
       {/* ======================================================== */}
-      {/* 3. SOCIAL PROOF & TESTIMONI TABBED BOX (redesign/home/info1.png) */}
+      {/* 3. SOCIAL PROOF & TESTIMONI: 3D EXECUTIVE IMPACT LEDGER */}
       {/* ======================================================== */}
       <section id="testimoni" className="relative w-full py-16 sm:py-24">
-        <div className="max-w-[910px] mx-auto px-4 sm:px-6">
-          {/* Section Header dengan Bobot Ringan Refined (Blueprint Typography) */}
-          <div className="text-center max-w-2xl mx-auto space-y-3">
+        <div className="max-w-[980px] mx-auto px-4 sm:px-6">
+          {/* Section Header dengan Integrated Verification Pill (Anti-AI Slop) */}
+          <div className="text-center max-w-3xl mx-auto space-y-3.5">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200/80 text-brand-700 text-xs font-semibold shadow-xs">
+              <span className="flex h-2 w-2 rounded-full bg-brand-600 animate-pulse" />
+              <span>Audit Efisiensi Operasional Terverifikasi</span>
+              <span className="text-slate-300">•</span>
+              <span className="text-slate-600 font-normal">4 Industri UMKM Nyata</span>
+            </div>
+
             <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-900">
-              Dipercaya oleh Pelaku Usaha & Penggiat UMKM
+              Dipercaya oleh Pelaku Usaha &amp; Penggiat UMKM
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 tracking-tight">
-              Membantu pemilik kedai kopi, bakery, minimarket, dan resto mengambil keputusan bisnis akurat setiap hari.
+            <p className="text-xs sm:text-sm text-slate-600 tracking-tight max-w-xl mx-auto">
+              Rata-rata pemilik gerai menghemat hingga <strong className="text-slate-900 font-semibold">90% waktu pencatatan</strong> manual harian dan mendeteksi selisih kas register secara instan tanpa menunggu tutup buku bulanan.
             </p>
           </div>
 
-          {/* Callout Anotasi Blueprint Grid */}
-          <div className="mt-8 max-w-2xl mx-auto">
-            <Callout title="Pencapaian Efisiensi Operasional">
-              Rata-rata pemilik gerai menghemat hingga <strong>90% waktu pencatatan</strong> manual harian dan mendeteksi selisih kas register secara instan tanpa menunggu tutup buku bulanan.
-            </Callout>
-          </div>
-
-          {/* macOS Style Window Frame Card (info1.png) */}
-          <div className="mt-8 rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden relative">
+          {/* Main Interactive Case Study Hub */}
+          <div className="mt-10 rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden relative">
             <CornerMarks />
 
-            {/* Top Window Bar with macOS Dots and Tabs */}
-            <div className="border-b border-slate-200 bg-slate-50 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-              {/* macOS Window Dots */}
-              <div className="hidden sm:flex items-center space-x-2">
-                <div className="h-2.5 w-2.5 rounded-full bg-rose-500/80" />
-                <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
-                <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
-              </div>
-
-              {/* Business Category Tabs */}
-              <div className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto w-full sm:w-auto scrollbar-none py-1">
+            {/* Segmented Dock Header (Bukan macOS Window) */}
+            <div className="border-b border-slate-200 bg-slate-50/80 backdrop-blur-xs px-3 sm:px-6 py-2.5 sm:py-3">
+              <div className="flex items-center justify-start sm:justify-center space-x-1 sm:space-x-2 overflow-x-auto scrollbar-none py-1">
                 {testimonials.map((item, idx) => {
                   const isActive = activeTab === idx;
                   const Icon = item.icon;
@@ -414,16 +617,31 @@ export default function HomePage() {
                       key={item.id}
                       onClick={() => setActiveTab(idx)}
                       type="button"
-                      className={`relative inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-colors cursor-pointer select-none whitespace-nowrap ${
+                      className={`group relative inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all cursor-pointer select-none whitespace-nowrap ${
                         isActive
                           ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
-                          : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
                       }`}
                     >
-                      <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-brand-600' : 'text-slate-400'}`} />
+                      <span
+                        className={`p-1 rounded-md transition-colors ${
+                          isActive
+                            ? 'bg-brand-50 text-brand-600'
+                            : 'bg-slate-200/60 text-slate-500 group-hover:text-slate-700'
+                        }`}
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                      </span>
                       <span>{item.brand}</span>
+                      <span
+                        className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full ${
+                          isActive ? 'bg-slate-100 text-slate-600' : 'text-slate-400'
+                        }`}
+                      >
+                        {item.scopeBadge}
+                      </span>
                       {isActive && (
-                        <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-brand-600 rounded-full" />
+                        <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-brand-600 rounded-full" />
                       )}
                     </button>
                   );
@@ -431,42 +649,70 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Inside Card Body (Quote + Detail) */}
+            {/* Split Content: Left Story + Right 3D Interactive Audit Slip */}
             <div className="p-6 sm:p-10 relative">
-              <Quote className="h-10 w-10 sm:h-12 sm:w-12 text-slate-200 absolute top-6 right-6 sm:top-10 sm:right-10 pointer-events-none" />
+              <Quote className="h-10 w-10 sm:h-12 sm:w-12 text-slate-100 absolute top-6 right-6 sm:top-10 sm:right-10 pointer-events-none" />
 
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-                {/* Quote Content */}
-                <div className="md:col-span-8 space-y-5">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-50 text-brand-700 border border-orange-200">
-                    {currentTestimonial.tag}
-                  </span>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+                {/* Left Column: Founder Story & Verified Context */}
+                <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
+                  <div className="space-y-4">
+                    {/* Industry Tag & Verified Customer Status */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-50 text-brand-700 border border-brand-200/80">
+                        <currentTestimonial.icon className="h-3.5 w-3.5 text-brand-600" />
+                        <span>{currentTestimonial.tag}</span>
+                      </span>
 
-                  <blockquote className="text-base sm:text-xl font-medium text-slate-800 leading-relaxed sm:leading-snug">
-                    “{currentTestimonial.quote}”
-                  </blockquote>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                        <MapPin className="h-3 w-3 text-slate-400" />
+                        <span>{currentTestimonial.location}</span>
+                      </span>
 
-                  <div>
-                    <h4 className="text-sm sm:text-base font-bold text-slate-900">
-                      {currentTestimonial.author}
-                    </h4>
-                    <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                      {currentTestimonial.role}
-                    </p>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                        <span>{currentTestimonial.verifiedSince}</span>
+                      </span>
+                    </div>
+
+                    {/* Editorial Quote in Instrument Sans */}
+                    <blockquote className="text-base sm:text-xl font-medium text-slate-900 leading-relaxed sm:leading-snug pt-1">
+                      “{currentTestimonial.quote}”
+                    </blockquote>
+                  </div>
+
+                  {/* Founder Profile & Trust Seal */}
+                  <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-sm tracking-tight shadow-sm shrink-0">
+                        {currentTestimonial.initials}
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-900">
+                          {currentTestimonial.author}
+                        </h4>
+                        <p className="text-xs text-slate-500">
+                          {currentTestimonial.role}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Star Rating & Satisfaction */}
+                    <div className="flex items-center space-x-1 text-amber-500 bg-amber-50/80 border border-amber-200/60 px-3 py-1.5 rounded-lg text-xs font-semibold self-start sm:self-auto">
+                      <div className="flex text-amber-500">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
+                      <span className="text-slate-800 font-bold ml-1">5.0</span>
+                      <span className="text-slate-400 font-mono text-[10px] ml-1">• NPS 98</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Stat Highlight Card */}
-                <div className="md:col-span-4 bg-orange-50/70 rounded-xl border border-orange-200/60 p-5 text-center space-y-2 flex flex-col justify-center">
-                  <div className="h-9 w-9 rounded-full bg-orange-100 text-brand-700 flex items-center justify-center mx-auto">
-                    <CheckCircle2 className="h-5 w-5" />
-                  </div>
-                  <h5 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Dampak Nyata
-                  </h5>
-                  <p className="text-sm sm:text-base font-bold text-brand-700 leading-tight">
-                    {currentTestimonial.stats}
-                  </p>
+                {/* Right Column: 3D Interactive Audit Slip */}
+                <div className="lg:col-span-5 flex items-center">
+                  <PerspectiveTiltCard item={currentTestimonial} />
                 </div>
               </div>
             </div>
