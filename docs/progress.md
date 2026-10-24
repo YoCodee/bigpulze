@@ -1660,3 +1660,34 @@
   - `npm run lint`      : Lulus (0 warning, 0 error)
   - `npm run test`      : Lulus (14 test files, 138 tests)
 
+### R18.3 — Landing Page Dark → Light Theme: L2 Komponen Bersama di Landing ✅
+**Selesai:** 2026-10-24
+
+- **Tombol & Aksi:**
+  - Tombol aksi navbar: diubah ke `bg-slate-900 text-white hover:bg-slate-800` (pill gelap tegas di atas navbar terang).
+  - Tombol pricing tier: tombol "Pilih Paket Pro" menggunakan `bg-brand-600 text-white hover:bg-brand-700`, tier Evaluasi Juri menggunakan `bg-enterprise-600 text-white`, tier standard menggunakan `border border-slate-300 text-slate-700 hover:bg-slate-900 hover:text-white`.
+  - Tombol CTA hero & banner footer penutup dipertahankan solid putih di atas kontainer oranye (`bg-white text-slate-950`).
+- **Kartu & Panel:**
+  - Kartu jendela macOS testimoni: `bg-white border border-slate-200 shadow-xl`, top bar `bg-slate-50 border-b border-slate-200`, tab aktif putih berbayang tipis, tab pasif `text-slate-500 hover:text-slate-900`.
+  - Kartu komparasi masalah (kiri): `bg-slate-50/80 border border-slate-200 shadow-sm`.
+  - Kartu komparasi solusi (kanan): dipertahankan `bg-hero-gradient` oranye menyala dengan teks putih kontras tinggi.
+  - Kartu alur arsitektur (paket): `bg-slate-50/70 border border-slate-200`, sub-kartu pipeline `bg-white border border-slate-200`.
+  - Kartu 4-tier pricing: kartu Pro berborder `border-2 border-brand-500 bg-white`, kartu juri `bg-blue-50/30 border border-enterprise-300`, kartu standar `bg-white border border-slate-200`.
+  - Kartu Bento Grid: container `bg-white border border-slate-200`, tabel live transaction stream `bg-slate-50 border border-slate-200 divide-slate-200`, terminal pengawasan `bg-slate-950 border border-slate-800` (kontras terminal kode gelap dipertahankan).
+  - Kartu Jaringan Multi-Cabang: container radar orbit `bg-slate-950 border border-slate-800` (kontras visualisasi node malam dipertahankan).
+- **Badge & Chip Status:**
+  - Badge kategori UMKM testimoni: `bg-orange-50 text-brand-700 border border-orange-200`.
+  - Badge komparasi P0 selisih kas: `bg-rose-50 text-rose-800 border border-rose-200`.
+  - Badge komparasi status belum rekonsiliasi: `bg-amber-50 text-amber-800 border border-amber-200`.
+  - Badge pricing tags (Popular, Akses Evaluasi, Gerai Pertama): disesuaikan ke palet light mode terstandarisasi.
+- **Tipografi & Kontras:**
+  - Seluruh heading section luar kontainer diubah dari `text-white` ke `text-slate-900`.
+  - Seluruh subjudul dan deskripsi diubah dari `text-zinc-400` ke `text-slate-600` (memenuhi WCAG AA rasio > 4.5:1).
+  - Teks oranye di atas latar putih distandarisasikan ke `brand-700` (`#C2410C`, kontras 5.18:1).
+  - Standardisasi ukuran teks: teks data dan label penting diangkat minimal ke 12px–14px.
+- **Hasil verifikasi:**
+  - `npm run typecheck` : Lulus (0 error)
+  - `npm run lint`      : Lulus (0 warning, 0 error)
+  - `npm run test`      : Lulus (14 test files, 138 tests)
+
+

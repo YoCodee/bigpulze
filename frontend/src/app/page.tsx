@@ -281,14 +281,14 @@ export default function HomePage() {
             {isLoggedIn ? (
               <Link
                 href="/dashboard"
-                className="px-4 py-1.5 text-xs font-bold rounded-full bg-white text-slate-950 hover:bg-zinc-200 transition-colors shadow-xs"
+                className="px-4 py-1.5 text-xs font-bold rounded-full bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-xs"
               >
                 Dashboard
               </Link>
             ) : (
               <Link
                 href="/login"
-                className="px-4 py-1.5 text-xs font-bold rounded-full bg-white text-slate-950 hover:bg-zinc-200 transition-colors shadow-xs"
+                className="px-4 py-1.5 text-xs font-bold rounded-full bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-xs"
               >
                 Masuk
               </Link>
@@ -376,10 +376,10 @@ export default function HomePage() {
         <div className="max-w-[910px] mx-auto px-4 sm:px-6">
           {/* Section Header dengan Bobot Ringan Refined (Blueprint Typography) */}
           <div className="text-center max-w-2xl mx-auto space-y-3">
-            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-white">
+            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-900">
               Dipercaya oleh Pelaku Usaha & Penggiat UMKM
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 tracking-tight">
+            <p className="text-xs sm:text-sm text-slate-600 tracking-tight">
               Membantu pemilik kedai kopi, bakery, minimarket, dan resto mengambil keputusan bisnis akurat setiap hari.
             </p>
           </div>
@@ -392,11 +392,11 @@ export default function HomePage() {
           </div>
 
           {/* macOS Style Window Frame Card (info1.png) */}
-          <div className="mt-8 rounded-2xl border border-[#26282D] bg-[#121316] shadow-2xl overflow-hidden relative">
+          <div className="mt-8 rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden relative">
             <CornerMarks />
 
             {/* Top Window Bar with macOS Dots and Tabs */}
-            <div className="border-b border-[#26282D] bg-[#16171A] px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div className="border-b border-slate-200 bg-slate-50 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
               {/* macOS Window Dots */}
               <div className="hidden sm:flex items-center space-x-2">
                 <div className="h-2.5 w-2.5 rounded-full bg-rose-500/80" />
@@ -416,14 +416,14 @@ export default function HomePage() {
                       type="button"
                       className={`relative inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-colors cursor-pointer select-none whitespace-nowrap ${
                         isActive
-                          ? 'bg-[#1F2024] text-white shadow-xs'
-                          : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
+                          ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
+                          : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
                       }`}
                     >
-                      <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-brand-500' : 'text-zinc-500'}`} />
+                      <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-brand-600' : 'text-slate-400'}`} />
                       <span>{item.brand}</span>
                       {isActive && (
-                        <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-brand-500 rounded-full" />
+                        <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-brand-600 rounded-full" />
                       )}
                     </button>
                   );
@@ -433,38 +433,38 @@ export default function HomePage() {
 
             {/* Inside Card Body (Quote + Detail) */}
             <div className="p-6 sm:p-10 relative">
-              <Quote className="h-10 w-10 sm:h-12 sm:w-12 text-zinc-700/50 absolute top-6 right-6 sm:top-10 sm:right-10 pointer-events-none" />
+              <Quote className="h-10 w-10 sm:h-12 sm:w-12 text-slate-200 absolute top-6 right-6 sm:top-10 sm:right-10 pointer-events-none" />
 
               <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
                 {/* Quote Content */}
                 <div className="md:col-span-8 space-y-5">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-500/15 text-brand-400 border border-brand-500/30">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-50 text-brand-700 border border-orange-200">
                     {currentTestimonial.tag}
                   </span>
 
-                  <blockquote className="text-base sm:text-xl font-medium text-zinc-100 leading-relaxed sm:leading-snug">
+                  <blockquote className="text-base sm:text-xl font-medium text-slate-800 leading-relaxed sm:leading-snug">
                     “{currentTestimonial.quote}”
                   </blockquote>
 
                   <div>
-                    <h4 className="text-sm sm:text-base font-bold text-white">
+                    <h4 className="text-sm sm:text-base font-bold text-slate-900">
                       {currentTestimonial.author}
                     </h4>
-                    <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
+                    <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
                       {currentTestimonial.role}
                     </p>
                   </div>
                 </div>
 
                 {/* Stat Highlight Card */}
-                <div className="md:col-span-4 bg-[#16171A] rounded-xl border border-[#26282D] p-5 text-center space-y-2 flex flex-col justify-center">
-                  <div className="h-9 w-9 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center mx-auto">
+                <div className="md:col-span-4 bg-orange-50/70 rounded-xl border border-orange-200/60 p-5 text-center space-y-2 flex flex-col justify-center">
+                  <div className="h-9 w-9 rounded-full bg-orange-100 text-brand-700 flex items-center justify-center mx-auto">
                     <CheckCircle2 className="h-5 w-5" />
                   </div>
-                  <h5 className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+                  <h5 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                     Dampak Nyata
                   </h5>
-                  <p className="text-sm sm:text-base font-bold text-brand-400 leading-tight">
+                  <p className="text-sm sm:text-base font-bold text-brand-700 leading-tight">
                     {currentTestimonial.stats}
                   </p>
                 </div>
@@ -474,18 +474,18 @@ export default function HomePage() {
 
           {/* Tech Ecosystem Ticker Bar */}
           <div className="mt-14 text-center space-y-4">
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-zinc-500">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
               Dibangun dengan Ekosistem Teknologi Teruji & Standar Perbankan
             </p>
             <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8">
               {techStack.map((tech) => (
                 <div
                   key={tech.name}
-                  className="flex items-center space-x-2 text-zinc-400 hover:text-zinc-200 transition-colors group"
+                  className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 transition-colors group"
                 >
-                  <div className="h-1.5 w-1.5 rounded-full bg-brand-500/80 group-hover:scale-125 transition-transform" />
-                  <span className="text-xs sm:text-sm font-semibold text-zinc-300">{tech.name}</span>
-                  <span className="text-[10px] text-zinc-600 font-mono">({tech.desc})</span>
+                  <div className="h-1.5 w-1.5 rounded-full bg-brand-600 group-hover:scale-125 transition-transform" />
+                  <span className="text-xs sm:text-sm font-semibold text-slate-800">{tech.name}</span>
+                  <span className="text-[10px] text-slate-500 font-mono">({tech.desc})</span>
                 </div>
               ))}
             </div>
@@ -502,10 +502,10 @@ export default function HomePage() {
       <section id="fondasi" className="relative w-full py-16 sm:py-24">
         <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-2.5">
-            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-white">
+            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-900">
               Fondasi Arsitektur Skala Enterprise untuk UMKM
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 tracking-tight">
+            <p className="text-xs sm:text-sm text-slate-600 tracking-tight">
               Tiga pilar ketangguhan sistem yang menjamin ketersediaan data, kecepatan transaksi, dan akurasi finansial mutlak.
             </p>
           </div>
@@ -541,10 +541,10 @@ export default function HomePage() {
         <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-10">
           {/* Section Header */}
           <div className="text-center max-w-2xl mx-auto space-y-2.5">
-            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-white">
+            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-900">
               Mengapa Memilih BizPulse?
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 tracking-tight">
+            <p className="text-xs sm:text-sm text-slate-600 tracking-tight">
               Menghilangkan friksi pencatatan manual dan memberi kepastian angka bagi pemilik usaha setiap hari.
             </p>
           </div>
@@ -552,25 +552,25 @@ export default function HomePage() {
           {/* 2-Column Side-by-Side Comparison Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
             {/* Kartu Kiri: Masalah Tradisional (Dark Card with Friction Tags) */}
-            <div className="relative rounded-none border border-[#26282D] bg-[#0E0F12] p-6 sm:p-8 flex flex-col justify-between space-y-6">
+            <div className="relative rounded-none border border-slate-200 bg-slate-50/80 shadow-sm p-6 sm:p-8 flex flex-col justify-between space-y-6">
               <CornerMarks />
 
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
                     <AlertTriangle className="h-3 w-3" />
                     STATUS: BELUM REKONSILIASI
                   </span>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-none text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-none text-xs font-bold bg-rose-50 text-rose-800 border border-rose-200">
                     P0: SELISIH KAS REGISTER
                   </span>
                 </div>
 
-                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-snug">
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-snug">
                   Pusing dengan Pembukuan Manual & POS Kaku
                 </h3>
 
-                <ul className="space-y-3 text-xs sm:text-[13px] text-zinc-400 leading-relaxed pt-2">
+                <ul className="space-y-3 text-sm text-slate-600 leading-relaxed pt-2">
                   <li className="flex items-start gap-2.5">
                     <XCircle className="h-4 w-4 text-rose-500 shrink-0 mt-0.5" />
                     <span>Nota kertas tercecer atau sobek di meja kasir; data penjualan rawan hilang.</span>
@@ -590,9 +590,9 @@ export default function HomePage() {
                 </ul>
               </div>
 
-              <div className="pt-4 border-t border-[#26282D] flex items-center justify-between text-xs text-zinc-500">
+              <div className="pt-4 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
                 <span>Rata-rata waktu terbuang</span>
-                <span className="font-semibold text-rose-400">~2 Jam / Cabang / Hari</span>
+                <span className="font-semibold text-rose-700">~2 Jam / Cabang / Hari</span>
               </div>
             </div>
 
@@ -639,10 +639,10 @@ export default function HomePage() {
 
           {/* Section Transition Heading (Mengacu ke teks transisi info2.png) */}
           <div className="pt-10 text-center space-y-1.5">
-            <h3 className="text-xl sm:text-3xl font-medium tracking-tight text-white">
+            <h3 className="text-xl sm:text-3xl font-medium tracking-tight text-slate-900">
               Investasi Terjangkau, Tumbuh Bersama Usaha Anda
             </h3>
-            <p className="text-xs sm:text-sm text-zinc-400">
+            <p className="text-xs sm:text-sm text-slate-600">
               (Mulai gratis untuk gerai pertama, siap berskala saat cabang bertambah.)
             </p>
           </div>
@@ -656,10 +656,10 @@ export default function HomePage() {
         <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-12">
           {/* Section Header */}
           <div className="text-center max-w-2xl mx-auto space-y-3">
-            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-white">
-              Pilihan Paket <span className="text-brand-400 underline decoration-brand-500/40 underline-offset-8">Sesuai Skala Usaha</span>
+            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-900">
+              Pilihan Paket <span className="text-brand-700 underline decoration-brand-500/40 underline-offset-8">Sesuai Skala Usaha</span>
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 tracking-tight">
+            <p className="text-xs sm:text-sm text-slate-600 tracking-tight">
               Investasi transparan tanpa biaya royalti tersembunyi. Dari 1 gerai rintisan hingga 5 cabang terpadu.
             </p>
           </div>
@@ -676,8 +676,8 @@ export default function HomePage() {
                   type="button"
                   className={`inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-full transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/25 scale-102'
-                      : 'bg-[#16171A] text-zinc-400 hover:text-white border border-[#26282D] hover:bg-zinc-800/40'
+                      ? 'bg-brand-600 text-white shadow-md shadow-brand-500/20 scale-102'
+                      : 'bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-200/70'
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -688,44 +688,44 @@ export default function HomePage() {
           </div>
 
           {/* Architecture Overview Flow Box (info3.png top box) */}
-          <div className="relative rounded-none border border-[#26282D] bg-[#0E0F12] p-6 sm:p-8 space-y-6">
+          <div className="relative rounded-none border border-slate-200 bg-slate-50/70 p-6 sm:p-8 space-y-6">
             <CornerMarks />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               {/* Left Column: Deskripsi Alur */}
               <div className="lg:col-span-5 space-y-3">
-                <span className="text-[11px] font-bold text-brand-400 uppercase tracking-widest">
+                <span className="text-xs font-bold text-brand-700 uppercase tracking-widest">
                   Arsitektur Solusi
                 </span>
-                <h4 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                <h4 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
                   {currentFlow.title}
                 </h4>
-                <p className="text-xs sm:text-[13px] text-zinc-400 leading-relaxed">
+                <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed">
                   {currentFlow.desc}
                 </p>
               </div>
 
               {/* Right Column: Visual Pipeline Steps Diagram */}
-              <div className="lg:col-span-7 bg-[#141518] border border-[#26282D] p-4 sm:p-5">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-3 text-right">
+              <div className="lg:col-span-7 bg-white border border-slate-200 p-4 sm:p-5">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 text-right">
                   Aliran Data Real-Time
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
                   {currentFlow.steps.map((st, i) => (
                     <div
                       key={i}
-                      className="border border-dashed border-[#26282D] bg-[#0E0F12] p-2.5 flex flex-col justify-center space-y-1 relative group hover:border-brand-500/50 transition-colors"
+                      className="border border-dashed border-slate-200 bg-slate-50/80 p-2.5 flex flex-col justify-center space-y-1 relative group hover:border-brand-500/60 transition-colors"
                     >
-                      <p className="text-xs font-bold text-zinc-200 truncate">
+                      <p className="text-xs font-bold text-slate-800 truncate">
                         {st.label}
                       </p>
-                      <p className="text-[10px] text-zinc-500 font-mono">
+                      <p className="text-[10px] text-slate-500 font-mono">
                         {st.sub}
                       </p>
                     </div>
                   ))}
                 </div>
-                <p className="text-[11px] text-zinc-500 text-center mt-3">
+                <p className="text-xs text-slate-500 text-center mt-3">
                   Diproses seketika di tingkat perangkat & Supabase tanpa jeda antrean
                 </p>
               </div>
@@ -739,10 +739,10 @@ export default function HomePage() {
                 key={plan.name}
                 className={`relative rounded-none border p-5 sm:p-6 flex flex-col justify-between space-y-6 transition-all ${
                   plan.popular
-                    ? 'bg-[#121316] border-brand-500/60 shadow-lg shadow-brand-500/10'
+                    ? 'bg-white border-2 border-brand-500 shadow-xl shadow-brand-500/10'
                     : plan.isJuri
-                    ? 'bg-[#101524] border-enterprise-500/40'
-                    : 'bg-[#0E0F12] border-[#26282D]'
+                    ? 'bg-blue-50/30 border border-enterprise-300 shadow-sm'
+                    : 'bg-white border border-slate-200 shadow-sm'
                 }`}
               >
                 <CornerMarks
@@ -751,19 +751,20 @@ export default function HomePage() {
                       ? 'border-brand-500'
                       : plan.isJuri
                       ? 'border-enterprise-400'
-                      : 'border-zinc-600'
+                      : 'border-slate-300'
                   }
+                  bgClass="bg-white"
                 />
 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-none uppercase tracking-wider ${
+                      className={`text-xs font-bold px-2 py-0.5 rounded-none uppercase tracking-wider ${
                         plan.popular
-                          ? 'bg-brand-500/20 text-brand-400 border border-brand-500/40'
+                          ? 'bg-orange-50 text-brand-700 border border-orange-200'
                           : plan.isJuri
-                          ? 'bg-enterprise-500/20 text-enterprise-300 border border-enterprise-500/40'
-                          : 'bg-zinc-800 text-zinc-400'
+                          ? 'bg-blue-50 text-enterprise-700 border border-blue-200'
+                          : 'bg-slate-100 text-slate-700 border border-slate-200'
                       }`}
                     >
                       {plan.tag}
@@ -771,35 +772,35 @@ export default function HomePage() {
                   </div>
 
                   <div>
-                    <h4 className="text-base font-bold text-white tracking-tight">
+                    <h4 className="text-base font-bold text-slate-900 tracking-tight">
                       {plan.name}
                     </h4>
-                    <p className="text-xs text-zinc-400 mt-1 line-clamp-2">
+                    <p className="text-xs text-slate-600 mt-1 line-clamp-2">
                       {plan.desc}
                     </p>
                   </div>
 
                   {/* Price Block */}
-                  <div className="pt-2 border-t border-[#26282D]">
+                  <div className="pt-2 border-t border-slate-200">
                     <div className="flex items-baseline space-x-1">
-                      <span className="text-2xl sm:text-3xl font-extrabold text-white tabular-nums tracking-tight">
+                      <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 tabular-nums tracking-tight">
                         {plan.price}
                       </span>
                       {plan.unit && (
-                        <span className="text-xs text-zinc-400 font-medium">{plan.unit}</span>
+                        <span className="text-xs text-slate-500 font-medium">{plan.unit}</span>
                       )}
                     </div>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">
+                    <p className="text-xs text-slate-500 mt-0.5">
                       {plan.period}
                     </p>
                   </div>
 
                   {/* Feature Tags List */}
-                  <ul className="space-y-2 pt-2 text-xs text-zinc-300">
+                  <ul className="space-y-2 pt-2 text-xs text-slate-700">
                     {plan.features.map((feat, fidx) => (
                       <li key={fidx} className="flex items-start gap-2">
-                        <Check className="h-3.5 w-3.5 text-brand-500 shrink-0 mt-0.5" />
-                        <span className="text-zinc-300 leading-tight">{feat}</span>
+                        <Check className="h-3.5 w-3.5 text-brand-600 shrink-0 mt-0.5" />
+                        <span className="text-slate-700 leading-tight">{feat}</span>
                       </li>
                     ))}
                   </ul>
@@ -811,10 +812,10 @@ export default function HomePage() {
                     href={plan.href}
                     className={`w-full inline-flex items-center justify-center py-2 px-3 text-xs font-bold rounded-full transition-all cursor-pointer ${
                       plan.popular
-                        ? 'bg-brand-500 text-white hover:bg-brand-600 shadow-md shadow-brand-500/30'
+                        ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-md shadow-brand-500/20'
                         : plan.isJuri
                         ? 'bg-enterprise-600 text-white hover:bg-enterprise-700 shadow-md'
-                        : 'border border-zinc-700 text-zinc-200 hover:bg-white hover:text-slate-900'
+                        : 'border border-slate-300 text-slate-700 hover:bg-slate-900 hover:text-white'
                     }`}
                   >
                     {plan.cta}
@@ -836,21 +837,21 @@ export default function HomePage() {
         <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-10">
           {/* Section Header */}
           <div className="text-center max-w-2xl mx-auto space-y-2.5">
-            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-white">
+            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-900">
               Dirancang Khusus untuk Alur Kerja UMKM
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 tracking-tight">
+            <p className="text-xs sm:text-sm text-slate-600 tracking-tight">
               Mudah digunakan oleh kasir baru di gerai pertama, cukup tangguh untuk kendali multi-cabang skala enterprise.
             </p>
           </div>
 
           {/* 2x2 Asymmetric Bento Grid Container (Outer Blueprint Frame) */}
-          <div className="relative rounded-none border border-[#26282D] bg-[#0E0F12]">
+          <div className="relative rounded-none border border-slate-200 bg-white shadow-sm">
             <CornerMarks />
 
             <div className="grid grid-cols-1 md:grid-cols-3">
               {/* Card 1: Top-Left (Col span 2) - Fits into your existing workflows */}
-              <div className="md:col-span-2 p-6 sm:p-8 flex flex-col justify-between border-b md:border-b border-[#26282D] space-y-6">
+              <div className="md:col-span-2 p-6 sm:p-8 flex flex-col justify-between border-b md:border-b border-slate-200 space-y-6">
                 {/* Top Visual Area: Live Transaction Register Stream (info4.png deployment list) */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   {/* Left Orange Icon Pill */}
@@ -859,36 +860,36 @@ export default function HomePage() {
                   </div>
 
                   {/* Transaction Status Table / Rows */}
-                  <div className="flex-1 w-full bg-[#141518] border border-[#26282D] divide-y divide-[#26282D]/80 font-mono text-[11px] sm:text-xs">
-                    <div className="px-3.5 py-2.5 flex items-center justify-between text-zinc-300">
+                  <div className="flex-1 w-full bg-slate-50 border border-slate-200 divide-y divide-slate-200 font-mono text-xs">
+                    <div className="px-3.5 py-2.5 flex items-center justify-between text-slate-700">
                       <div className="flex items-center space-x-2">
-                        <span className="text-zinc-500">TRX-0842</span>
-                        <span className="hidden sm:inline text-zinc-400">• Kopi Senja 2x</span>
+                        <span className="text-slate-500">TRX-0842</span>
+                        <span className="hidden sm:inline text-slate-600">• Kopi Senja 2x</span>
                       </div>
-                      <span className="text-zinc-500 text-[10px]">Hari ini, 11:32 WIB</span>
-                      <span className="inline-flex items-center gap-1 text-emerald-400 font-semibold">
+                      <span className="text-slate-500 text-[11px]">Hari ini, 11:32 WIB</span>
+                      <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold">
                         Selesai <CheckCircle2 className="h-3.5 w-3.5" />
                       </span>
                     </div>
 
-                    <div className="px-3.5 py-2.5 flex items-center justify-between text-zinc-300">
+                    <div className="px-3.5 py-2.5 flex items-center justify-between text-slate-700">
                       <div className="flex items-center space-x-2">
-                        <span className="text-zinc-500">TRX-0841</span>
-                        <span className="hidden sm:inline text-zinc-400">• Roti Bakar Keju</span>
+                        <span className="text-slate-500">TRX-0841</span>
+                        <span className="hidden sm:inline text-slate-600">• Roti Bakar Keju</span>
                       </div>
-                      <span className="text-zinc-500 text-[10px]">Hari ini, 11:28 WIB</span>
-                      <span className="inline-flex items-center gap-1 text-emerald-400 font-semibold">
+                      <span className="text-slate-500 text-[11px]">Hari ini, 11:28 WIB</span>
+                      <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold">
                         Selesai <CheckCircle2 className="h-3.5 w-3.5" />
                       </span>
                     </div>
 
-                    <div className="px-3.5 py-2.5 flex items-center justify-between text-zinc-400">
+                    <div className="px-3.5 py-2.5 flex items-center justify-between text-slate-600">
                       <div className="flex items-center space-x-2">
-                        <span className="text-zinc-500">TRX-0840</span>
-                        <span className="hidden sm:inline text-zinc-400">• Es Teh Manis 3x</span>
+                        <span className="text-slate-500">TRX-0840</span>
+                        <span className="hidden sm:inline text-slate-600">• Es Teh Manis 3x</span>
                       </div>
-                      <span className="text-zinc-500 text-[10px]">Hari ini, 11:25 WIB</span>
-                      <span className="inline-flex items-center gap-1 text-brand-400 font-medium">
+                      <span className="text-slate-500 text-[11px]">Hari ini, 11:25 WIB</span>
+                      <span className="inline-flex items-center gap-1 text-brand-700 font-medium">
                         Sinkronisasi <span className="animate-spin text-xs">⟳</span>
                       </span>
                     </div>
@@ -897,17 +898,17 @@ export default function HomePage() {
 
                 {/* Bottom Text */}
                 <div className="space-y-1.5 pt-2">
-                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
                     Cocok dengan Kebiasaan Kasir & Pemilik Usaha
                   </h3>
-                  <p className="text-xs sm:text-[13px] text-zinc-400 leading-relaxed">
+                  <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed">
                     Voice POS 2 detik, cetak struk Bluetooth thermal 58/80mm, dan kasir offline-first. Staf baru langsung bisa melayani pelanggan tanpa training rumit.
                   </p>
                 </div>
               </div>
 
               {/* Card 2: Top-Right (Col span 1) - One network for users, apps, and data (Vibrant Orange Card) */}
-              <div className="md:col-span-1 p-6 sm:p-8 flex flex-col justify-between bg-hero-gradient text-white border-b md:border-b md:border-l border-[#26282D] space-y-6 shadow-inner">
+              <div className="md:col-span-1 p-6 sm:p-8 flex flex-col justify-between bg-hero-gradient text-white border-b md:border-b md:border-l border-brand-500/30 space-y-6 shadow-inner">
                 <div className="space-y-4">
                   <div className="h-10 w-10 rounded-lg bg-white/20 flex items-center justify-center text-white backdrop-blur-xs">
                     <Globe2 className="h-5 w-5" />
@@ -929,56 +930,56 @@ export default function HomePage() {
               </div>
 
               {/* Card 3: Bottom-Left (Col span 1) - Secure by default */}
-              <div className="md:col-span-1 p-6 sm:p-8 flex flex-col justify-between border-b md:border-b-0 border-[#26282D] space-y-6">
+              <div className="md:col-span-1 p-6 sm:p-8 flex flex-col justify-between border-b md:border-b-0 border-slate-200 space-y-6">
                 <div className="space-y-4">
-                  <div className="h-10 w-10 rounded-lg bg-[#18191E] border border-[#26282D] flex items-center justify-center text-brand-400">
+                  <div className="h-10 w-10 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center text-brand-700">
                     <ShieldCheck className="h-5 w-5" />
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
                     Aman & Tervalidasi Standar Bank
                   </h3>
 
-                  <p className="text-xs sm:text-[13px] text-zinc-400 leading-relaxed">
+                  <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed">
                     PostgreSQL Row Level Security (RLS) di setiap baris, log audit pembatalan nota (VOID) anti-fraud, dan ekspor laporan keuangan terstandarisasi pengajuan kredit bank/KUR.
                   </p>
                 </div>
 
-                <div className="space-y-1.5 pt-4 border-t border-[#26282D]">
-                  <div className="flex items-center gap-2 text-[11px] text-zinc-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                <div className="space-y-1.5 pt-4 border-t border-slate-200">
+                  <div className="flex items-center gap-2 text-xs text-slate-600">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                     <span>RLS PostgreSQL Multi-Tenant</span>
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] text-zinc-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
+                  <div className="flex items-center gap-2 text-xs text-slate-600">
+                    <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
                     <span>Audit Log VOID Anti-Manipulasi</span>
                   </div>
                 </div>
               </div>
 
               {/* Card 4: Bottom-Right (Col span 2) - Fast path to AI adoption with Terminal */}
-              <div className="md:col-span-2 p-6 sm:p-8 flex flex-col lg:flex-row justify-between md:border-l border-[#26282D] gap-6 items-stretch">
+              <div className="md:col-span-2 p-6 sm:p-8 flex flex-col lg:flex-row justify-between md:border-l border-slate-200 gap-6 items-stretch">
                 {/* Left Description inside Card 4 */}
                 <div className="lg:w-2/5 flex flex-col justify-between space-y-4">
                   <div className="space-y-2.5">
-                    <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
                       Deteksi Dini Masalah Operasional
                     </h3>
-                    <p className="text-xs sm:text-[13px] text-zinc-400 leading-relaxed">
+                    <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed">
                       Algoritma Z-score dan asisten 3 Pertanyaan Pagi otomatis menganalisis lonjakan biaya, stok mati, dan potensi kebocoran margin kasir setiap fajar.
                     </p>
                   </div>
 
-                  <div className="inline-flex items-center gap-1.5 text-xs text-brand-400 font-medium">
+                  <div className="inline-flex items-center gap-1.5 text-xs text-brand-700 font-medium">
                     <Activity className="h-3.5 w-3.5" />
                     <span>Pengawasan otomatis non-stop 24/7</span>
                   </div>
                 </div>
 
                 {/* Right Dark Terminal UI Box (exact match to info4.png) */}
-                <div className="lg:w-3/5 bg-[#08090B] border border-[#26282D] p-3.5 sm:p-4 rounded-none font-mono text-[11px] sm:text-xs flex flex-col justify-between space-y-3">
+                <div className="lg:w-3/5 bg-slate-950 border border-slate-800 p-3.5 sm:p-4 rounded-none font-mono text-xs flex flex-col justify-between space-y-3">
                   <div className="space-y-2">
-                    <p className="text-zinc-500 text-[10px] leading-tight">
+                    <p className="text-slate-400 text-[11px] leading-tight">
                       Menjalankan mesin anomali BizPulse...
                     </p>
                     <p className="text-brand-400 font-semibold flex items-center gap-1.5">
@@ -986,33 +987,33 @@ export default function HomePage() {
                       3 modul pengawasan aktif
                     </p>
 
-                    <div className="space-y-1 pl-2 text-zinc-300 text-[11px]">
+                    <div className="space-y-1 pl-2 text-slate-300 text-[11px]">
                       <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">↳ beban-biaya</span>
-                        <span className="text-zinc-500 text-[10px]">scan Z-score • 0 lonjakan</span>
+                        <span className="text-slate-400">↳ beban-biaya</span>
+                        <span className="text-slate-400 text-[10px]">scan Z-score • 0 lonjakan</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">↳ kas-register</span>
+                        <span className="text-slate-400">↳ kas-register</span>
                         <span className="text-emerald-400 text-[10px]">rekonsiliasi • selisih Rp 0</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">↳ stok-kritis</span>
+                        <span className="text-slate-400">↳ stok-kritis</span>
                         <span className="text-amber-400 text-[10px]">batas minimum • 2 mutasi siap</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Terminal Status & Action Button */}
-                  <div className="pt-2 border-t border-[#26282D]/80 flex items-center justify-between gap-2">
+                  <div className="pt-2 border-t border-slate-800 flex items-center justify-between gap-2">
                     {terminalExecuted ? (
-                      <div className="flex items-center gap-1.5 text-emerald-400 text-[10px] font-bold">
+                      <div className="flex items-center gap-1.5 text-emerald-400 text-[11px] font-bold">
                         <CheckCircle2 className="h-3.5 w-3.5" />
                         <span>2 mutasi dikirim ke dashboard</span>
                       </div>
                     ) : (
-                      <div className="flex items-center space-x-1.5 text-zinc-500 text-[10px] truncate">
+                      <div className="flex items-center space-x-1.5 text-slate-400 text-[11px] truncate">
                         <span className="text-brand-500">&gt;</span>
-                        <span className="text-zinc-400">kirim_rekomendasi_mutasi</span>
+                        <span className="text-slate-300">kirim_rekomendasi_mutasi</span>
                         <span className="animate-pulse">_</span>
                       </div>
                     )}
@@ -1020,10 +1021,10 @@ export default function HomePage() {
                     <button
                       type="button"
                       onClick={() => setTerminalExecuted((prev) => !prev)}
-                      className={`px-2.5 py-1 text-[10px] font-bold rounded-sm transition-colors cursor-pointer shrink-0 ${
+                      className={`px-2.5 py-1 text-xs font-bold rounded-sm transition-colors cursor-pointer shrink-0 ${
                         terminalExecuted
                           ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                          : 'bg-brand-500 text-white hover:bg-brand-600'
+                          : 'bg-brand-600 text-white hover:bg-brand-700'
                       }`}
                     >
                       {terminalExecuted ? 'Terkirim ✓' : 'Eksekusi ↵'}
@@ -1046,17 +1047,17 @@ export default function HomePage() {
         <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-12">
           {/* Section Header (Region: Earth in about.png) */}
           <div className="text-center max-w-2xl mx-auto space-y-2.5">
-            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-white">
+            <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-900">
               Jaringan Cerdas Multi-Cabang
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 tracking-tight">
+            <p className="text-xs sm:text-sm text-slate-600 tracking-tight">
               Satu arsitektur terintegrasi yang menghubungkan kasir gerai, gudang persediaan, dan pemilik usaha — sedekat jangkauan tangan, secepat komputasi lokal.
             </p>
           </div>
 
           {/* Central Visual: Multi-Branch Vector Network Globe / Radar Canvas */}
-          <div className="relative rounded-none border border-[#26282D] bg-[#0A0A0C] p-6 sm:p-10 min-h-[440px] sm:min-h-[500px] flex flex-col justify-between items-center overflow-hidden">
-            <CornerMarks />
+          <div className="relative rounded-none border border-slate-800 bg-slate-950 p-6 sm:p-10 min-h-[440px] sm:min-h-[500px] flex flex-col justify-between items-center overflow-hidden">
+            <CornerMarks borderClass="border-slate-700" bgClass="bg-slate-950" />
 
             {/* Ambient Warm Glow */}
             <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[320px] sm:w-[480px] h-[220px] bg-brand-500/10 blur-[90px] pointer-events-none rounded-full" />
