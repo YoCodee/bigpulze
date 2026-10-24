@@ -235,7 +235,8 @@ export default function HomePage() {
   const currentFlow = featureFlows[activeFeatureTab];
 
   return (
-    <BlueprintCanvas className="min-h-screen text-white flex flex-col selection:bg-brand-500 selection:text-white">
+    <div className="landing-theme min-h-screen bg-white text-slate-900">
+      <BlueprintCanvas className="min-h-screen text-slate-900 flex flex-col">
       {/* ======================================================== */}
       {/* 1. TOP NAVBAR (Full-bleed Header) */}
       {/* ======================================================== */}
@@ -1445,5 +1446,6 @@ export default function HomePage() {
         </div>
       </footer>
     </BlueprintCanvas>
+  </div>
   );
 }

@@ -112,9 +112,15 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* Pola titik gutter cetak biru (blueprint dot matrix 8px x 8px) */
+  /* Pola titik gutter cetak biru (blueprint dot matrix 8px x 8px) — dark canvas */
   .bg-dot-matrix {
     background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+    background-size: 8px 8px;
+  }
+
+  /* Pola titik gutter blueprint untuk latar putih (landing light theme) */
+  .bg-dot-matrix-light {
+    background-image: radial-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px);
     background-size: 8px 8px;
   }
 
@@ -122,4 +128,42 @@
   .border-blueprint {
     border-color: #26282D;
   }
+
+  /* Garis pandu putus-putus blueprint presisi — mode terang */
+  .border-blueprint-light {
+    border-color: #E5E7EB;
+  }
+}
+
+/* ======================================================== */
+/* TEMA TERANG TERSCOPE KHUSUS LANDING PAGE (Rute "/")     */
+/* Tidak mengubah token global yang digunakan aplikasi     */
+/* ======================================================== */
+.landing-theme {
+  --landing-canvas: #FFFFFF;
+  --landing-surface: #FFFFFF;
+  --landing-surface-muted: #F8FAFC;
+  --landing-grid-line: #E5E7EB;
+  --landing-border: #E5E7EB;
+  --landing-border-strong: #CBD5E1;
+  --landing-text-primary: #0F172A;
+  --landing-text-secondary: #475569;
+  --landing-text-muted: #64748B;
+  --landing-accent-text: #C2410C;
+  --landing-accent-ui: #EA580C;
+  --landing-accent-bg: #FFF7ED;
+  --landing-accent-border: #FDBA74;
+
+  background-color: var(--landing-canvas);
+  color: var(--landing-text-primary);
+}
+
+.landing-theme ::selection {
+  background-color: #EA580C;
+  color: #FFFFFF;
+}
+
+.landing-theme :focus-visible {
+  outline: 2px solid #EA580C;
+  outline-offset: 2px;
 }

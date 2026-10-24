@@ -1635,3 +1635,28 @@
 - `npm run build`     : **Lulus 100%** (36 route, termasuk `POST /api/demo/seed`)
 
 **Status Tahap R17:** Selesai 100% (Data Demo Dummy Skala Penuh + Seeder PRD §11.1 + Perbaikan Paginasi)
+
+---
+
+## Tahap R18: Redesign Teks Dashboard Owner & Migrasi Landing Page Light Theme (24 Okt)
+
+### R18.1 — Penyederhanaan Teks & Declutter Dashboard Owner (`/dashboard`) ✅
+**Selesai:** 2026-10-24
+
+- Mempertahankan tata letak visual awal sesuai arahan pengguna, dengan menyederhanakan teks dan menghapus istilah teknis/jargon (Z-score, Modified Z, MAD, PostgreSQL RLS, GTNIC 2026 watermark, dll.).
+- Dokumen audit: `docs/dashboard-declutter.md`.
+- Verifikasi: Typecheck 0 error, Lint 0 warning, Test 138/138 lulus.
+
+### R18.2 — Landing Page Dark → Light Theme: L1 Fondasi Tema Terang ✅
+**Selesai:** 2026-10-24
+
+- **Dokumen audit komprehensif:** `docs/landing-light-audit.md` (pemetaan elemen, perhitungan kontras oranye vs putih, peta token scoped).
+- **CSS Scoped:** Menambahkan kelas `.landing-theme` di `frontend/src/app/globals.css` dengan token CSS variables khusus tema terang, seleksi teks scoped (`::selection`), focus-ring scoped (`:focus-visible`), serta utilitas `.bg-dot-matrix-light` dan `.border-blueprint-light`.
+- **Komponen Blueprint:** Memperbarui `frontend/src/components/ui/blueprint-grid.tsx` agar mendukung tema terang secara default (`BlueprintCanvas` latar putih dengan garis pandu abu-abu halus, `DashedRule` border slate-200, `DotGutter` dot matrix light, `CornerMarks` border slate-300 / bg putih, `Callout` border oranye halus dengan teks `brand-700` kontras 5.18:1, `FeatureGrid` & `FeatureCell` kanvas putih bersih).
+- **Wrapper Scoped:** Membungkus `frontend/src/app/page.tsx` dengan `<div className="landing-theme min-h-screen bg-white text-slate-900">`.
+- **Integritas Aplikasi:** Halaman aplikasi internal (`/dashboard`, `/pos`, `/reports`, dll.) 100% tidak terpengaruh karena variabel dan styling di-scope ke `.landing-theme`.
+- **Hasil verifikasi:**
+  - `npm run typecheck` : Lulus (0 error)
+  - `npm run lint`      : Lulus (0 warning, 0 error)
+  - `npm run test`      : Lulus (14 test files, 138 tests)
+
