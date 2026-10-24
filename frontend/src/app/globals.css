@@ -133,6 +133,34 @@
   .border-blueprint-light {
     border-color: #E5E7EB;
   }
+
+  /* Efek hover konsisten seluruh card landing page (Poin G) */
+  .landing-card-hover {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .landing-card-hover:hover {
+      transform: translateY(-2px);
+      border-color: #FDBA74; /* brand-300 / accent border */
+    }
+
+    .landing-card-hover:hover .card-hover-icon {
+      transform: translate(2px, -1px);
+      transition: transform 0.25s ease;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .landing-card-hover {
+      transition: none !important;
+    }
+    .landing-card-hover:hover {
+      transform: none !important;
+    }
+  }
 }
 
 /* ======================================================== */

@@ -246,9 +246,9 @@ export function FeatureCell({
   className?: string;
 }) {
   return (
-    <div className={cn('p-6 sm:p-7 text-left space-y-2.5 bg-white', className)}>
+    <div className={cn('landing-card-hover p-6 sm:p-7 text-left space-y-2.5 bg-white hover:bg-slate-50/50', className)}>
       {Icon && (
-        <div className="text-slate-600 mb-3">
+        <div className="text-slate-600 mb-3 card-hover-icon">
           <Icon className="h-5 w-5 stroke-[1.5]" />
         </div>
       )}

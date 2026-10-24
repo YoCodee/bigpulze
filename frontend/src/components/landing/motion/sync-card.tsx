@@ -176,7 +176,7 @@ export function SyncCardDemo() {
   return (
     <div
       ref={rootRef}
-      className="relative overflow-hidden md:col-span-1 p-6 sm:p-8 flex flex-col justify-between bg-hero-gradient text-white border-b md:border-b md:border-l border-brand-500/30 space-y-6 shadow-inner"
+      className="landing-card-hover relative overflow-hidden md:col-span-1 p-6 sm:p-8 flex flex-col justify-between bg-hero-gradient text-white border-b md:border-b md:border-l border-brand-500/30 space-y-6 shadow-inner"
     >
       {/* Subtle Shimmer Sheen di latar belakang */}
       <div

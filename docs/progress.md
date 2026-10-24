@@ -1897,6 +1897,27 @@
   - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
 
+### G7.1 — Animasi Landing Page: Hover Konsisten & Section Hero (Poin G) ✅
+**Selesai:** 2026-10-24
+
+- **Efek Hover Konsisten Seluruh Card (`globals.css` & `.landing-card-hover`):**
+  - Menambahkan aturan kelas utilitas `.landing-card-hover`: elevasi transform `y: -2px`, transisi border ke warna aksen oranye (`#FDBA74`) berdurasi 0.25s, dan pergeseran ikon halus 1–2px via `.card-hover-icon`.
+  - Diterapkan pada Bento cards, comparison cards, testimonial card, dan feature cells.
+  - Mematuhi `@media (hover: hover)` dan `prefers-reduced-motion` (nonaktif pada perangkat layar sentuh dan mode aksesibilitas).
+- **Animasi Section Hero (`<HeroMotion>`):**
+  - `frontend/src/components/landing/motion/hero-motion.tsx`: Mengatur urutan masuk beruntun (*stagger*) saat halaman dimuat:
+    1. Announcement pill badge GTNIC 2026
+    2. Display headline H1 masif
+    3. Paragraf deskripsi
+    4. Baris tombol CTA (Mulai Demo & Buka Dashboard)
+    5. Trust ticker ribbon di bagian bawah kartu hero
+  - Konten teks tetap utuh dirender di server (HTML ada sejak awal) untuk SEO dan performa.
+- **Hasil Verifikasi:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
+
+
 
 
 

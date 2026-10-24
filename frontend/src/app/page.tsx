@@ -42,6 +42,7 @@ import {
   SyncCardDemo,
   SecurityCardDemo,
   AnomalyTerminalDemo,
+  HeroMotion,
 } from '@/components/landing/motion';
 
 const testimonials = [
@@ -340,61 +341,64 @@ export default function HomePage() {
           {/* Subtle Warm Glow di Bagian Bawah Hero */}
           <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-[500px] sm:w-[700px] h-[250px] bg-white/20 blur-[100px] pointer-events-none rounded-full" />
 
-          {/* Announcement Pill Badge */}
-          <Link
-            href="/demo-guide"
-            className="relative z-10 group inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs sm:text-sm font-medium text-white shadow-xs backdrop-blur-xs hover:bg-white/20 transition-all cursor-pointer"
-          >
-            <span>GTNIC 2026 • Asisten Keputusan & Smart Voice POS UMKM</span>
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-brand-600 font-bold text-xs group-hover:translate-x-0.5 transition-transform">
-              <ArrowRight className="h-3 w-3 stroke-[3]" />
-            </span>
-          </Link>
-
-          {/* Headline Display Masif */}
-          <h1 className="relative z-10 mt-6 sm:mt-8 max-w-3xl text-3xl sm:text-5xl md:text-5xl font-extrabold tracking-tight leading-[1.08] text-white">
-            Semua Jawaban untuk Mengelola Multi-Cabang UMKM—Otomatis Setiap Pagi
-          </h1>
-
-          {/* Subtitle Paragraf */}
-          <p className="relative z-10 mt-5 sm:mt-6 max-w-2xl text-sm sm:text-base md:text-lg font-normal text-white/95 leading-relaxed">
-            Satu platform terintegrasi: Kasir suara pintar 2 detik, buku besar auto-ledger laba rugi real-time, dan asisten keputusan 3 pertanyaan pagi berbasis deteksi anomali tanpa kerumitan pencatatan manual.
-          </p>
-
-          {/* CTA Buttons Row */}
-          <div className="relative z-10 mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full sm:w-auto">
+          {/* Hero Content Motion Stagger Sequence */}
+          <HeroMotion>
+            {/* Announcement Pill Badge */}
             <Link
-              href="/login"
-              className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-white text-slate-900 font-bold text-sm sm:text-base shadow-xl hover:bg-zinc-100 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+              href="/demo-guide"
+              className="hero-animate-item relative z-10 group inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs sm:text-sm font-medium text-white shadow-xs backdrop-blur-xs hover:bg-white/20 transition-all cursor-pointer"
             >
-              Mulai Demo 1-Klik
+              <span>GTNIC 2026 • Asisten Keputusan & Smart Voice POS UMKM</span>
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-brand-600 font-bold text-xs group-hover:translate-x-0.5 transition-transform">
+                <ArrowRight className="h-3 w-3 stroke-[3]" />
+              </span>
             </Link>
 
-            <Link
-              href="/dashboard"
-              className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-full border border-white/30 bg-white/10 text-white font-semibold text-sm sm:text-base backdrop-blur-xs hover:bg-white/20 active:scale-[0.98] transition-all cursor-pointer"
-            >
-              Buka Dashboard Owner
-            </Link>
-          </div>
+            {/* Headline Display Masif */}
+            <h1 className="hero-animate-item relative z-10 mt-6 sm:mt-8 max-w-3xl text-3xl sm:text-5xl md:text-5xl font-extrabold tracking-tight leading-[1.08] text-white">
+              Semua Jawaban untuk Mengelola Multi-Cabang UMKM—Otomatis Setiap Pagi
+            </h1>
 
-          {/* Trust Ticker Badges di Bagian Bawah Kartu Hero (1 Baris Utuh) */}
-          <div className="relative z-10 mt-10 sm:mt-12 flex items-center justify-center gap-3 sm:gap-6 lg:gap-8 text-xs font-medium text-white/90 pt-6 border-t border-white/20 max-w-4xl mx-auto w-full overflow-x-auto scrollbar-none py-1">
-            <div className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0">
-              <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-white" />
-              <span>100% Client-Side Voice NLP (Rp 0 API)</span>
+            {/* Subtitle Paragraf */}
+            <p className="hero-animate-item relative z-10 mt-5 sm:mt-6 max-w-2xl text-sm sm:text-base md:text-lg font-normal text-white/95 leading-relaxed">
+              Satu platform terintegrasi: Kasir suara pintar 2 detik, buku besar auto-ledger laba rugi real-time, dan asisten keputusan 3 pertanyaan pagi berbasis deteksi anomali tanpa kerumitan pencatatan manual.
+            </p>
+
+            {/* CTA Buttons Row */}
+            <div className="hero-animate-item relative z-10 mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full sm:w-auto">
+              <Link
+                href="/login"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-white text-slate-900 font-bold text-sm sm:text-base shadow-xl hover:bg-zinc-100 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+              >
+                Mulai Demo 1-Klik
+              </Link>
+
+              <Link
+                href="/dashboard"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-full border border-white/30 bg-white/10 text-white font-semibold text-sm sm:text-base backdrop-blur-xs hover:bg-white/20 active:scale-[0.98] transition-all cursor-pointer"
+              >
+                Buka Dashboard Owner
+              </Link>
             </div>
-            <span className="text-white/40 shrink-0">•</span>
-            <div className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0">
-              <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-white" />
-              <span>Laporan PDF Standar Bank (KUR Ready)</span>
+
+            {/* Trust Ticker Badges di Bagian Bawah Kartu Hero (1 Baris Utuh) */}
+            <div className="hero-animate-item relative z-10 mt-10 sm:mt-12 flex items-center justify-center gap-3 sm:gap-6 lg:gap-8 text-xs font-medium text-white/90 pt-6 border-t border-white/20 max-w-4xl mx-auto w-full overflow-x-auto scrollbar-none py-1">
+              <div className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-white" />
+                <span>100% Client-Side Voice NLP (Rp 0 API)</span>
+              </div>
+              <span className="text-white/40 shrink-0">•</span>
+              <div className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-white" />
+                <span>Laporan PDF Standar Bank (KUR Ready)</span>
+              </div>
+              <span className="text-white/40 shrink-0">•</span>
+              <div className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-white" />
+                <span>Sinkronisasi Multi-Cabang Latensi 0ms</span>
+              </div>
             </div>
-            <span className="text-white/40 shrink-0">•</span>
-            <div className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0">
-              <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-white" />
-              <span>Sinkronisasi Multi-Cabang Latensi 0ms</span>
-            </div>
-          </div>
+          </HeroMotion>
         </div>
       </section>
 
@@ -445,7 +449,7 @@ export default function HomePage() {
           </div>
 
           {/* Elegant Single-Surface Testimonial Card */}
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 sm:p-10 md:p-12 shadow-xs relative">
+          <div className="landing-card-hover mt-6 rounded-2xl border border-slate-200 bg-white p-6 sm:p-10 md:p-12 shadow-xs relative">
             <CornerMarks />
 
             {/* Tag & Meta info */}
@@ -586,7 +590,7 @@ export default function HomePage() {
           {/* 2-Column Side-by-Side Comparison Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
             {/* Kartu Kiri: Masalah Tradisional (Dark Card with Friction Tags) */}
-            <div className="relative rounded-none border border-slate-200 bg-slate-50/80 shadow-sm p-6 sm:p-8 flex flex-col justify-between space-y-6">
+            <div className="landing-card-hover relative rounded-none border border-slate-200 bg-slate-50/80 shadow-sm p-6 sm:p-8 flex flex-col justify-between space-y-6">
               <CornerMarks />
 
               <div className="space-y-4">
@@ -631,7 +635,7 @@ export default function HomePage() {
             </div>
 
             {/* Kartu Kanan: Solusi Gesit BizPulse (Vibrant Orange Card) */}
-            <div className="relative rounded-none border border-brand-500/40 bg-hero-gradient p-6 sm:p-8 flex flex-col justify-between space-y-6 text-white shadow-xl shadow-brand-500/15">
+            <div className="landing-card-hover relative rounded-none border border-brand-500/40 bg-hero-gradient p-6 sm:p-8 flex flex-col justify-between space-y-6 text-white shadow-xl shadow-brand-500/15">
               <CornerMarks borderClass="border-white/50" bgClass="bg-brand-600" />
 
               <div className="space-y-4">
@@ -885,7 +889,7 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3">
               {/* Card 1: Top-Left (Col span 2) - Fits into your existing workflows */}
-              <div className="md:col-span-2 p-6 sm:p-8 flex flex-col justify-between border-b md:border-b border-slate-200 space-y-6">
+              <div className="landing-card-hover md:col-span-2 p-6 sm:p-8 flex flex-col justify-between border-b md:border-b border-slate-200 space-y-6">
                 {/* Top Visual Area: Live Transaction Register Stream (info4.png deployment list) */}
                 <TransactionFeedDemo />
 

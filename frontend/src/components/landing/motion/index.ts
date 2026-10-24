@@ -18,3 +18,5 @@ export { SyncCardDemo } from './sync-card';
 export { SecurityCardDemo } from './security-card';
 
 export { AnomalyTerminalDemo } from './anomaly-terminal';
+
+export { HeroMotion } from './hero-motion';

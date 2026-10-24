@@ -138,7 +138,7 @@ export function SecurityCardDemo() {
   return (
     <div
       ref={rootRef}
-      className="md:col-span-1 p-6 sm:p-8 flex flex-col justify-between border-b md:border-b-0 border-slate-200 space-y-6 bg-white"
+      className="landing-card-hover md:col-span-1 p-6 sm:p-8 flex flex-col justify-between border-b md:border-b-0 border-slate-200 space-y-6 bg-white"
     >
       <div className="space-y-4">
         {/* Shield Icon Box */}

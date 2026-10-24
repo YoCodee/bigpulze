@@ -239,7 +239,7 @@ export function AnomalyTerminalDemo() {
   return (
     <div
       ref={rootRef}
-      className="md:col-span-2 p-6 sm:p-8 flex flex-col lg:flex-row justify-between md:border-l border-slate-200 gap-6 items-stretch bg-white"
+      className="landing-card-hover md:col-span-2 p-6 sm:p-8 flex flex-col lg:flex-row justify-between md:border-l border-slate-200 gap-6 items-stretch bg-white"
     >
       {/* Left Description inside Card 4 */}
       <div ref={leftColRef} className="lg:w-2/5 flex flex-col justify-between space-y-4">
