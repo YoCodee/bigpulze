@@ -1838,6 +1838,26 @@
   - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
 
+### G4 — Animasi Landing Page: Card Oranye Satu Platform (Poin D) ✅
+**Selesai:** 2026-10-24
+
+- **Komponen Card Oranye `<SyncCardDemo>`:**
+  - `frontend/src/components/landing/motion/sync-card.tsx`: Menggantikan markup statis Card 2 (*"Satu Platform untuk POS, Stok, dan Keuangan"*).
+- **Fitur Gerak:**
+  - **Teks Reveal Sekali:** Ikon bola dunia, judul, dan paragraf deskripsi masuk secara berurutan (`y: 12px → 0`, `opacity: 0 → 1`, stagger `0.08s`) saat card masuk viewport.
+  - **Garis Pemisah Tergambar:** Garis horizontal tipis di atas baris metrik digambar dari kiri ke kanan (`scaleX: 0 → 1`).
+  - **Floating Icon Pelan:** Ikon bola dunia (`Globe2`) bergerak naik-turun sinusoidal sangat lembut (`y: -3.5px`, durasi 2.6s, `sine.inOut`, yoyo).
+  - **Titik Sinyal Data Berjalan:** Pada baris *"Sinkronisasi instan"*, titik pulsa putih bergerak dari kiri ke kanan menembus jalur data menuju angka `< 100ms`.
+  - **Kilau Latar Belakang (Shimmer Sheen):** Lapisan gradasi halus menyapu pelan melintasi latar oranye secara berkala.
+- **Kontrol Viewport & Aksesibilitas:**
+  - Seluruh loop animasi (floating icon, moving dot, shimmer) otomatis **pause** saat card berada di luar viewport layar dan **resume** saat terlihat kembali.
+  - Mematuhi `prefers-reduced-motion`: tampilan statis instan tanpa kilau dan tanpa pergerakan jika reduced motion diaktifkan.
+- **Hasil Verifikasi:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
+
+
 
 
 

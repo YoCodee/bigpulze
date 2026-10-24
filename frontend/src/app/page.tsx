@@ -20,7 +20,6 @@ import {
   FileSpreadsheet,
   Activity,
   Check,
-  Globe2,
   Smartphone,
   RefreshCw,
   Building2,
@@ -37,7 +36,7 @@ import {
   FeatureGrid,
   FeatureCell,
 } from '@/components/ui/blueprint-grid';
-import { SectionHeader, TransactionFeedDemo } from '@/components/landing/motion';
+import { SectionHeader, TransactionFeedDemo, SyncCardDemo } from '@/components/landing/motion';
 
 const testimonials = [
   {
@@ -897,26 +896,7 @@ export default function HomePage() {
               </div>
 
               {/* Card 2: Top-Right (Col span 1) - One network for users, apps, and data (Vibrant Orange Card) */}
-              <div className="md:col-span-1 p-6 sm:p-8 flex flex-col justify-between bg-hero-gradient text-white border-b md:border-b md:border-l border-brand-500/30 space-y-6 shadow-inner">
-                <div className="space-y-4">
-                  <div className="h-10 w-10 rounded-lg bg-white/20 flex items-center justify-center text-white backdrop-blur-xs">
-                    <Globe2 className="h-5 w-5" />
-                  </div>
-
-                  <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight leading-snug">
-                    Satu Platform untuk POS, Stok, dan Keuangan
-                  </h3>
-
-                  <p className="text-xs sm:text-[13px] text-white/90 leading-relaxed">
-                    Mulai dari kasir mencatat pesanan, gudang memutasi bahan baku, hingga pemilik memantau laba bersih harian — semua tersinkronisasi seketika dalam satu database aman tanpa modul terpisah.
-                  </p>
-                </div>
-
-                <div className="pt-4 border-t border-white/20 flex items-center justify-between text-[11px] text-white/80 font-mono">
-                  <span>Sinkronisasi instan</span>
-                  <span className="font-bold text-white">&lt; 100ms</span>
-                </div>
-              </div>
+              <SyncCardDemo />
 
               {/* Card 3: Bottom-Left (Col span 1) - Secure by default */}
               <div className="md:col-span-1 p-6 sm:p-8 flex flex-col justify-between border-b md:border-b-0 border-slate-200 space-y-6">
