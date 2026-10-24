@@ -89,7 +89,7 @@ export function numberToWords(n: number): string {
   if (n === 0) return 'nol';
 
   const isNegative = n < 0;
-  let num = Math.abs(Math.round(n));
+  const num = Math.abs(Math.round(n));
 
   if (num >= 1_000_000_000_000) {
     const triliun = Math.floor(num / 1_000_000_000_000);

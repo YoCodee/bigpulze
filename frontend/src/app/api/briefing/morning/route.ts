@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { apiSuccess, apiError, handleApiError } from '@/lib/api-response';
 import {
@@ -25,7 +24,7 @@ import { id as idLocale } from 'date-fns/locale';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = createClient();
     const {
@@ -48,7 +47,7 @@ export async function GET(request: NextRequest) {
     }
 
     const orgId = profile.org_id;
-    const orgName = (profile.organizations as any)?.name || 'Bisnis Anda';
+    const orgName = (profile.organizations as unknown as { name?: string })?.name || 'Bisnis Anda';
     const ownerName = profile.full_name || 'Owner';
 
     // 2. Date setup: yesterday for PnL
@@ -212,10 +211,10 @@ export async function GET(request: NextRequest) {
       .eq('status', 'OPEN');
 
     const openDbAnomalies = dbAnomalies || [];
-    const anomalyItems = openDbAnomalies.map((a: any) => ({
-      title: a.title || a.description || 'Anomali pengeluaran',
-      branch_name: a.branch_id ? branchMap.get(a.branch_id) || 'Semua Cabang' : 'Semua Cabang',
-      severity: a.severity || 'MEDIUM',
+    const anomalyItems = openDbAnomalies.map((a: Record<string, unknown>) => ({
+      title: (a.title as string) || (a.description as string) || 'Anomali pengeluaran',
+      branch_name: a.branch_id ? branchMap.get(a.branch_id as string) || 'Semua Cabang' : 'Semua Cabang',
+      severity: (a.severity as 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL') || 'MEDIUM',
       metric_value: Number(a.metric_value || 0),
     }));
 
@@ -264,7 +263,7 @@ export async function GET(request: NextRequest) {
       salesMap.set(item.product_id, curr + Number(item.quantity));
     });
 
-    const stockItems: BranchProductStock[] = productList.map((p: any) => {
+    const stockItems: BranchProductStock[] = productList.map((p) => {
       const unitsSold = salesMap.get(p.id) || 0;
       return {
         product_id: p.id,

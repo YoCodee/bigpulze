@@ -183,9 +183,9 @@ export function useMorningBriefing(): UseMorningBriefingReturn {
 
       isPlayingRef.current = true;
       speakSection(0, currentScript);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Briefing error:', err);
-      setErrorMessage(err.message || 'Terjadi kesalahan sistem.');
+      setErrorMessage(err instanceof Error ? err.message : 'Terjadi kesalahan sistem.');
       setStatus('error');
       isPlayingRef.current = false;
     }

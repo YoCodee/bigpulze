@@ -3,7 +3,6 @@
 import React from 'react';
 import {
   Volume2,
-  VolumeX,
   Play,
   Pause,
   RotateCcw,
@@ -12,7 +11,6 @@ import {
   AlertTriangle,
   CheckCircle2,
   Clock,
-  ChevronRight,
   X,
   Info,
 } from 'lucide-react';
@@ -66,7 +64,7 @@ export function MorningBriefingPlayer({ briefing, onClose }: MorningBriefingPlay
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-bold text-slate-900 tracking-tight">
-                AI Voice Morning Briefing
+                Briefing Suara Pagi
               </h3>
               <Badge
                 variant={isSpeaking ? 'brand' : isDone ? 'success' : 'neutral'}
@@ -86,7 +84,7 @@ export function MorningBriefingPlayer({ briefing, onClose }: MorningBriefingPlay
             <p className="text-xs text-slate-500">
               {script
                 ? `Ringkasan 3 Pertanyaan Pagi • Est. ~${script.estimated_duration_seconds} detik`
-                : 'Sintesis otomatis dari PnL kemarin, anomali terbuka, & rekomendasi mutasi'}
+                : 'Ringkasan kondisi 3 pertanyaan pagi'}
             </p>
           </div>
         </div>
@@ -240,7 +238,7 @@ export function MorningBriefingPlayer({ briefing, onClose }: MorningBriefingPlay
             </div>
 
             <p className="text-sm sm:text-base leading-relaxed font-normal text-slate-100 min-h-12">
-              "{currentSection?.text || script.sections[0]?.text}"
+              &ldquo;{currentSection?.text || script.sections[0]?.text}&rdquo;
             </p>
 
             {/* Ambient waveform gradient at bottom */}
@@ -266,7 +264,7 @@ export function MorningBriefingPlayer({ briefing, onClose }: MorningBriefingPlay
                 {selectedVoiceName || 'Standar Bahasa Indonesia'}
               </strong>
             </span>
-            <span>Web Speech API (Zero API Cost)</span>
+            <span>Pemutar Suara Lokal</span>
           </div>
         </div>
       )}

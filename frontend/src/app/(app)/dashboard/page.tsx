@@ -271,9 +271,9 @@ export default function DashboardPage() {
   // Metrics for MetricStrip component
   const morningMetrics: MetricItem[] = [
     {
-      label: 'Pertanyaan 1: Kemarin Untung / Rugi?',
+      label: 'Kemarin Untung / Rugi?',
       value: '+Rp 2.730.000',
-      subtext: 'Omzet Rp 3.850.000 • HPP Rp 1.120.000 (Margin 70.9%)',
+      subtext: 'Omzet Rp 3.850.000 • Modal Rp 1.120.000',
       badge: (
         <Badge variant="success" dot>
           Untung ✅
@@ -285,23 +285,23 @@ export default function DashboardPage() {
       },
     },
     {
-      label: 'Uang Fisik Kasir di Laci (Register)',
+      label: 'Uang Kas di Kasir',
       value: 'Rp 2.140.000',
-      subtext: 'Selisih Rp 0 • 167 transaksi QRIS & Tunai klop',
+      subtext: 'Selisih Rp 0 • Semua transaksi klop',
       badge: (
         <Badge variant="neutral" dot>
           Klop Sempurna
         </Badge>
       ),
       change: {
-        value: 'Rekonsiliasi 100%',
+        value: 'Klop 100%',
         isNeutral: true,
       },
     },
     {
-      label: 'Pertanyaan 2: Deteksi Anomali Sistem',
-      value: `${anomalySummary.total_open} Terbuka`,
-      subtext: `${anomalySummary.critical_count} Kritis • Modified Z-score > 2.5`,
+      label: 'Perlu Diperhatikan',
+      value: `${anomalySummary.total_open} Pengeluaran`,
+      subtext: `${anomalySummary.critical_count} transaksi mendesak dicek`,
       badge: (
         <Badge variant={anomalySummary.total_open > 0 ? 'warning' : 'success'} dot>
           {anomalySummary.total_open > 0 ? 'Perlu Tinjauan' : 'Normal'}
@@ -309,12 +309,12 @@ export default function DashboardPage() {
       ),
     },
     {
-      label: 'Pertanyaan 3: Rekomendasi Mutasi',
+      label: 'Saran Mutasi Stok',
       value: `${recommendations.length} Rekomendasi`,
-      subtext: `Potensi Laba: +${formatRupiah(recommendationSummary.total_potential_net_benefit)}`,
+      subtext: `Potensi hemat +${formatRupiah(recommendationSummary.total_potential_net_benefit)}`,
       badge: (
         <Badge variant="brand" dot>
-          Hemat Ongkir
+          Hemat Biaya
         </Badge>
       ),
     },
@@ -347,20 +347,20 @@ export default function DashboardPage() {
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="brand" dot>
-                GTNIC 2026 • Asisten Keputusan
+                Ikhtisar Usaha
               </Badge>
               <span className="text-xs text-slate-500 flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                {formatDateId(new Date(), 'EEEE, d MMMM yyyy')} • Zona WIB (Asia/Jakarta)
+                {formatDateId(new Date(), 'EEEE, d MMMM yyyy')}
               </span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Pusat Kendali Eksekutif, Budi Santoso 
+              Selamat Pagi, Budi Santoso
             </h1>
 
             <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
-              Selamat pagi! Berikut adalah ikhtisar harian <strong className="text-slate-700">3 Pertanyaan Pagi</strong> untuk 3 cabang Kopi Senja. Buku besar otomatis telah terkonsiliasi hingga fajar ini.
+              Ikhtisar kondisi 3 gerai Kopi Senja hingga pagi ini.
             </p>
           </div>
 
@@ -407,7 +407,7 @@ export default function DashboardPage() {
             <Link href="/demo-guide">
               <Button variant="primary" size="sm" className="gap-1.5 bg-enterprise-600 hover:bg-enterprise-700">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Panduan Juri</span>
+                <span>Panduan Demo</span>
               </Button>
             </Link>
           </div>
@@ -438,9 +438,9 @@ export default function DashboardPage() {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-slate-900 group-hover:text-enterprise-600 transition-colors">
-                  Buka Kasir Voice POS
+                  Kasir Voice POS
                 </h4>
-                <p className="text-xs text-slate-500">Input transaksi 2 detik & cetak struk</p>
+                <p className="text-xs text-slate-500">Transaksi cepat lewat suara</p>
               </div>
             </div>
             <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-enterprise-600 group-hover:translate-x-0.5 transition-all" />
@@ -456,9 +456,9 @@ export default function DashboardPage() {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
-                  Catat Beban Operasional
+                  Catat Pengeluaran
                 </h4>
-                <p className="text-xs text-slate-500">Input biaya harian lisan atau manual</p>
+                <p className="text-xs text-slate-500">Catat biaya operasional harian</p>
               </div>
             </div>
             <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-amber-600 group-hover:translate-x-0.5 transition-all" />
@@ -474,9 +474,9 @@ export default function DashboardPage() {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
-                  Laporan Laba Rugi Auto-Ledger
+                  Laporan Laba Rugi
                 </h4>
-                <p className="text-xs text-slate-500">Ekspor format resmi PDF siap bank/KUR</p>
+                <p className="text-xs text-slate-500">Lihat keuntungan & ekspor PDF</p>
               </div>
             </div>
             <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
@@ -494,18 +494,18 @@ export default function DashboardPage() {
             items={[
               {
                 id: 'overview',
-                label: 'Ikhtisar 3 Pertanyaan Pagi',
+                label: '3 Pertanyaan Pagi',
                 icon: Sparkles,
               },
               {
                 id: 'branches',
-                label: 'Performa Cabang Aktif',
+                label: 'Performa Cabang',
                 icon: Building2,
                 count: 3,
               },
               {
                 id: 'anomalies',
-                label: 'Deteksi Anomali Terbuka',
+                label: 'Perlu Dicek',
                 icon: ShieldAlert,
                 count: anomalySummary.total_open,
               },
@@ -514,7 +514,7 @@ export default function DashboardPage() {
 
           <div className="text-xs text-slate-500 flex items-center gap-1.5 self-end sm:self-auto">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>PostgreSQL RLS Multi-Tenant Aktif</span>
+            <span>Data Terproteksi</span>
           </div>
         </div>
 
@@ -522,10 +522,10 @@ export default function DashboardPage() {
         {/* 4. SEGMENTED 4-KPI METRIC STRIP (refrence1 (4).png) */}
         {/* ======================================================== */}
         <MetricStrip
-          title="Indikator Kunci Keputusan 3 Pagi (D-1 s.d. Fajar Ini)"
+          title="Ringkasan 3 Pertanyaan Pagi"
           action={
             <Link href="/reports" className="text-enterprise-600 hover:text-enterprise-700 font-bold flex items-center gap-1">
-              <span>Buka Buku Besar</span>
+              <span>Buka Laporan</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           }
@@ -551,10 +551,10 @@ export default function DashboardPage() {
                         <span className="p-1.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-200">
                           <ShieldAlert className="w-4 h-4" />
                         </span>
-                        <CardTitle>Pertanyaan 2: Apa yang Harus Diperhatikan?</CardTitle>
+                        <CardTitle>Apa yang Harus Diperhatikan?</CardTitle>
                       </div>
                       <CardDescription className="mt-1">
-                        Algoritma Modified Z-Score mendeteksi lonjakan beban abnormal, penurunan omzet drastis, dan transaksi kembar secara otomatis.
+                        Daftar pengeluaran dan transaksi tidak biasa yang perlu diperiksa.
                       </CardDescription>
                     </div>
 
@@ -563,7 +563,7 @@ export default function DashboardPage() {
                       dot
                       className="shrink-0"
                     >
-                      {anomalySummary.total_open} Anomali Terbuka
+                      {anomalySummary.total_open} Perlu Dicek
                     </Badge>
                   </CardHeader>
 
@@ -571,13 +571,13 @@ export default function DashboardPage() {
                     {loading ? (
                       <div className="p-8 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
                         <Loader2 className="w-4 h-4 animate-spin text-enterprise-600" />
-                        <span>Menganalisis integritas data finansial seluruh cabang...</span>
+                        <span>Memeriksa transaksi seluruh gerai...</span>
                       </div>
                     ) : anomalies.length === 0 ? (
                       <EmptyState
                         icon={CheckCircle2}
                         title="Seluruh Cabang Beroperasi Normal"
-                        description="Tidak ditemukan lonjakan biaya abnormal, selisih register kasir, atau transaksi kembar saat ini. Bisnis Anda dalam kondisi prima."
+                        description="Tidak ditemukan lonjakan biaya, selisih register kasir, atau transaksi mencurigakan. Usaha Anda dalam kondisi baik."
                       />
                     ) : (
                       <div className="space-y-3">
@@ -604,7 +604,11 @@ export default function DashboardPage() {
                                         : 'neutral'
                                     }
                                   >
-                                    {anom.severity}
+                                    {anom.severity === 'CRITICAL'
+                                      ? 'Mendesak'
+                                      : anom.severity === 'HIGH'
+                                      ? 'Penting'
+                                      : 'Perlu Dicek'}
                                   </Badge>
                                   <h4 className="text-sm font-bold text-slate-900 leading-snug">
                                     {anom.title}
@@ -629,13 +633,8 @@ export default function DashboardPage() {
                               <span className="font-medium text-slate-700">
                                 Lokasi: {anom.branch_name || 'Seluruh Cabang'}
                               </span>
-                              {anom.z_score !== null && anom.z_score !== undefined && (
-                                <span className="font-mono text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">
-                                  Modified Z-Score: {anom.z_score}
-                                </span>
-                              )}
                               <span className="text-slate-400">
-                                Terdeteksi: {formatDateId(anom.detected_at, 'd MMM, HH:mm')} WIB
+                                Terdeteksi: {formatDateId(anom.detected_at, 'd MMM, HH:mm')}
                               </span>
                             </div>
                           </div>
@@ -653,15 +652,15 @@ export default function DashboardPage() {
                         <span className="p-1.5 rounded-lg bg-blue-50 text-enterprise-600 border border-blue-200">
                           <ArrowRightLeft className="w-4 h-4" />
                         </span>
-                        <CardTitle>Pertanyaan 3: Apa yang Harus Dilakukan?</CardTitle>
+                        <CardTitle>Apa yang Harus Dilakukan?</CardTitle>
                       </div>
                       <CardDescription className="mt-1">
-                        Daftar tindakan eksekusi cerdas: resolusi audit anomali biaya cabang dan rekomendasi transfer persediaan antarcabang.
+                        Saran mutasi persediaan antarcabang untuk mencegah kehabisan stok.
                       </CardDescription>
                     </div>
 
                     <Badge variant="brand" dot className="shrink-0">
-                      {anomalies.length + recommendations.length} Tindakan Siap
+                      {recommendations.length} Rekomendasi Mutasi
                     </Badge>
                   </CardHeader>
 
@@ -669,13 +668,13 @@ export default function DashboardPage() {
                     {loading ? (
                       <div className="p-8 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
                         <Loader2 className="w-4 h-4 animate-spin text-enterprise-600" />
-                        <span>Menghitung optimasi tindakan dan transfer stok antarcabang...</span>
+                        <span>Menghitung saran mutasi stok antarcabang...</span>
                       </div>
                     ) : anomalies.length === 0 && recommendations.length === 0 ? (
                       <EmptyState
                         icon={PackageCheck}
                         title="Seluruh Operasional & Persediaan Prima"
-                        description="Tidak ada audit biaya mendesak maupun defisit stok antarcabang saat ini. Seluruh gerai beroperasi dalam batas aman."
+                        description="Stok seluruh gerai dalam batas aman. Belum diperlukan mutasi stok saat ini."
                       />
                     ) : (
                       <div className="space-y-4">
@@ -689,7 +688,7 @@ export default function DashboardPage() {
                               <div className="flex items-center gap-2">
                                 <span className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
                                   <ShieldAlert className="w-4 h-4 text-amber-600" />
-                                  Tindakan Audit: {anom.title}
+                                  Perlu Dicek: {anom.title}
                                 </span>
                                 <span className="text-[10px] text-slate-500 font-mono">
                                   ({anom.branch_name || 'Cabang'})
@@ -699,7 +698,7 @@ export default function DashboardPage() {
                               <Badge
                                 variant={anom.severity === 'CRITICAL' ? 'danger' : 'warning'}
                               >
-                                {anom.severity === 'CRITICAL' ? 'Audit Kritis' : 'Perlu Tindakan'}
+                                {anom.severity === 'CRITICAL' ? 'Mendesak' : 'Perlu Tindakan'}
                               </Badge>
                             </div>
 
@@ -718,7 +717,7 @@ export default function DashboardPage() {
                                 onClick={() => setSelectedAnomaly(anom)}
                                 className="bg-white border-amber-300 text-amber-900 hover:bg-amber-100 font-semibold text-xs gap-1.5 shadow-2xs"
                               >
-                                <span>Selesaikan Investigasi Audit</span>
+                                <span>Periksa Pengeluaran</span>
                                 <ArrowRight className="w-3.5 h-3.5 text-amber-600" />
                               </Button>
                             </div>
@@ -737,15 +736,12 @@ export default function DashboardPage() {
                                   <Boxes className="w-4 h-4 text-enterprise-600" />
                                   {rec.product_name}
                                 </span>
-                                <span className="text-[10px] text-slate-500 font-mono">
-                                  ({rec.sku})
-                                </span>
                               </div>
 
                               <Badge
                                 variant={rec.urgency === 'CRITICAL' ? 'danger' : 'enterprise'}
                               >
-                                {rec.urgency === 'CRITICAL' ? 'Kritis' : 'Disarankan'}
+                                {rec.urgency === 'CRITICAL' ? 'Mendesak' : 'Disarankan'}
                               </Badge>
                             </div>
 
@@ -754,7 +750,7 @@ export default function DashboardPage() {
                               {/* Donor Branch */}
                               <div className="space-y-0.5">
                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                                  Cabang Donor (Surplus)
+                                  Dari (Surplus)
                                 </span>
                                 <p className="font-bold text-slate-800">{rec.from_branch_name}</p>
                                 <p className="text-[11px] text-slate-500 font-mono">
@@ -769,14 +765,14 @@ export default function DashboardPage() {
                                   +{rec.transfer_qty} unit
                                 </span>
                                 <span className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
-                                  Mutasi Cerdas <ArrowRight className="w-3 h-3" />
+                                  Pindahkan <ArrowRight className="w-3 h-3" />
                                 </span>
                               </div>
 
                               {/* Receiver Branch */}
                               <div className="space-y-0.5 text-right">
                                 <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider block">
-                                  Cabang Penerima (Defisit)
+                                  Ke (Defisit)
                                 </span>
                                 <p className="font-bold text-rose-800">{rec.to_branch_name}</p>
                                 <p className="text-[11px] text-slate-500 font-mono">
@@ -793,18 +789,15 @@ export default function DashboardPage() {
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs pt-1">
                               <div>
                                 <span className="text-slate-600">
-                                  Keuntungan Bersih:{' '}
+                                  Potensi Hemat:{' '}
                                   <strong className="text-emerald-700 font-bold font-mono text-sm">
                                     +{formatRupiah(rec.net_benefit)}
                                   </strong>
                                 </span>
-                                <span className="text-[11px] text-slate-400 ml-1.5">
-                                  (Setelah ongkir {formatRupiah(rec.logistics_cost)})
-                                </span>
                               </div>
 
                               <span className="text-[11px] text-slate-500">
-                                Cadangan pasokan: {rec.to_days_of_supply_after} hari aman
+                                Stok cukup untuk ±{rec.to_days_of_supply_after} hari
                               </span>
                             </div>
 
@@ -819,12 +812,12 @@ export default function DashboardPage() {
                               {executingId === rec.id ? (
                                 <>
                                   <Loader2 className="w-4 h-4 animate-spin" />
-                                  <span>Memproses Mutasi Stok Melalui RPC Database...</span>
+                                  <span>Memproses Pemindahan Stok...</span>
                                 </>
                               ) : (
                                 <>
                                   <Check className="w-4 h-4" />
-                                  <span>Eksekusi Mutasi Stok 1-Klik ({rec.transfer_qty} Unit)</span>
+                                  <span>Pindahkan Stok ({rec.transfer_qty} Unit)</span>
                                 </>
                               )}
                             </Button>
@@ -846,7 +839,7 @@ export default function DashboardPage() {
                         <CardTitle>Tren Finansial 7 Hari Terakhir</CardTitle>
                       </div>
                       <CardDescription className="mt-1">
-                        Kalkulasi buku besar harian otomatis: Omzet kotor, beban operasional, dan margin laba bersih.
+                        Omzet harian dibanding target penjualan.
                       </CardDescription>
                     </div>
 
@@ -883,12 +876,12 @@ export default function DashboardPage() {
                         </div>
                         <div className="flex items-center gap-1.5">
                           <span className="h-2.5 w-2.5 rounded-xs bg-slate-200" />
-                          <span>Target Capaian</span>
+                          <span>Target</span>
                         </div>
                       </div>
 
                       <span className="font-mono text-slate-700 font-medium">
-                        Rata-rata Margin: <strong className="text-emerald-700">74.2%</strong>
+                        Rata-rata Margin: <strong className="text-emerald-700">74%</strong>
                       </span>
                     </div>
                   </CardContent>
@@ -971,8 +964,7 @@ export default function DashboardPage() {
             <Card>
               <CardHeader className="border-b border-slate-100 pb-3.5">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-bold">Capaian Target Hari Ini</CardTitle>
-                  <span className="text-xs text-slate-400 font-mono">Zona WIB</span>
+                  <CardTitle className="text-sm font-bold">Target Penjualan Hari Ini</CardTitle>
                 </div>
               </CardHeader>
 
@@ -1013,48 +1005,48 @@ export default function DashboardPage() {
             {/* 2. Ringkasan Kapasitas & Status Akun */}
             <Card>
               <CardHeader className="border-b border-slate-100 pb-3.5">
-                <CardTitle className="text-sm font-bold">Kapasitas & Integritas Akun</CardTitle>
+                <CardTitle className="text-sm font-bold">Status Akun & Sistem</CardTitle>
               </CardHeader>
 
               <CardContent className="p-5 space-y-3.5 text-xs">
                 <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
-                  <span className="text-slate-500">Kuota Cabang Aktif</span>
-                  <Badge variant="enterprise">3 / 5 Cabang (Pro Tier)</Badge>
+                  <span className="text-slate-500">Cabang Aktif</span>
+                  <Badge variant="enterprise">3 / 5 Cabang</Badge>
                 </div>
 
                 <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
-                  <span className="text-slate-500">Keamanan Database</span>
+                  <span className="text-slate-500">Keamanan Data</span>
                   <span className="font-semibold text-slate-800 flex items-center gap-1">
-                    <Lock className="w-3.5 h-3.5 text-emerald-600" /> PostgreSQL RLS
+                    <Lock className="w-3.5 h-3.5 text-emerald-600" /> Terproteksi
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
-                  <span className="text-slate-500">Log Audit Anti-Fraud</span>
+                  <span className="text-slate-500">Pencatatan Transaksi</span>
                   <span className="font-semibold text-emerald-700 flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Aktif & Terproteksi
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Otomatis & Klop
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Format Laporan</span>
-                  <span className="font-mono text-slate-700">Standar Pengajuan KUR</span>
+                  <span className="text-slate-500">Laporan Keuangan</span>
+                  <span className="font-mono text-slate-700">Standar Usaha</span>
                 </div>
               </CardContent>
             </Card>
 
-            {/* 3. Panduan Cepat Skenario Juri GTNIC 2026 */}
+            {/* 3. Panduan Cepat Skenario */}
             <Card className="bg-[#121316] text-white border-slate-800">
               <CardHeader className="border-b border-slate-800/80 pb-3">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-brand-400" />
-                  <CardTitle className="text-sm font-bold text-white">Panduan Pengujian Juri</CardTitle>
+                  <CardTitle className="text-sm font-bold text-white">Panduan Uji Coba</CardTitle>
                 </div>
               </CardHeader>
 
               <CardContent className="p-5 space-y-3 text-xs text-slate-300">
                 <p className="leading-relaxed text-[11px] text-slate-300">
-                  Gunakan panduan 6 skenario interaktif untuk menguji voice input, auto-ledger, deteksi anomali Z-score, dan mutasi stok.
+                  Coba skenario interaktif untuk menguji input suara kasir, pencatatan pengeluaran, dan mutasi stok.
                 </p>
 
                 <div className="space-y-1.5 pt-1">
@@ -1062,7 +1054,7 @@ export default function DashboardPage() {
                     href="/demo-guide"
                     className="w-full py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-brand-500/20"
                   >
-                    <span>Buka Panduan 6 Skenario</span>
+                    <span>Buka Panduan Demo</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
 
@@ -1071,7 +1063,7 @@ export default function DashboardPage() {
                     className="w-full py-2 bg-slate-800/80 hover:bg-slate-800 text-slate-200 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 border border-slate-700"
                   >
                     <FileText className="w-3.5 h-3.5 text-brand-400" />
-                    <span>Ekspor PDF KUR Bank</span>
+                    <span>Lihat Contoh Laporan</span>
                   </Link>
                 </div>
               </CardContent>
@@ -1088,7 +1080,7 @@ export default function DashboardPage() {
               <div className="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShieldAlert className="w-5 h-5 text-amber-600" />
-                  <h3 className="text-sm font-bold text-slate-900">Resolusi Anomali Finansial</h3>
+                  <h3 className="text-sm font-bold text-slate-900">Pemeriksaan Pengeluaran</h3>
                 </div>
                 <button
                   type="button"
@@ -1102,7 +1094,7 @@ export default function DashboardPage() {
               <div className="p-5 space-y-4">
                 <div className="space-y-1">
                   <div className="text-[11px] text-slate-500 uppercase tracking-wider font-bold">
-                    {selectedAnomaly.branch_name || 'Seluruh Cabang'} • {selectedAnomaly.anomaly_type}
+                    {selectedAnomaly.branch_name || 'Seluruh Cabang'}
                   </div>
                   <h4 className="text-base font-bold text-slate-900">{selectedAnomaly.title}</h4>
                   <p className="text-xs text-slate-600 leading-relaxed">
@@ -1111,7 +1103,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="p-3 bg-amber-50/60 rounded-lg border border-amber-200 space-y-1 text-xs">
-                  <div className="font-bold text-amber-900">Saran Tindakan Asisten:</div>
+                  <div className="font-bold text-amber-900">Saran Tindakan:</div>
                   <p className="text-amber-800 text-[11px] leading-relaxed">
                     {selectedAnomaly.suggested_action}
                   </p>
@@ -1125,7 +1117,7 @@ export default function DashboardPage() {
                     rows={2}
                     value={resolutionNote}
                     onChange={(e) => setResolutionNote(e.target.value)}
-                    placeholder="Contoh: Sudah konfirmasi dengan kasir, terjadi lonjakan permintaan festival..."
+                    placeholder="Contoh: Sudah konfirmasi dengan kasir, terjadi lonjakan permintaan..."
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-enterprise-500"
                   />
                 </div>
@@ -1137,7 +1129,7 @@ export default function DashboardPage() {
                     disabled={resolving}
                     onClick={() => handleResolveAnomaly('DISMISSED')}
                   >
-                    Abaikan (Dismiss)
+                    Abaikan
                   </Button>
 
                   <Button
