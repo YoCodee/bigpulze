@@ -1948,6 +1948,24 @@
   - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
 
+### G7.4 — Animasi Landing Page: Section Jaringan Radar Multi-Cabang ✅
+**Selesai:** 2026-10-24
+
+- **Komponen Pembungkus `<NetworkRadarMotion>`:**
+  - `frontend/src/components/landing/motion/network-radar.tsx`: Mengatur animasi visual kanvas radar multi-cabang.
+- **Fitur Gerak:**
+  - **Simpul Cabang Pop-in:** Tiga simpul (*Hub Pusat Jakarta*, *Cabang Bandung*, dan *Cabang Surabaya*) muncul secara berurutan saat masuk viewport (`scale: 0.85 → 1`, `opacity: 0 → 1`, stagger 0.12s).
+  - **Kotak Keterangan Callout:** Kotak callout kiri (*2 Detik / Transaksi*) dan kanan (*99.9% Keandalan Operasional*) meluncur masuk dari samping (`x: -20px → 0` dan `x: 20px → 0`).
+  - **Loop Aliran Data (SVG Dashed Arcs):** Garis lengkung putus-putus penghubung antarcabang mengalirkan pulsa paket data secara kontinu via translasi `strokeDashoffset` linear.
+- **Kontrol Viewport & Aksesibilitas:**
+  - Animasi aliran garis SVG otomatis **pause** saat elemen keluar layar dan **resume** saat kembali terlihat via `ScrollTrigger` `onToggle`.
+  - Mematuhi `prefers-reduced-motion`: tampilan statis instan tanpa strokeDashoffset loop dan delay.
+- **Hasil Verifikasi:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
+
+
 
 
 

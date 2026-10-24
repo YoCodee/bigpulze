@@ -45,6 +45,7 @@ import {
   HeroMotion,
   Stagger,
   Reveal,
+  NetworkRadarMotion,
 } from '@/components/landing/motion';
 
 const testimonials = [
@@ -940,114 +941,117 @@ export default function HomePage() {
           </SectionHeader>
 
           {/* Central Visual: Multi-Branch Vector Network Globe / Radar Canvas */}
-          <div className="relative rounded-none border border-slate-200 bg-slate-50/70 p-6 sm:p-10 min-h-[440px] sm:min-h-[500px] flex flex-col justify-between items-center overflow-hidden">
-            <CornerMarks />
+          <NetworkRadarMotion>
+            <div className="landing-card-hover relative rounded-none border border-slate-200 bg-slate-50/70 p-6 sm:p-10 min-h-[440px] sm:min-h-[500px] flex flex-col justify-between items-center overflow-hidden">
+              <CornerMarks />
 
-            {/* Ambient Warm Glow */}
-            <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[320px] sm:w-[480px] h-[220px] bg-brand-500/10 blur-[90px] pointer-events-none rounded-full" />
+              {/* Ambient Warm Glow */}
+              <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[320px] sm:w-[480px] h-[220px] bg-brand-500/10 blur-[90px] pointer-events-none rounded-full" />
 
-            {/* Orbit Circles (simulating globe wireframe) */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-[280px] sm:w-[380px] md:w-[460px] h-[280px] sm:h-[380px] md:h-[460px] rounded-full border border-dashed border-slate-300/80" />
-              <div className="absolute w-[200px] sm:w-[280px] md:w-[340px] h-[200px] sm:h-[280px] md:h-[340px] rounded-full border border-slate-300/60" />
-              <div className="absolute w-[120px] sm:w-[180px] md:w-[220px] h-[120px] sm:h-[180px] md:h-[220px] rounded-full border border-dashed border-slate-300/40" />
-            </div>
+              {/* Orbit Circles (simulating globe wireframe) */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-[280px] sm:w-[380px] md:w-[460px] h-[280px] sm:h-[380px] md:h-[460px] rounded-full border border-dashed border-slate-300/80" />
+                <div className="absolute w-[200px] sm:w-[280px] md:w-[340px] h-[200px] sm:h-[280px] md:h-[340px] rounded-full border border-slate-300/60" />
+                <div className="absolute w-[120px] sm:w-[180px] md:w-[220px] h-[120px] sm:h-[180px] md:h-[220px] rounded-full border border-dashed border-slate-300/40" />
+              </div>
 
-            {/* SVG Arcs Connecting the Branches */}
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none z-10"
-              viewBox="0 0 800 460"
-              preserveAspectRatio="none"
-              fill="none"
-            >
-              {/* Curve from Hub Pusat (400, 130) to Cabang Bandung (200, 310) */}
-              <path
-                d="M 400 130 Q 280 180 200 310"
-                stroke="#EA580C"
-                strokeWidth="1.5"
-                strokeDasharray="4 4"
-                className="opacity-80"
-              />
-              {/* Curve from Hub Pusat (400, 130) to Cabang Surabaya (600, 310) */}
-              <path
-                d="M 400 130 Q 520 180 600 310"
-                stroke="#EA580C"
-                strokeWidth="1.5"
-                strokeDasharray="4 4"
-                className="opacity-80"
-              />
-              {/* Direct Inter-branch Mutation Line between Bandung and Surabaya */}
-              <path
-                d="M 200 310 Q 400 360 600 310"
-                stroke="#CBD5E1"
-                strokeWidth="1.5"
-                strokeDasharray="3 3"
-              />
-            </svg>
+              {/* SVG Arcs Connecting the Branches */}
+              <svg
+                className="absolute inset-0 w-full h-full pointer-events-none z-10"
+                viewBox="0 0 800 460"
+                preserveAspectRatio="none"
+                fill="none"
+              >
+                {/* Curve from Hub Pusat (400, 130) to Cabang Bandung (200, 310) */}
+                <path
+                  d="M 400 130 Q 280 180 200 310"
+                  stroke="#EA580C"
+                  strokeWidth="1.5"
+                  strokeDasharray="4 4"
+                  className="radar-arc opacity-80"
+                />
+                {/* Curve from Hub Pusat (400, 130) to Cabang Surabaya (600, 310) */}
+                <path
+                  d="M 400 130 Q 520 180 600 310"
+                  stroke="#EA580C"
+                  strokeWidth="1.5"
+                  strokeDasharray="4 4"
+                  className="radar-arc opacity-80"
+                />
+                {/* Direct Inter-branch Mutation Line between Bandung and Surabaya */}
+                <path
+                  d="M 200 310 Q 400 360 600 310"
+                  stroke="#CBD5E1"
+                  strokeWidth="1.5"
+                  strokeDasharray="3 3"
+                  className="radar-arc"
+                />
+              </svg>
 
-            {/* Nodes Layer */}
-            <div className="relative z-20 w-full h-full min-h-[300px] sm:min-h-[340px]">
-              {/* 1. Hub Pusat (Jakarta / Owner Control) */}
-              <div className="absolute top-[8%] sm:top-[12%] left-1/2 -translate-x-1/2 flex flex-col items-center group cursor-default">
-                <div className="relative">
-                  <span className="absolute -inset-1 rounded-full bg-brand-500/30 animate-ping duration-1000" />
-                  <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-hero-gradient text-white flex items-center justify-center shadow-lg shadow-brand-500/30 border border-white/20">
-                    <Building2 className="h-6 w-6" />
+              {/* Nodes Layer */}
+              <div className="relative z-20 w-full h-full min-h-[300px] sm:min-h-[340px]">
+                {/* 1. Hub Pusat (Jakarta / Owner Control) */}
+                <div className="radar-node absolute top-[8%] sm:top-[12%] left-1/2 -translate-x-1/2 flex flex-col items-center group cursor-default">
+                  <div className="relative">
+                    <span className="absolute -inset-1 rounded-full bg-brand-500/30 animate-ping duration-1000" />
+                    <div className="relative h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-hero-gradient text-white flex items-center justify-center shadow-lg shadow-brand-500/30 border border-white/20">
+                      <Building2 className="h-6 w-6" />
+                    </div>
+                  </div>
+                  <div className="mt-2 text-center bg-white px-3 py-1 rounded-full border border-brand-500/40 shadow-sm backdrop-blur-xs">
+                    <p className="text-xs font-bold text-slate-900 leading-none">Pusat Kendali Owner</p>
+                    <p className="text-[10px] text-brand-700 font-mono mt-0.5">Jakarta • Server Supabase</p>
                   </div>
                 </div>
-                <div className="mt-2 text-center bg-white px-3 py-1 rounded-full border border-brand-500/40 shadow-sm backdrop-blur-xs">
-                  <p className="text-xs font-bold text-slate-900 leading-none">Pusat Kendali Owner</p>
-                  <p className="text-[10px] text-brand-700 font-mono mt-0.5">Jakarta • Server Supabase</p>
+
+                {/* 2. Cabang 1 (Bandung Dago - Kopi Senja) */}
+                <div className="radar-node absolute bottom-[8%] sm:bottom-[12%] left-[4%] sm:left-[16%] flex flex-col items-center group cursor-default">
+                  <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-white text-brand-600 border border-brand-500/40 flex items-center justify-center shadow-md">
+                    <Store className="h-5 w-5" />
+                  </div>
+                  <div className="mt-2 text-center bg-white px-2.5 py-1 rounded-full border border-slate-200 shadow-sm backdrop-blur-xs">
+                    <p className="text-[11px] font-bold text-slate-800 leading-none">Cabang Bandung</p>
+                    <p className="text-[10px] text-slate-500 font-mono mt-0.5">POS Aktif • Kasir 1 & 2</p>
+                  </div>
+                </div>
+
+                {/* 3. Cabang 2 (Surabaya Gubeng - Kopi Senja) */}
+                <div className="radar-node absolute bottom-[8%] sm:bottom-[12%] right-[4%] sm:right-[16%] flex flex-col items-center group cursor-default">
+                  <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-white text-brand-600 border border-brand-500/40 flex items-center justify-center shadow-md">
+                    <Coffee className="h-5 w-5" />
+                  </div>
+                  <div className="mt-2 text-center bg-white px-2.5 py-1 rounded-full border border-slate-200 shadow-sm backdrop-blur-xs">
+                    <p className="text-[11px] font-bold text-slate-800 leading-none">Cabang Surabaya</p>
+                    <p className="text-[10px] text-slate-500 font-mono mt-0.5">POS Aktif • Kasir 1</p>
+                  </div>
+                </div>
+
+                {/* Callout 1 (Left): 2 Detik / Transaksi (Desktop floating, responsive) */}
+                <div className="radar-callout radar-callout-left hidden lg:block absolute top-[28%] left-2 max-w-[230px]">
+                  <Callout title="2 Detik / Transaksi">
+                    Smart Voice POS berjalan di browser lokal tanpa dependensi API external. 4.5x lebih cepat dari ketik manual.
+                  </Callout>
+                </div>
+
+                {/* Callout 2 (Right): 99.9% Uptime (Desktop floating, responsive) */}
+                <div className="radar-callout radar-callout-right hidden lg:block absolute top-[24%] right-2 max-w-[240px]">
+                  <Callout title="99.9% Keandalan Operasional">
+                    Kasir tetap dapat bertransaksi saat internet mati; data otomatis tersinkronisasi seketika saat sinyal pulih.
+                  </Callout>
                 </div>
               </div>
 
-              {/* 2. Cabang 1 (Bandung Dago - Kopi Senja) */}
-              <div className="absolute bottom-[8%] sm:bottom-[12%] left-[4%] sm:left-[16%] flex flex-col items-center group cursor-default">
-                <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-white text-brand-600 border border-brand-500/40 flex items-center justify-center shadow-md">
-                  <Store className="h-5 w-5" />
-                </div>
-                <div className="mt-2 text-center bg-white px-2.5 py-1 rounded-full border border-slate-200 shadow-sm backdrop-blur-xs">
-                  <p className="text-[11px] font-bold text-slate-800 leading-none">Cabang Bandung</p>
-                  <p className="text-[10px] text-slate-500 font-mono mt-0.5">POS Aktif • Kasir 1 & 2</p>
-                </div>
-              </div>
-
-              {/* 3. Cabang 2 (Surabaya Gubeng - Kopi Senja) */}
-              <div className="absolute bottom-[8%] sm:bottom-[12%] right-[4%] sm:right-[16%] flex flex-col items-center group cursor-default">
-                <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-white text-brand-600 border border-brand-500/40 flex items-center justify-center shadow-md">
-                  <Coffee className="h-5 w-5" />
-                </div>
-                <div className="mt-2 text-center bg-white px-2.5 py-1 rounded-full border border-slate-200 shadow-sm backdrop-blur-xs">
-                  <p className="text-[11px] font-bold text-slate-800 leading-none">Cabang Surabaya</p>
-                  <p className="text-[10px] text-slate-500 font-mono mt-0.5">POS Aktif • Kasir 1</p>
-                </div>
-              </div>
-
-              {/* Callout 1 (Left): 2 Detik / Transaksi (Desktop floating, responsive) */}
-              <div className="hidden lg:block absolute top-[28%] left-2 max-w-[230px]">
+              {/* Mobile/Tablet Inline Callouts (Below map on smaller screens to prevent overlap) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full mt-6 lg:hidden relative z-20">
                 <Callout title="2 Detik / Transaksi">
                   Smart Voice POS berjalan di browser lokal tanpa dependensi API external. 4.5x lebih cepat dari ketik manual.
                 </Callout>
-              </div>
-
-              {/* Callout 2 (Right): 99.9% Uptime (Desktop floating, responsive) */}
-              <div className="hidden lg:block absolute top-[24%] right-2 max-w-[240px]">
                 <Callout title="99.9% Keandalan Operasional">
                   Kasir tetap dapat bertransaksi saat internet mati; data otomatis tersinkronisasi seketika saat sinyal pulih.
                 </Callout>
               </div>
             </div>
-
-            {/* Mobile/Tablet Inline Callouts (Below map on smaller screens to prevent overlap) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full mt-6 lg:hidden relative z-20">
-              <Callout title="2 Detik / Transaksi">
-                Smart Voice POS berjalan di browser lokal tanpa dependensi API external. 4.5x lebih cepat dari ketik manual.
-              </Callout>
-              <Callout title="99.9% Keandalan Operasional">
-                Kasir tetap dapat bertransaksi saat internet mati; data otomatis tersinkronisasi seketika saat sinyal pulih.
-              </Callout>
-            </div>
-          </div>
+          </NetworkRadarMotion>
 
           {/* 3-Cell Feature Grid at Bottom (Run everywhere, Run anywhere, Run at massive scale) */}
           <FeatureGrid>
