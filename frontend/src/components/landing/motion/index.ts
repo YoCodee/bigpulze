@@ -16,3 +16,5 @@ export type { TransactionItem } from './transaction-feed';
 export { SyncCardDemo } from './sync-card';
 
 export { SecurityCardDemo } from './security-card';
+
+export { AnomalyTerminalDemo } from './anomaly-terminal';

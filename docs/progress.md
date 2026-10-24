@@ -1876,6 +1876,28 @@
   - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
 
+### G6 — Animasi Landing Page: Card Terminal Anomali (Poin F) ✅
+**Selesai:** 2026-10-24
+
+- **Komponen Terminal Anomali `<AnomalyTerminalDemo>`:**
+  - `frontend/src/components/landing/motion/anomaly-terminal.tsx`: Menggantikan markup statis Card 4 (*"Deteksi Dini Masalah Operasional"*).
+- **Fitur Timeline Loop Berulang (±9.5s):**
+  - **Efek Mengetik Visual:** Baris *"Menjalankan mesin anomali BizPulse..."* muncul dengan efek visual mengetik berbasis CSS `clip-path: inset(0 X% 0 0)` (teks tetap 100% utuh di DOM untuk aksesibilitas dan SEO).
+  - **Status Modul & Denyut Titik:** Baris *"3 modul pengawasan aktif"* muncul, dan titik status berdenyut 2x (`scale: 1 → 1.4 → 1`).
+  - **Sub-Baris Anomali Masuk Berurutan:** 3 sub-baris (*beban-biaya*, *kas-register*, *stok-kritis*) masuk dengan stagger halus.
+  - **Prompt Mengetik & Efek Klik:** Perintah `> kirim_rekomendasi_mutasi` mengetik, kursor berkedip, tombol *"Eksekusi"* menampilkan efek ditekan (`scale: 1 → 0.94 → 1`).
+  - **Konfirmasi Hasil Eksekusi:** Muncul notifikasi *"2 mutasi dikirim ke dashboard"* dan tombol beralih ke warna hijau (*"Terkirim ✓"*), ditahan selama ~2.6 detik.
+  - **Fade Out Halus & Reset:** Konsol fade out lembut (`opacity: 1 → 0.35`) lalu meloop kembali ke awal tanpa layout shift.
+- **Interaktivitas & Aksesibilitas:**
+  - Pengguna tetap dapat mengklik tombol *"Eksekusi"* secara manual kapan saja.
+  - Otomatis pause saat card keluar dari viewport layar via `ScrollTrigger` `onToggle`.
+  - Mematuhi `prefers-reduced-motion`: menampilkan keadaan hasil akhir secara statis tanpa loop.
+- **Hasil Verifikasi:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
+
+
 
 
 

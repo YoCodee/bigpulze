@@ -41,6 +41,7 @@ import {
   TransactionFeedDemo,
   SyncCardDemo,
   SecurityCardDemo,
+  AnomalyTerminalDemo,
 } from '@/components/landing/motion';
 
 const testimonials = [
@@ -248,7 +249,6 @@ const pricingPlans = [
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState(0);
   const [activeFeatureTab, setActiveFeatureTab] = useState(0);
-  const [terminalExecuted, setTerminalExecuted] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -907,80 +907,7 @@ export default function HomePage() {
               <SecurityCardDemo />
 
               {/* Card 4: Bottom-Right (Col span 2) - Fast path to AI adoption with Terminal */}
-              <div className="md:col-span-2 p-6 sm:p-8 flex flex-col lg:flex-row justify-between md:border-l border-slate-200 gap-6 items-stretch">
-                {/* Left Description inside Card 4 */}
-                <div className="lg:w-2/5 flex flex-col justify-between space-y-4">
-                  <div className="space-y-2.5">
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                      Deteksi Dini Masalah Operasional
-                    </h3>
-                    <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed">
-                      Algoritma Z-score dan asisten 3 Pertanyaan Pagi otomatis menganalisis lonjakan biaya, stok mati, dan potensi kebocoran margin kasir setiap fajar.
-                    </p>
-                  </div>
-
-                  <div className="inline-flex items-center gap-1.5 text-xs text-brand-700 font-medium">
-                    <Activity className="h-3.5 w-3.5" />
-                    <span>Pengawasan otomatis non-stop 24/7</span>
-                  </div>
-                </div>
-
-                {/* Right Light Console UI Box */}
-                <div className="lg:w-3/5 bg-slate-50 border border-slate-200 p-3.5 sm:p-4 rounded-none font-mono text-xs flex flex-col justify-between space-y-3 shadow-xs">
-                  <div className="space-y-2">
-                    <p className="text-slate-500 text-[11px] leading-tight">
-                      Menjalankan mesin anomali BizPulse...
-                    </p>
-                    <p className="text-brand-700 font-semibold flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-brand-600 animate-pulse" />
-                      3 modul pengawasan aktif
-                    </p>
-
-                    <div className="space-y-1 pl-2 text-slate-700 text-[11px]">
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-600">↳ beban-biaya</span>
-                        <span className="text-slate-500 text-[10px]">scan Z-score • 0 lonjakan</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-600">↳ kas-register</span>
-                        <span className="text-emerald-700 font-medium text-[10px]">rekonsiliasi • selisih Rp 0</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-600">↳ stok-kritis</span>
-                        <span className="text-amber-700 font-medium text-[10px]">batas minimum • 2 mutasi siap</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Terminal Status & Action Button */}
-                  <div className="pt-2 border-t border-slate-200 flex items-center justify-between gap-2">
-                    {terminalExecuted ? (
-                      <div className="flex items-center gap-1.5 text-emerald-700 text-[11px] font-bold">
-                        <CheckCircle2 className="h-3.5 w-3.5" />
-                        <span>2 mutasi dikirim ke dashboard</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center space-x-1.5 text-slate-500 text-[11px] truncate">
-                        <span className="text-brand-600">&gt;</span>
-                        <span className="text-slate-700">kirim_rekomendasi_mutasi</span>
-                        <span className="animate-pulse">_</span>
-                      </div>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => setTerminalExecuted((prev) => !prev)}
-                      className={`px-2.5 py-1 text-xs font-bold rounded-sm transition-colors cursor-pointer shrink-0 ${
-                        terminalExecuted
-                          ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                          : 'bg-brand-600 text-white hover:bg-brand-700'
-                      }`}
-                    >
-                      {terminalExecuted ? 'Terkirim ✓' : 'Eksekusi ↵'}
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <AnomalyTerminalDemo />
             </div>
           </div>
         </div>
