@@ -1781,6 +1781,24 @@
   - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
 
+### G1 — Animasi Landing Page: Fondasi GSAP & Motion Primitives ✅
+**Selesai:** 2026-10-24
+
+- **Instalasi Paket:**
+  - Menambahkan dependensi `gsap` (v3.15.0) dan `@gsap/react` (v2.1.2) ke `frontend/package.json`.
+- **Inisialisasi & Konfigurasi:**
+  - `frontend/src/lib/gsap.ts`: Registrasi plugin `ScrollTrigger` dan `useGSAP` aman hanya di sisi klien Next.js.
+  - `frontend/src/lib/motion.config.ts`: Token konstanta durasi (0.4s–0.8s), easing standar (`power2.out`, `power3.out`), stagger (0.06s–0.12s), jarak gerak, dan media query `prefers-reduced-motion`.
+- **Motion Primitives (Reusable Components):**
+  - `<Reveal>` (`reveal.tsx`): Komponen kemunculan fade-up sekali dengan scope ref, ScrollTrigger, dan penanganan otomatis reduced motion.
+  - `<Stagger>` (`stagger.tsx`): Komponen kemunculan beruntun untuk daftar anak elemen.
+  - `useLoopWhenVisible` (`use-loop-when-visible.ts`): Hook khusus untuk menjalankan timeline/loop animasi hanya saat elemen in-view di viewport dan langsung pause saat out-of-view via ScrollTrigger `onToggle`.
+- **Hasil Verifikasi:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
+
+
 
 
 
