@@ -1816,6 +1816,29 @@
   - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
 
+### G3 — Animasi Landing Page: Card Daftar Transaksi Live Feed (Poin C) ✅
+**Selesai:** 2026-10-24
+
+- **Komponen Live Feed Transaksi `<TransactionFeedDemo>`:**
+  - `frontend/src/components/landing/motion/transaction-feed.tsx`: Menggantikan tabel transaksi statis di card *"Cocok dengan Kebiasaan Kasir & Pemilik Usaha"* pada section *"Dirancang Khusus untuk Alur Kerja UMKM"*.
+  - Menampilkan 3 baris transaksi tetap dalam wadah `h-[114px]` (`overflow: hidden`) bebas layout shift (CLS = 0).
+- **Siklus Animasi Loop (setiap ±3.6s):**
+  - Baris transaksi baru masuk dari atas (`y: -38px → 0`, fade in) dan baris-baris sebelumnya meluncur turun dengan lembut via translasi transform GPU.
+  - Baris paling bawah fade out secara halus (`opacity: 1 → 0`).
+  - Ikon struk oranye di pojok kiri atas berdenyut sangat halus (`scale: 1 → 1.07 → 1`) setiap kali transaksi baru masuk.
+  - Baris transaksi terbaru awalnya bertatus *"Sinkronisasi"* dengan ikon berputar `⟳`, lalu setelah ~0.9 detik beralih menjadi *"Selesai"* dengan centang hijau teranimasi stroke-dashoffset draw.
+  - Reset posisi dan pergantian slot data dilakukan secara instan tanpa kedipan (*flicker-free sliding buffer*).
+- **Kontrol Viewport & Aksesibilitas:**
+  - Terhubung dengan `ScrollTrigger.create` `onToggle`: otomatis **pause total** saat card keluar dari viewport layar dan **melanjutkan kembali** saat pengguna scroll kembali ke card tersebut.
+  - Menggunakan kumpulan data demo konstan dan deterministik (`DEMO_TRANSACTIONS`), mencegah risiko hydration mismatch.
+  - Mendukung `prefers-reduced-motion`: menampilkan 3 baris awal secara statis tanpa loop.
+  - Dilengkapi fallback `<noscript>` agar data tetap terbaca penuh tanpa JavaScript.
+- **Hasil Verifikasi:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
+
+
 
 
 

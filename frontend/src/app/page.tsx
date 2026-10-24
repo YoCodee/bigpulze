@@ -20,7 +20,6 @@ import {
   FileSpreadsheet,
   Activity,
   Check,
-  Receipt,
   Globe2,
   Smartphone,
   RefreshCw,
@@ -38,7 +37,7 @@ import {
   FeatureGrid,
   FeatureCell,
 } from '@/components/ui/blueprint-grid';
-import { SectionHeader } from '@/components/landing/motion';
+import { SectionHeader, TransactionFeedDemo } from '@/components/landing/motion';
 
 const testimonials = [
   {
@@ -884,48 +883,7 @@ export default function HomePage() {
               {/* Card 1: Top-Left (Col span 2) - Fits into your existing workflows */}
               <div className="md:col-span-2 p-6 sm:p-8 flex flex-col justify-between border-b md:border-b border-slate-200 space-y-6">
                 {/* Top Visual Area: Live Transaction Register Stream (info4.png deployment list) */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                  {/* Left Orange Icon Pill */}
-                  <div className="h-12 w-12 rounded-xl bg-hero-gradient flex items-center justify-center text-white shadow-md shadow-brand-500/20 shrink-0">
-                    <Receipt className="h-6 w-6" />
-                  </div>
-
-                  {/* Transaction Status Table / Rows */}
-                  <div className="flex-1 w-full bg-slate-50 border border-slate-200 divide-y divide-slate-200 font-mono text-xs">
-                    <div className="px-3.5 py-2.5 flex items-center justify-between text-slate-700">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-slate-500">TRX-0842</span>
-                        <span className="hidden sm:inline text-slate-600">• Kopi Senja 2x</span>
-                      </div>
-                      <span className="text-slate-500 text-[11px]">Hari ini, 11:32 WIB</span>
-                      <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold">
-                        Selesai <CheckCircle2 className="h-3.5 w-3.5" />
-                      </span>
-                    </div>
-
-                    <div className="px-3.5 py-2.5 flex items-center justify-between text-slate-700">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-slate-500">TRX-0841</span>
-                        <span className="hidden sm:inline text-slate-600">• Roti Bakar Keju</span>
-                      </div>
-                      <span className="text-slate-500 text-[11px]">Hari ini, 11:28 WIB</span>
-                      <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold">
-                        Selesai <CheckCircle2 className="h-3.5 w-3.5" />
-                      </span>
-                    </div>
-
-                    <div className="px-3.5 py-2.5 flex items-center justify-between text-slate-600">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-slate-500">TRX-0840</span>
-                        <span className="hidden sm:inline text-slate-600">• Es Teh Manis 3x</span>
-                      </div>
-                      <span className="text-slate-500 text-[11px]">Hari ini, 11:25 WIB</span>
-                      <span className="inline-flex items-center gap-1 text-brand-700 font-medium">
-                        Sinkronisasi <span className="animate-spin text-xs">⟳</span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                <TransactionFeedDemo />
 
                 {/* Bottom Text */}
                 <div className="space-y-1.5 pt-2">

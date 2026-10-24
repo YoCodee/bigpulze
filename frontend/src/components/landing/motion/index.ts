@@ -9,3 +9,6 @@ export type { SectionHeaderProps } from './section-header';
 
 export { useLoopWhenVisible } from './use-loop-when-visible';
 export type { UseLoopWhenVisibleOptions } from './use-loop-when-visible';
+
+export { TransactionFeedDemo, DEMO_TRANSACTIONS } from './transaction-feed';
+export type { TransactionItem } from './transaction-feed';
