@@ -976,44 +976,44 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Right Dark Terminal UI Box (exact match to info4.png) */}
-                <div className="lg:w-3/5 bg-slate-950 border border-slate-800 p-3.5 sm:p-4 rounded-none font-mono text-xs flex flex-col justify-between space-y-3">
+                {/* Right Light Console UI Box */}
+                <div className="lg:w-3/5 bg-slate-50 border border-slate-200 p-3.5 sm:p-4 rounded-none font-mono text-xs flex flex-col justify-between space-y-3 shadow-xs">
                   <div className="space-y-2">
-                    <p className="text-slate-400 text-[11px] leading-tight">
+                    <p className="text-slate-500 text-[11px] leading-tight">
                       Menjalankan mesin anomali BizPulse...
                     </p>
-                    <p className="text-brand-400 font-semibold flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-brand-500 animate-pulse" />
+                    <p className="text-brand-700 font-semibold flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-brand-600 animate-pulse" />
                       3 modul pengawasan aktif
                     </p>
 
-                    <div className="space-y-1 pl-2 text-slate-300 text-[11px]">
+                    <div className="space-y-1 pl-2 text-slate-700 text-[11px]">
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400">↳ beban-biaya</span>
-                        <span className="text-slate-400 text-[10px]">scan Z-score • 0 lonjakan</span>
+                        <span className="text-slate-600">↳ beban-biaya</span>
+                        <span className="text-slate-500 text-[10px]">scan Z-score • 0 lonjakan</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400">↳ kas-register</span>
-                        <span className="text-emerald-400 text-[10px]">rekonsiliasi • selisih Rp 0</span>
+                        <span className="text-slate-600">↳ kas-register</span>
+                        <span className="text-emerald-700 font-medium text-[10px]">rekonsiliasi • selisih Rp 0</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400">↳ stok-kritis</span>
-                        <span className="text-amber-400 text-[10px]">batas minimum • 2 mutasi siap</span>
+                        <span className="text-slate-600">↳ stok-kritis</span>
+                        <span className="text-amber-700 font-medium text-[10px]">batas minimum • 2 mutasi siap</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Terminal Status & Action Button */}
-                  <div className="pt-2 border-t border-slate-800 flex items-center justify-between gap-2">
+                  <div className="pt-2 border-t border-slate-200 flex items-center justify-between gap-2">
                     {terminalExecuted ? (
-                      <div className="flex items-center gap-1.5 text-emerald-400 text-[11px] font-bold">
+                      <div className="flex items-center gap-1.5 text-emerald-700 text-[11px] font-bold">
                         <CheckCircle2 className="h-3.5 w-3.5" />
                         <span>2 mutasi dikirim ke dashboard</span>
                       </div>
                     ) : (
-                      <div className="flex items-center space-x-1.5 text-slate-400 text-[11px] truncate">
-                        <span className="text-brand-500">&gt;</span>
-                        <span className="text-slate-300">kirim_rekomendasi_mutasi</span>
+                      <div className="flex items-center space-x-1.5 text-slate-500 text-[11px] truncate">
+                        <span className="text-brand-600">&gt;</span>
+                        <span className="text-slate-700">kirim_rekomendasi_mutasi</span>
                         <span className="animate-pulse">_</span>
                       </div>
                     )}
@@ -1056,17 +1056,17 @@ export default function HomePage() {
           </div>
 
           {/* Central Visual: Multi-Branch Vector Network Globe / Radar Canvas */}
-          <div className="relative rounded-none border border-slate-800 bg-slate-950 p-6 sm:p-10 min-h-[440px] sm:min-h-[500px] flex flex-col justify-between items-center overflow-hidden">
-            <CornerMarks borderClass="border-slate-700" bgClass="bg-slate-950" />
+          <div className="relative rounded-none border border-slate-200 bg-slate-50/70 p-6 sm:p-10 min-h-[440px] sm:min-h-[500px] flex flex-col justify-between items-center overflow-hidden">
+            <CornerMarks />
 
             {/* Ambient Warm Glow */}
             <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[320px] sm:w-[480px] h-[220px] bg-brand-500/10 blur-[90px] pointer-events-none rounded-full" />
 
             {/* Orbit Circles (simulating globe wireframe) */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-[280px] sm:w-[380px] md:w-[460px] h-[280px] sm:h-[380px] md:h-[460px] rounded-full border border-dashed border-zinc-800/80" />
-              <div className="absolute w-[200px] sm:w-[280px] md:w-[340px] h-[200px] sm:h-[280px] md:h-[340px] rounded-full border border-zinc-800/60" />
-              <div className="absolute w-[120px] sm:w-[180px] md:w-[220px] h-[120px] sm:h-[180px] md:h-[220px] rounded-full border border-dashed border-zinc-800/40" />
+              <div className="w-[280px] sm:w-[380px] md:w-[460px] h-[280px] sm:h-[380px] md:h-[460px] rounded-full border border-dashed border-slate-300/80" />
+              <div className="absolute w-[200px] sm:w-[280px] md:w-[340px] h-[200px] sm:h-[280px] md:h-[340px] rounded-full border border-slate-300/60" />
+              <div className="absolute w-[120px] sm:w-[180px] md:w-[220px] h-[120px] sm:h-[180px] md:h-[220px] rounded-full border border-dashed border-slate-300/40" />
             </div>
 
             {/* SVG Arcs Connecting the Branches */}
@@ -1079,26 +1079,25 @@ export default function HomePage() {
               {/* Curve from Hub Pusat (400, 130) to Cabang Bandung (200, 310) */}
               <path
                 d="M 400 130 Q 280 180 200 310"
-                stroke="#F6821F"
+                stroke="#EA580C"
                 strokeWidth="1.5"
                 strokeDasharray="4 4"
-                className="opacity-75"
+                className="opacity-80"
               />
               {/* Curve from Hub Pusat (400, 130) to Cabang Surabaya (600, 310) */}
               <path
                 d="M 400 130 Q 520 180 600 310"
-                stroke="#F6821F"
+                stroke="#EA580C"
                 strokeWidth="1.5"
                 strokeDasharray="4 4"
-                className="opacity-75"
+                className="opacity-80"
               />
               {/* Direct Inter-branch Mutation Line between Bandung and Surabaya */}
               <path
                 d="M 200 310 Q 400 360 600 310"
-                stroke="#3F3F46"
-                strokeWidth="1"
+                stroke="#CBD5E1"
+                strokeWidth="1.5"
                 strokeDasharray="3 3"
-                className="opacity-40"
               />
             </svg>
 
@@ -1112,31 +1111,31 @@ export default function HomePage() {
                     <Building2 className="h-6 w-6" />
                   </div>
                 </div>
-                <div className="mt-2 text-center bg-slate-900/90 px-3 py-1 rounded-full border border-brand-500/50 backdrop-blur-xs">
-                  <p className="text-xs font-bold text-white leading-none">Pusat Kendali Owner</p>
-                  <p className="text-[10px] text-brand-400 font-mono mt-0.5">Jakarta • Server Supabase</p>
+                <div className="mt-2 text-center bg-white px-3 py-1 rounded-full border border-brand-500/40 shadow-sm backdrop-blur-xs">
+                  <p className="text-xs font-bold text-slate-900 leading-none">Pusat Kendali Owner</p>
+                  <p className="text-[10px] text-brand-700 font-mono mt-0.5">Jakarta • Server Supabase</p>
                 </div>
               </div>
 
               {/* 2. Cabang 1 (Bandung Dago - Kopi Senja) */}
               <div className="absolute bottom-[8%] sm:bottom-[12%] left-[4%] sm:left-[16%] flex flex-col items-center group cursor-default">
-                <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-slate-900 text-brand-400 border border-brand-500/60 flex items-center justify-center shadow-md">
+                <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-white text-brand-600 border border-brand-500/40 flex items-center justify-center shadow-md">
                   <Store className="h-5 w-5" />
                 </div>
-                <div className="mt-2 text-center bg-slate-900/90 px-2.5 py-1 rounded-full border border-slate-700 backdrop-blur-xs">
-                  <p className="text-[11px] font-bold text-slate-200 leading-none">Cabang Bandung</p>
-                  <p className="text-[10px] text-slate-400 font-mono mt-0.5">POS Aktif • Kasir 1 & 2</p>
+                <div className="mt-2 text-center bg-white px-2.5 py-1 rounded-full border border-slate-200 shadow-sm backdrop-blur-xs">
+                  <p className="text-[11px] font-bold text-slate-800 leading-none">Cabang Bandung</p>
+                  <p className="text-[10px] text-slate-500 font-mono mt-0.5">POS Aktif • Kasir 1 & 2</p>
                 </div>
               </div>
 
               {/* 3. Cabang 2 (Surabaya Gubeng - Kopi Senja) */}
               <div className="absolute bottom-[8%] sm:bottom-[12%] right-[4%] sm:right-[16%] flex flex-col items-center group cursor-default">
-                <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-slate-900 text-brand-400 border border-brand-500/60 flex items-center justify-center shadow-md">
+                <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-white text-brand-600 border border-brand-500/40 flex items-center justify-center shadow-md">
                   <Coffee className="h-5 w-5" />
                 </div>
-                <div className="mt-2 text-center bg-slate-900/90 px-2.5 py-1 rounded-full border border-slate-700 backdrop-blur-xs">
-                  <p className="text-[11px] font-bold text-slate-200 leading-none">Cabang Surabaya</p>
-                  <p className="text-[10px] text-slate-400 font-mono mt-0.5">POS Aktif • Kasir 1</p>
+                <div className="mt-2 text-center bg-white px-2.5 py-1 rounded-full border border-slate-200 shadow-sm backdrop-blur-xs">
+                  <p className="text-[11px] font-bold text-slate-800 leading-none">Cabang Surabaya</p>
+                  <p className="text-[10px] text-slate-500 font-mono mt-0.5">POS Aktif • Kasir 1</p>
                 </div>
               </div>
 
@@ -1273,7 +1272,7 @@ export default function HomePage() {
       {/* ======================================================== */}
       {/* 10. FOOTER MULTI-KOLOM (redesign/home/footer.png) */}
       {/* ======================================================== */}
-      <footer className="w-full bg-slate-950 border-t border-slate-800 pt-14 pb-10 text-slate-400">
+      <footer className="w-full bg-slate-50 border-t border-slate-200 pt-14 pb-10 text-slate-600">
         <div className="max-w-[1120px] mx-auto px-4 sm:px-6 space-y-12">
           {/* Top 5-Column Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10">
@@ -1294,53 +1293,53 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-xl font-extrabold tracking-tight text-white">BizPulse</span>
-                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-brand-500/20 text-brand-400 border border-brand-500/30 uppercase tracking-wider">
+                  <span className="text-xl font-extrabold tracking-tight text-slate-900">BizPulse</span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-orange-50 text-brand-700 border border-orange-200 uppercase tracking-wider">
                     GTNIC 2026
                   </span>
                 </div>
               </Link>
 
-              <p className="text-xs sm:text-[13px] text-slate-400 leading-relaxed max-w-sm">
+              <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed max-w-sm">
                 Asisten keputusan harian, Smart Voice POS 2 detik, dan pembukuan auto-ledger real-time untuk UMKM multi-cabang Indonesia.
               </p>
 
-              <div className="pt-2 flex flex-wrap items-center gap-2 text-xs text-slate-400">
-                <span className="px-2 py-0.5 bg-slate-900 border border-slate-800 rounded">Next.js 14</span>
-                <span className="px-2 py-0.5 bg-slate-900 border border-slate-800 rounded">Supabase PostgreSQL</span>
-                <span className="px-2 py-0.5 bg-slate-900 border border-slate-800 rounded">Web Speech API</span>
-                <span className="px-2 py-0.5 bg-slate-900 border border-slate-800 rounded">Tailwind CSS</span>
+              <div className="pt-2 flex flex-wrap items-center gap-2 text-xs text-slate-600">
+                <span className="px-2 py-0.5 bg-white border border-slate-200 rounded shadow-xs">Next.js 14</span>
+                <span className="px-2 py-0.5 bg-white border border-slate-200 rounded shadow-xs">Supabase PostgreSQL</span>
+                <span className="px-2 py-0.5 bg-white border border-slate-200 rounded shadow-xs">Web Speech API</span>
+                <span className="px-2 py-0.5 bg-white border border-slate-200 rounded shadow-xs">Tailwind CSS</span>
               </div>
             </div>
 
             {/* Column 1: Mulai Cepat (Span 2) */}
             <div className="lg:col-span-2 space-y-3">
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                 Mulai Cepat
               </h4>
               <ul className="space-y-2 text-xs">
                 <li>
-                  <Link href="/demo-guide" className="hover:text-white transition-colors">
+                  <Link href="/demo-guide" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Panduan Juri 1-Klik
                   </Link>
                 </li>
                 <li>
-                  <Link href="/pos" className="hover:text-white transition-colors">
+                  <Link href="/pos" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Simulator Kasir POS
                   </Link>
                 </li>
                 <li>
-                  <Link href="/dashboard" className="hover:text-white transition-colors">
+                  <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Pusat Kendali Owner
                   </Link>
                 </li>
                 <li>
-                  <Link href="/login" className="hover:text-white transition-colors">
+                  <Link href="/login" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Masuk Akun Demo
                   </Link>
                 </li>
                 <li>
-                  <a href="#paket" className="hover:text-white transition-colors">
+                  <a href="#paket" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Pilihan Paket
                   </a>
                 </li>
@@ -1349,32 +1348,32 @@ export default function HomePage() {
 
             {/* Column 2: Fitur Utama (Span 2) */}
             <div className="lg:col-span-2 space-y-3">
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                 Fitur Utama
               </h4>
               <ul className="space-y-2 text-xs">
                 <li>
-                  <Link href="/pos" className="hover:text-white transition-colors">
+                  <Link href="/pos" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Smart Voice POS
                   </Link>
                 </li>
                 <li>
-                  <Link href="/dashboard" className="hover:text-white transition-colors">
+                  <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 transition-colors">
                     3 Pertanyaan Pagi
                   </Link>
                 </li>
                 <li>
-                  <Link href="/reports" className="hover:text-white transition-colors">
+                  <Link href="/reports" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Auto-Ledger Real-Time
                   </Link>
                 </li>
                 <li>
-                  <Link href="/stock" className="hover:text-white transition-colors">
+                  <Link href="/stock" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Rekomendasi Mutasi
                   </Link>
                 </li>
                 <li>
-                  <Link href="/expenses" className="hover:text-white transition-colors">
+                  <Link href="/expenses" className="text-slate-600 hover:text-slate-900 transition-colors">
                     Deteksi Anomali Biaya
                   </Link>
                 </li>
@@ -1383,24 +1382,24 @@ export default function HomePage() {
 
             {/* Column 3: Keamanan & Standar (Span 2) */}
             <div className="lg:col-span-2 space-y-3">
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                 Keamanan & Standar
               </h4>
-              <ul className="space-y-2 text-xs">
+              <ul className="space-y-2 text-xs text-slate-600">
                 <li className="flex items-center space-x-1.5">
-                  <Lock className="h-3 w-3 text-brand-500 shrink-0" />
+                  <Lock className="h-3 w-3 text-brand-600 shrink-0" />
                   <span>RLS PostgreSQL</span>
                 </li>
                 <li className="flex items-center space-x-1.5">
-                  <ShieldCheck className="h-3 w-3 text-brand-500 shrink-0" />
+                  <ShieldCheck className="h-3 w-3 text-brand-600 shrink-0" />
                   <span>Audit Log VOID</span>
                 </li>
                 <li className="flex items-center space-x-1.5">
-                  <FileText className="h-3 w-3 text-brand-500 shrink-0" />
+                  <FileText className="h-3 w-3 text-brand-600 shrink-0" />
                   <span>Ekspor PDF KUR</span>
                 </li>
                 <li className="flex items-center space-x-1.5">
-                  <Server className="h-3 w-3 text-brand-500 shrink-0" />
+                  <Server className="h-3 w-3 text-brand-600 shrink-0" />
                   <span>Offline-First Resilien</span>
                 </li>
               </ul>
@@ -1408,18 +1407,18 @@ export default function HomePage() {
 
             {/* Column 4: GTNIC 2026 (Span 2) */}
             <div className="lg:col-span-2 space-y-3">
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                 GTNIC 2026
               </h4>
               <ul className="space-y-2 text-xs">
                 <li>
-                  <span className="text-slate-300">Garda Tech Competition</span>
+                  <span className="text-slate-700">Garda Tech Competition</span>
                 </li>
                 <li>
                   <span className="text-slate-500">Kategori Web Development</span>
                 </li>
                 <li>
-                  <Link href="/demo-guide" className="text-brand-400 hover:text-brand-300">
+                  <Link href="/demo-guide" className="text-brand-700 hover:text-brand-800 font-semibold">
                     6 Skenario Pengujian ↗
                   </Link>
                 </li>
@@ -1434,13 +1433,13 @@ export default function HomePage() {
           </div>
 
           {/* Bottom Copyright & Status Bar */}
-          <div className="border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <div className="border-t border-slate-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
             <div>
               © 2026 BizPulse. Hak Cipta Dilindungi Undang-Undang. Inovasi untuk Garda Tech National Innovation Competition 2026.
             </div>
 
-            <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-300">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600 shadow-xs">
+              <span className="h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
               <span className="font-mono text-xs">Sistem Normal • Asia/Jakarta (WIB)</span>
             </div>
           </div>

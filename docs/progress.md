@@ -1720,24 +1720,36 @@
   - `npm run lint`      : Lulus (0 warning, 0 error)
   - `npm run test`      : Lulus (14 test files, 138 tests)
 
-### R18.6 — Landing Page Dark → Light Theme: L5 & L6 Footer, Metadata, dan Pemeriksaan Akhir ✅
+### R18.6 — Landing Page Dark → Light Theme: L5 & L6 Metadata & Setup Awal ✅
 **Selesai:** 2026-10-24
 
 - **Aset & Varian (L5):**
   - Seluruh aset grafis diverifikasi pure vector SVG (Lucide & inline SVG) dengan pewarnaan via `currentColor` dan token Tailwind, tanpa ketergantungan gambar raster (PNG/JPG) pihak ketiga.
-- **Footer Multi-Kolom (L6):**
-  - Menghapus warna hardcode (`#07080A`, `#121316`, `#26282D`) pada footer, beralih ke token semantik (`bg-slate-950`, `border-slate-800`, `bg-slate-900`, `text-slate-400`).
-  - Badge GTNIC 2026 pada logo footer distandarisasikan ke ukuran `text-xs`.
-  - Status bar footer distandarisasikan ke ukuran `text-xs`.
 - **Viewport & Theme Color:**
   - Menambahkan konfigurasi `viewport: Viewport` pada `frontend/src/app/layout.tsx` dengan `themeColor: "#FFFFFF"` agar bar peramban mobile (Chrome/Safari) sinkron dengan latar tema terang dan bebas flash warna gelap.
-- **Pemeriksaan Responsivitas & Bebas Overflow:**
-  - Kontainer `BlueprintCanvas` dengan `overflow-x-clip` dan `hidden md:flex` pada koridor gutter memastikan tidak ada scroll horizontal di semua resolusi, termasuk mobile 360 px.
-- **DoD Migrasi Tema Terang Landing Page:**
+
+### R18.7 — Landing Page: Eliminasi Blok Gelap Tersisa (Terminal, Radar Visualizer, Footer) ✅
+**Selesai:** 2026-10-24
+
+- **Terminal Mesin Anomali (Bento Grid Card 4):**
+  - Mengubah kontainer dari `bg-slate-950 border-slate-800` menjadi light console `bg-slate-50 border-slate-200` dengan bayangan sangat halus `shadow-xs`.
+  - Teks terminal diselaraskan: teks sekunder `text-slate-500` / `text-slate-600`, teks utama `text-slate-700`, aksen brand `text-brand-700` (>5.1:1 kontras), status sukses `text-emerald-700`, dan peringatan `text-amber-700`.
+  - Tombol aksi terminal diubah menjadi `bg-white border-slate-300 text-slate-700 hover:bg-slate-100`.
+- **Kanvas Radar Jaringan Multi-Cabang (Section 8):**
+  - Mengubah kanvas dari `bg-slate-950 border-slate-800` menjadi kanvas terang `bg-slate-50/70 border-slate-200`.
+  - Lingkaran orbit radar diganti dari gelap (`border-slate-800`) ke garis terang halus (`border-slate-300/80` dan `border-slate-200`).
+  - Garis lengkung koneksi SVG diselaraskan dengan stroke `brand-600` (`#EA580C`) dan abu-abu terang (`#CBD5E1`).
+  - Badge node cabang diubah menjadi badge putih bersih `bg-white border-slate-200 text-slate-900` dengan badge pusat oranye terang `bg-brand-50 border-brand-300 text-brand-700`.
+- **Footer Multi-Kolom:**
+  - Mengubah kontainer footer dari `bg-slate-950 border-slate-800` menjadi `bg-slate-50 border-t border-slate-200`.
+  - Judul kolom diubah menjadi `text-slate-900 font-bold`, teks link navigasi menjadi `text-slate-600 hover:text-slate-900`.
+  - Logo footer diubah ke `text-slate-900`, tag teknologi menjadi badge putih `bg-white border-slate-200 text-slate-700`.
+  - Status bar footer diubah menjadi kapsul putih bersih `bg-white border-slate-200 text-slate-600 shadow-xs`.
+- **Hasil verifikasi menyeluruh:**
   - `npm run typecheck` : **Lulus 100%** (0 error)
   - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
-  - `npm run build`     : **Lulus 100%** (33 static pages generated successfully)
+  - `npm run build`     : **Lulus 100%** (33 route static & dynamic teroptimasi)
 
 
 
