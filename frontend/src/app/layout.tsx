@@ -2,10 +2,19 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+const instrumentSans = localFont({
+  src: [
+    {
+      path: "./fonts/InstrumentSans-VariableFont_wdth,wght.ttf",
+      style: "normal",
+    },
+    {
+      path: "./fonts/InstrumentSans-Italic-VariableFont_wdth,wght.ttf",
+      style: "italic",
+    },
+  ],
+  variable: "--font-instrument-sans",
+  display: "swap",
 });
 
 const geistMono = localFont({
@@ -34,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
+        className={`${instrumentSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
         {children}
       </body>

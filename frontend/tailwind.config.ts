@@ -81,7 +81,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
-          "var(--font-geist-sans)",
+          "var(--font-instrument-sans)",
           "Inter",
           "-apple-system",
           "BlinkMacSystemFont",

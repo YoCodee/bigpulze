@@ -1751,5 +1751,21 @@
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
   - `npm run build`     : **Lulus 100%** (33 route static & dynamic teroptimasi)
 
+### R18.8 — Integrasi Font Instrument Sans (Variable Font) Global ✅
+**Selesai:** 2026-10-24
+
+- **Aset Tipografi:**
+  - Menempatkan `InstrumentSans-VariableFont_wdth,wght.ttf` dan `InstrumentSans-Italic-VariableFont_wdth,wght.ttf` ke `frontend/src/app/fonts/`.
+- **Konfigurasi Next.js & Tailwind:**
+  - Didaftarkan sebagai font lokal di `frontend/src/app/layout.tsx` via `next/font/local` dengan CSS variable `--font-instrument-sans`.
+  - Ditetapkan sebagai font sans-serif primer di `frontend/tailwind.config.ts` dan `frontend/src/app/globals.css`.
+  - Mempertahankan `Geist Mono` untuk presisi nilai numerik/finansial tabular dan terminal.
+- **Hasil Verifikasi:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
+  - `npm run build`     : **Lulus 100%** (33 static pages generated successfully)
+
+
 
 
