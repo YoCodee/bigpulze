@@ -1273,7 +1273,7 @@ export default function HomePage() {
       {/* ======================================================== */}
       {/* 10. FOOTER MULTI-KOLOM (redesign/home/footer.png) */}
       {/* ======================================================== */}
-      <footer className="w-full bg-[#07080A] border-t border-[#26282D] pt-14 pb-10 text-zinc-400">
+      <footer className="w-full bg-slate-950 border-t border-slate-800 pt-14 pb-10 text-slate-400">
         <div className="max-w-[1120px] mx-auto px-4 sm:px-6 space-y-12">
           {/* Top 5-Column Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10">
@@ -1295,21 +1295,21 @@ export default function HomePage() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-xl font-extrabold tracking-tight text-white">BizPulse</span>
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-brand-500/20 text-brand-400 border border-brand-500/30 uppercase tracking-wider">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-brand-500/20 text-brand-400 border border-brand-500/30 uppercase tracking-wider">
                     GTNIC 2026
                   </span>
                 </div>
               </Link>
 
-              <p className="text-xs sm:text-[13px] text-zinc-400 leading-relaxed max-w-sm">
+              <p className="text-xs sm:text-[13px] text-slate-400 leading-relaxed max-w-sm">
                 Asisten keputusan harian, Smart Voice POS 2 detik, dan pembukuan auto-ledger real-time untuk UMKM multi-cabang Indonesia.
               </p>
 
-              <div className="pt-2 flex flex-wrap items-center gap-2 text-[11px] text-zinc-500">
-                <span className="px-2 py-0.5 bg-[#121316] border border-[#26282D] rounded">Next.js 14</span>
-                <span className="px-2 py-0.5 bg-[#121316] border border-[#26282D] rounded">Supabase PostgreSQL</span>
-                <span className="px-2 py-0.5 bg-[#121316] border border-[#26282D] rounded">Web Speech API</span>
-                <span className="px-2 py-0.5 bg-[#121316] border border-[#26282D] rounded">Tailwind CSS</span>
+              <div className="pt-2 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                <span className="px-2 py-0.5 bg-slate-900 border border-slate-800 rounded">Next.js 14</span>
+                <span className="px-2 py-0.5 bg-slate-900 border border-slate-800 rounded">Supabase PostgreSQL</span>
+                <span className="px-2 py-0.5 bg-slate-900 border border-slate-800 rounded">Web Speech API</span>
+                <span className="px-2 py-0.5 bg-slate-900 border border-slate-800 rounded">Tailwind CSS</span>
               </div>
             </div>
 
@@ -1413,10 +1413,10 @@ export default function HomePage() {
               </h4>
               <ul className="space-y-2 text-xs">
                 <li>
-                  <span className="text-zinc-300">Garda Tech Competition</span>
+                  <span className="text-slate-300">Garda Tech Competition</span>
                 </li>
                 <li>
-                  <span className="text-zinc-500">Kategori Web Development</span>
+                  <span className="text-slate-500">Kategori Web Development</span>
                 </li>
                 <li>
                   <Link href="/demo-guide" className="text-brand-400 hover:text-brand-300">
@@ -1424,24 +1424,24 @@ export default function HomePage() {
                   </Link>
                 </li>
                 <li>
-                  <span className="text-zinc-500">Zona Waktu: WIB (UTC+7)</span>
+                  <span className="text-slate-500">Zona Waktu: WIB (UTC+7)</span>
                 </li>
                 <li>
-                  <span className="text-zinc-500">Standar Format Rupiah</span>
+                  <span className="text-slate-500">Standar Format Rupiah</span>
                 </li>
               </ul>
             </div>
           </div>
 
           {/* Bottom Copyright & Status Bar */}
-          <div className="border-t border-[#26282D] pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
+          <div className="border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
             <div>
               © 2026 BizPulse. Hak Cipta Dilindungi Undang-Undang. Inovasi untuk Garda Tech National Innovation Competition 2026.
             </div>
 
-            <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-[#121316] border border-[#26282D] text-zinc-400">
+            <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-300">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-mono text-[11px]">Sistem Normal • Asia/Jakarta (WIB)</span>
+              <span className="font-mono text-xs">Sistem Normal • Asia/Jakarta (WIB)</span>
             </div>
           </div>
         </div>

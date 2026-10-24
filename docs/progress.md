@@ -1720,5 +1720,24 @@
   - `npm run lint`      : Lulus (0 warning, 0 error)
   - `npm run test`      : Lulus (14 test files, 138 tests)
 
+### R18.6 — Landing Page Dark → Light Theme: L5 & L6 Footer, Metadata, dan Pemeriksaan Akhir ✅
+**Selesai:** 2026-10-24
+
+- **Aset & Varian (L5):**
+  - Seluruh aset grafis diverifikasi pure vector SVG (Lucide & inline SVG) dengan pewarnaan via `currentColor` dan token Tailwind, tanpa ketergantungan gambar raster (PNG/JPG) pihak ketiga.
+- **Footer Multi-Kolom (L6):**
+  - Menghapus warna hardcode (`#07080A`, `#121316`, `#26282D`) pada footer, beralih ke token semantik (`bg-slate-950`, `border-slate-800`, `bg-slate-900`, `text-slate-400`).
+  - Badge GTNIC 2026 pada logo footer distandarisasikan ke ukuran `text-xs`.
+  - Status bar footer distandarisasikan ke ukuran `text-xs`.
+- **Viewport & Theme Color:**
+  - Menambahkan konfigurasi `viewport: Viewport` pada `frontend/src/app/layout.tsx` dengan `themeColor: "#FFFFFF"` agar bar peramban mobile (Chrome/Safari) sinkron dengan latar tema terang dan bebas flash warna gelap.
+- **Pemeriksaan Responsivitas & Bebas Overflow:**
+  - Kontainer `BlueprintCanvas` dengan `overflow-x-clip` dan `hidden md:flex` pada koridor gutter memastikan tidak ada scroll horizontal di semua resolusi, termasuk mobile 360 px.
+- **DoD Migrasi Tema Terang Landing Page:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
+  - `npm run build`     : **Lulus 100%** (33 static pages generated successfully)
+
 
 
