@@ -1857,6 +1857,26 @@
   - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
   - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
 
+### G5 — Animasi Landing Page: Card Keamanan Standar Bank (Poin E) ✅
+**Selesai:** 2026-10-24
+
+- **Komponen Card Keamanan `<SecurityCardDemo>`:**
+  - `frontend/src/components/landing/motion/security-card.tsx`: Menggantikan markup statis Card 3 (*"Aman & Tervalidasi Standar Bank"*).
+- **Fitur Gerak:**
+  - **Gambar Outline Perisai:** SVG outline perisai tergambar presisi menggunakan teknik `stroke-dashoffset` (`strokeDashoffset: 90 → 0`, durasi 0.55s, `power2.out`).
+  - **Centang Tergambar Menyusul:** Tanda centang di dalam perisai tergambar seketika setelah perisai terbentuk (`strokeDashoffset: 20 → 0`, durasi 0.3s).
+  - **Teks Masuk Berurutan:** Judul dan paragraf deskripsi meluncur masuk dengan stagger halus (`y: 12px → 0`, `opacity: 0 → 1`).
+  - **Item Daftar Masuk Bergantian:** Dua lencana keamanan (*RLS PostgreSQL Multi-Tenant* & *Audit Log VOID Anti-Manipulasi*) meluncur dari kiri (`x: -14px → 0`, `opacity: 0 → 1`).
+  - **Denyut Titik Penanda:** Titik indikator emerald dan oranye berdenyut sekali (`scale: 1 → 1.5 → 1`) sebagai konfirmasi visual sistem pengawasan aktif.
+- **Aksesibilitas & Performa:**
+  - Animasi berjalan sekali saat masuk viewport (`once: true`).
+  - Mendukung `prefers-reduced-motion`: instan statis tanpa stroke draw atau transform delay.
+- **Hasil Verifikasi:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)
+
+
 
 
 

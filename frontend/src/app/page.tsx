@@ -36,7 +36,12 @@ import {
   FeatureGrid,
   FeatureCell,
 } from '@/components/ui/blueprint-grid';
-import { SectionHeader, TransactionFeedDemo, SyncCardDemo } from '@/components/landing/motion';
+import {
+  SectionHeader,
+  TransactionFeedDemo,
+  SyncCardDemo,
+  SecurityCardDemo,
+} from '@/components/landing/motion';
 
 const testimonials = [
   {
@@ -899,32 +904,7 @@ export default function HomePage() {
               <SyncCardDemo />
 
               {/* Card 3: Bottom-Left (Col span 1) - Secure by default */}
-              <div className="md:col-span-1 p-6 sm:p-8 flex flex-col justify-between border-b md:border-b-0 border-slate-200 space-y-6">
-                <div className="space-y-4">
-                  <div className="h-10 w-10 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center text-brand-700">
-                    <ShieldCheck className="h-5 w-5" />
-                  </div>
-
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                    Aman & Tervalidasi Standar Bank
-                  </h3>
-
-                  <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed">
-                    PostgreSQL Row Level Security (RLS) di setiap baris, log audit pembatalan nota (VOID) anti-fraud, dan ekspor laporan keuangan terstandarisasi pengajuan kredit bank/KUR.
-                  </p>
-                </div>
-
-                <div className="space-y-1.5 pt-4 border-t border-slate-200">
-                  <div className="flex items-center gap-2 text-xs text-slate-600">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
-                    <span>RLS PostgreSQL Multi-Tenant</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-slate-600">
-                    <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
-                    <span>Audit Log VOID Anti-Manipulasi</span>
-                  </div>
-                </div>
-              </div>
+              <SecurityCardDemo />
 
               {/* Card 4: Bottom-Right (Col span 2) - Fast path to AI adoption with Terminal */}
               <div className="md:col-span-2 p-6 sm:p-8 flex flex-col lg:flex-row justify-between md:border-l border-slate-200 gap-6 items-stretch">

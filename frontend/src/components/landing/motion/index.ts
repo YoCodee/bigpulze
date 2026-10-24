@@ -14,3 +14,5 @@ export { TransactionFeedDemo, DEMO_TRANSACTIONS } from './transaction-feed';
 export type { TransactionItem } from './transaction-feed';
 
 export { SyncCardDemo } from './sync-card';
+
+export { SecurityCardDemo } from './security-card';
