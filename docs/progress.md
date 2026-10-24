@@ -1980,3 +1980,20 @@
 
 
 
+### G7.5 — Animasi Landing Page: Section CTA Banner Penutup & Footer ✅
+**Selesai:** 2026-10-24
+
+- **Komponen Pembungkus `<CtaBannerMotion>`:**
+  - `frontend/src/components/landing/motion/cta-banner-motion.tsx`: Mengatur animasi sekuensial entrance dan floating icons untuk Section 9 CTA Banner.
+- **Fitur Gerak:**
+  - **Entrance Stagger:** Kotak banner utama meluncur naik (`y: 20px → 0`, `opacity: 0 → 1`), diikuti judul teks, subteks, tombol aksi CTA ("Mulai Uji Coba Gratis"), dan teks disclaimer.
+  - **Floating Decorative Icons:** 4 ikon ornamen blueprint (ShieldCheck, Sparkles, FileText, Zap) memiliki gerakan melayang lembut (*ambient float*) dengan variasi fase dan offset 2–3px untuk kesan hidup tanpa distraksi.
+- **Section Footer (Section 10):**
+  - Seluruh footer dibungkus komponen `<Reveal>` (`distance: 14px`, `duration: 0.6s`) sehingga muncul elegan saat pengunjung mencapai dasar halaman landing.
+- **Aksesibilitas & Performa:**
+  - Floating loop otomatis **pause** saat keluar viewport (`ScrollTrigger` `onToggle`).
+  - Mematuhi `prefers-reduced-motion` via `gsap.matchMedia()` (floating dinonaktifkan, posisi statis instan).
+- **Hasil Verifikasi:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 test files, 138 tests)

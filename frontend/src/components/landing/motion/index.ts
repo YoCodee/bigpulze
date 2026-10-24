@@ -22,3 +22,5 @@ export { AnomalyTerminalDemo } from './anomaly-terminal';
 export { HeroMotion } from './hero-motion';
 
 export { NetworkRadarMotion } from './network-radar';
+
+export { CtaBannerMotion } from './cta-banner-motion';

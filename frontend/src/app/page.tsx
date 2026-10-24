@@ -46,6 +46,7 @@ import {
   Stagger,
   Reveal,
   NetworkRadarMotion,
+  CtaBannerMotion,
 } from '@/components/landing/motion';
 
 const testimonials = [
@@ -1081,77 +1082,79 @@ export default function HomePage() {
       {/* 9. CTA BANNER PENUTUP (redesign/home/footer.png) */}
       {/* ======================================================== */}
       <section className="px-3 sm:px-6 md:px-8 py-14 sm:py-20 max-w-[1120px] mx-auto w-full">
-        <div className="relative rounded-3xl overflow-hidden bg-hero-gradient shadow-2xl shadow-brand-500/25 text-white p-7 sm:p-12 md:p-16 text-center flex flex-col items-center justify-center">
-          {/* Halftone Dot-Grid Pattern */}
-          <div className="absolute inset-0 bg-dot-grid opacity-35 pointer-events-none" />
+        <CtaBannerMotion>
+          <div className="relative rounded-3xl overflow-hidden bg-hero-gradient shadow-2xl shadow-brand-500/25 text-white p-7 sm:p-12 md:p-16 text-center flex flex-col items-center justify-center">
+            {/* Halftone Dot-Grid Pattern */}
+            <div className="absolute inset-0 bg-dot-grid opacity-35 pointer-events-none" />
 
-          {/* Warm Ambient Glow di Bagian Bawah */}
-          <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-[420px] sm:w-[650px] h-[220px] bg-white/20 blur-[100px] pointer-events-none rounded-full" />
+            {/* Warm Ambient Glow di Bagian Bawah */}
+            <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-[420px] sm:w-[650px] h-[220px] bg-white/20 blur-[100px] pointer-events-none rounded-full" />
 
-          {/* Faint Floating Diamond/Decorative Boxes (mimicking footer.png background) */}
-          <div className="hidden sm:block absolute top-8 left-12 rotate-12 border border-white/20 bg-white/5 rounded-xl p-3 opacity-30 pointer-events-none">
-            <ShieldCheck className="h-6 w-6 text-white" />
-          </div>
-          <div className="hidden sm:block absolute top-10 right-14 -rotate-12 border border-white/20 bg-white/5 rounded-xl p-3 opacity-30 pointer-events-none">
-            <Sparkles className="h-6 w-6 text-white" />
-          </div>
-          <div className="hidden md:block absolute bottom-24 left-16 -rotate-6 border border-white/20 bg-white/5 rounded-xl p-3 opacity-25 pointer-events-none">
-            <FileText className="h-5 w-5 text-white" />
-          </div>
-          <div className="hidden md:block absolute bottom-24 right-16 rotate-6 border border-white/20 bg-white/5 rounded-xl p-3 opacity-25 pointer-events-none">
-            <Zap className="h-5 w-5 text-white" />
-          </div>
+            {/* Faint Floating Diamond/Decorative Boxes (mimicking footer.png background) */}
+            <div className="cta-floater hidden sm:block absolute top-8 left-12 rotate-12 border border-white/20 bg-white/5 rounded-xl p-3 opacity-30 pointer-events-none">
+              <ShieldCheck className="h-6 w-6 text-white" />
+            </div>
+            <div className="cta-floater hidden sm:block absolute top-10 right-14 -rotate-12 border border-white/20 bg-white/5 rounded-xl p-3 opacity-30 pointer-events-none">
+              <Sparkles className="h-6 w-6 text-white" />
+            </div>
+            <div className="cta-floater hidden md:block absolute bottom-24 left-16 -rotate-6 border border-white/20 bg-white/5 rounded-xl p-3 opacity-25 pointer-events-none">
+              <FileText className="h-5 w-5 text-white" />
+            </div>
+            <div className="cta-floater hidden md:block absolute bottom-24 right-16 rotate-6 border border-white/20 bg-white/5 rounded-xl p-3 opacity-25 pointer-events-none">
+              <Zap className="h-5 w-5 text-white" />
+            </div>
 
-          {/* Headline (Build without boundaries in footer.png) */}
-          <h2 className="relative z-10 text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white max-w-3xl leading-tight">
-            Tumbuh Tanpa Batas Bersama BizPulse
-          </h2>
+            {/* Headline (Build without boundaries in footer.png) */}
+            <h2 className="cta-animate-item relative z-10 text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white max-w-3xl leading-tight">
+              Tumbuh Tanpa Batas Bersama BizPulse
+            </h2>
 
-          {/* Subtitle */}
-          <p className="relative z-10 mt-4 text-xs sm:text-base md:text-lg text-white/95 max-w-2xl leading-relaxed">
-            Bergabunglah dengan ratusan pengusaha UMKM yang telah menghilangkan kerumitan pembukuan manual dan mengendalikan multi-cabang secara cerdas. Mulai gratis hari ini tanpa perlu kartu kredit.
-          </p>
+            {/* Subtitle */}
+            <p className="cta-animate-item relative z-10 mt-4 text-xs sm:text-base md:text-lg text-white/95 max-w-2xl leading-relaxed">
+              Bergabunglah dengan ratusan pengusaha UMKM yang telah menghilangkan kerumitan pembukuan manual dan mengendalikan multi-cabang secara cerdas. Mulai gratis hari ini tanpa perlu kartu kredit.
+            </p>
 
-          {/* Dual Action Buttons */}
-          <div className="relative z-10 mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
-            <Link
-              href="/demo-guide"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full text-sm sm:text-base font-bold bg-white text-slate-950 hover:bg-zinc-100 transition-all shadow-xl hover:scale-102 cursor-pointer"
-            >
-              <Sparkles className="h-4 w-4 text-brand-600" />
-              <span>Mulai Demo 1-Klik</span>
-            </Link>
+            {/* Dual Action Buttons */}
+            <div className="cta-animate-item relative z-10 mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
+              <Link
+                href="/demo-guide"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full text-sm sm:text-base font-bold bg-white text-slate-950 hover:bg-zinc-100 transition-all shadow-xl hover:scale-102 cursor-pointer"
+              >
+                <Sparkles className="h-4 w-4 text-brand-600" />
+                <span>Mulai Demo 1-Klik</span>
+              </Link>
 
-            <Link
-              href="/login"
-              className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm sm:text-base font-semibold bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-xs transition-all cursor-pointer"
-            >
-              Masuk Akun Demo
-            </Link>
-          </div>
+              <Link
+                href="/login"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm sm:text-base font-semibold bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-xs transition-all cursor-pointer"
+              >
+                Masuk Akun Demo
+              </Link>
+            </div>
 
-          {/* Bottom Ticker Strip Inside Orange Banner (footer.png bottom ribbon) */}
-          <div className="w-full mt-10 sm:mt-14 -mx-7 -mb-7 sm:-mx-12 sm:-mb-12 md:-mx-16 md:-mb-16 border-t border-white/20 bg-black/20 backdrop-blur-xs py-3.5 px-4 sm:px-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-left text-xs text-white/90">
-              <div className="flex items-center space-x-2">
-                <TrendingUp className="h-4 w-4 shrink-0 text-white" />
-                <span className="truncate">Auto-Ledger & 3 Pagi Sesuai Akuntansi</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Mic className="h-4 w-4 shrink-0 text-white" />
-                <span className="truncate">Smart Voice POS 2 Detik Offline-First</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <ShieldCheck className="h-4 w-4 shrink-0 text-white" />
-                <span className="truncate">RLS PostgreSQL & Audit Anti-Fraud VOID</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Boxes className="h-4 w-4 shrink-0 text-white" />
-                <span className="truncate">Mutasi Stok Hemat Ongkir Terhitung Otomatis</span>
+            {/* Bottom Ticker Strip Inside Orange Banner (footer.png bottom ribbon) */}
+            <div className="cta-animate-item w-full mt-10 sm:mt-14 -mx-7 -mb-7 sm:-mx-12 sm:-mb-12 md:-mx-16 md:-mb-16 border-t border-white/20 bg-black/20 backdrop-blur-xs py-3.5 px-4 sm:px-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-left text-xs text-white/90">
+                <div className="flex items-center space-x-2">
+                  <TrendingUp className="h-4 w-4 shrink-0 text-white" />
+                  <span className="truncate">Auto-Ledger & 3 Pagi Sesuai Akuntansi</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Mic className="h-4 w-4 shrink-0 text-white" />
+                  <span className="truncate">Smart Voice POS 2 Detik Offline-First</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <ShieldCheck className="h-4 w-4 shrink-0 text-white" />
+                  <span className="truncate">RLS PostgreSQL & Audit Anti-Fraud VOID</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Boxes className="h-4 w-4 shrink-0 text-white" />
+                  <span className="truncate">Mutasi Stok Hemat Ongkir Terhitung Otomatis</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </CtaBannerMotion>
       </section>
 
       {/* Full-bleed Horizontal Dashed Rule */}
@@ -1163,174 +1166,178 @@ export default function HomePage() {
       <footer className="w-full bg-slate-50 border-t border-slate-200 pt-14 pb-10 text-slate-600">
         <div className="max-w-[1120px] mx-auto px-4 sm:px-6 space-y-12">
           {/* Top 5-Column Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10">
-            {/* Brand Column (Span 4) */}
-            <div className="lg:col-span-4 space-y-4">
-              <Link href="/" className="flex items-center space-x-2.5 group">
-                <div className="h-8 w-8 rounded-lg bg-brand-500 text-white flex items-center justify-center shadow-md">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-4 h-4"
-                  >
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                  </svg>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xl font-extrabold tracking-tight text-slate-900">BizPulse</span>
-                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-orange-50 text-brand-700 border border-orange-200 uppercase tracking-wider">
-                    GTNIC 2026
-                  </span>
-                </div>
-              </Link>
+          <Reveal distance={16}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10">
+              {/* Brand Column (Span 4) */}
+              <div className="lg:col-span-4 space-y-4">
+                <Link href="/" className="flex items-center space-x-2.5 group">
+                  <div className="h-8 w-8 rounded-lg bg-brand-500 text-white flex items-center justify-center shadow-md">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="w-4 h-4"
+                    >
+                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                    </svg>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xl font-extrabold tracking-tight text-slate-900">BizPulse</span>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded bg-orange-50 text-brand-700 border border-orange-200 uppercase tracking-wider">
+                      GTNIC 2026
+                    </span>
+                  </div>
+                </Link>
 
-              <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed max-w-sm">
-                Asisten keputusan harian, Smart Voice POS 2 detik, dan pembukuan auto-ledger real-time untuk UMKM multi-cabang Indonesia.
-              </p>
+                <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed max-w-sm">
+                  Asisten keputusan harian, Smart Voice POS 2 detik, dan pembukuan auto-ledger real-time untuk UMKM multi-cabang Indonesia.
+                </p>
 
-              <div className="pt-2 flex flex-wrap items-center gap-2 text-xs text-slate-600">
-                <span className="px-2 py-0.5 bg-white border border-slate-200 rounded shadow-xs">Next.js 14</span>
-                <span className="px-2 py-0.5 bg-white border border-slate-200 rounded shadow-xs">Supabase PostgreSQL</span>
-                <span className="px-2 py-0.5 bg-white border border-slate-200 rounded shadow-xs">Web Speech API</span>
-                <span className="px-2 py-0.5 bg-white border border-slate-200 rounded shadow-xs">Tailwind CSS</span>
+                <div className="pt-2 flex flex-wrap items-center gap-2 text-xs text-slate-600">
+                  <span className="px-2 py-0.5 bg-white border border-slate-200 rounded shadow-xs">Next.js 14</span>
+                  <span className="px-2 py-0.5 bg-white border border-slate-200 rounded shadow-xs">Supabase PostgreSQL</span>
+                  <span className="px-2 py-0.5 bg-white border border-slate-200 rounded shadow-xs">Web Speech API</span>
+                  <span className="px-2 py-0.5 bg-white border border-slate-200 rounded shadow-xs">Tailwind CSS</span>
+                </div>
+              </div>
+
+              {/* Column 1: Mulai Cepat (Span 2) */}
+              <div className="lg:col-span-2 space-y-3">
+                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                  Mulai Cepat
+                </h4>
+                <ul className="space-y-2 text-xs">
+                  <li>
+                    <Link href="/demo-guide" className="text-slate-600 hover:text-slate-900 transition-colors">
+                      Panduan Juri 1-Klik
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/pos" className="text-slate-600 hover:text-slate-900 transition-colors">
+                      Simulator Kasir POS
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 transition-colors">
+                      Pusat Kendali Owner
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/login" className="text-slate-600 hover:text-slate-900 transition-colors">
+                      Masuk Akun Demo
+                    </Link>
+                  </li>
+                  <li>
+                    <a href="#paket" className="text-slate-600 hover:text-slate-900 transition-colors">
+                      Pilihan Paket
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Column 2: Fitur Utama (Span 2) */}
+              <div className="lg:col-span-2 space-y-3">
+                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                  Fitur Utama
+                </h4>
+                <ul className="space-y-2 text-xs">
+                  <li>
+                    <Link href="/pos" className="text-slate-600 hover:text-slate-900 transition-colors">
+                      Smart Voice POS
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 transition-colors">
+                      3 Pertanyaan Pagi
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/reports" className="text-slate-600 hover:text-slate-900 transition-colors">
+                      Auto-Ledger Real-Time
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/stock" className="text-slate-600 hover:text-slate-900 transition-colors">
+                      Rekomendasi Mutasi
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/expenses" className="text-slate-600 hover:text-slate-900 transition-colors">
+                      Deteksi Anomali Biaya
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Column 3: Keamanan & Standar (Span 2) */}
+              <div className="lg:col-span-2 space-y-3">
+                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                  Keamanan & Standar
+                </h4>
+                <ul className="space-y-2 text-xs text-slate-600">
+                  <li className="flex items-center space-x-1.5">
+                    <Lock className="h-3 w-3 text-brand-600 shrink-0" />
+                    <span>RLS PostgreSQL</span>
+                  </li>
+                  <li className="flex items-center space-x-1.5">
+                    <ShieldCheck className="h-3 w-3 text-brand-600 shrink-0" />
+                    <span>Audit Log VOID</span>
+                  </li>
+                  <li className="flex items-center space-x-1.5">
+                    <FileText className="h-3 w-3 text-brand-600 shrink-0" />
+                    <span>Ekspor PDF KUR</span>
+                  </li>
+                  <li className="flex items-center space-x-1.5">
+                    <Server className="h-3 w-3 text-brand-600 shrink-0" />
+                    <span>Offline-First Resilien</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Column 4: GTNIC 2026 (Span 2) */}
+              <div className="lg:col-span-2 space-y-3">
+                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                  GTNIC 2026
+                </h4>
+                <ul className="space-y-2 text-xs">
+                  <li>
+                    <span className="text-slate-700">Garda Tech Competition</span>
+                  </li>
+                  <li>
+                    <span className="text-slate-500">Kategori Web Development</span>
+                  </li>
+                  <li>
+                    <Link href="/demo-guide" className="text-brand-700 hover:text-brand-800 font-semibold">
+                      6 Skenario Pengujian ↗
+                    </Link>
+                  </li>
+                  <li>
+                    <span className="text-slate-500">Zona Waktu: WIB (UTC+7)</span>
+                  </li>
+                  <li>
+                    <span className="text-slate-500">Standar Format Rupiah</span>
+                  </li>
+                </ul>
               </div>
             </div>
-
-            {/* Column 1: Mulai Cepat (Span 2) */}
-            <div className="lg:col-span-2 space-y-3">
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                Mulai Cepat
-              </h4>
-              <ul className="space-y-2 text-xs">
-                <li>
-                  <Link href="/demo-guide" className="text-slate-600 hover:text-slate-900 transition-colors">
-                    Panduan Juri 1-Klik
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/pos" className="text-slate-600 hover:text-slate-900 transition-colors">
-                    Simulator Kasir POS
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 transition-colors">
-                    Pusat Kendali Owner
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/login" className="text-slate-600 hover:text-slate-900 transition-colors">
-                    Masuk Akun Demo
-                  </Link>
-                </li>
-                <li>
-                  <a href="#paket" className="text-slate-600 hover:text-slate-900 transition-colors">
-                    Pilihan Paket
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 2: Fitur Utama (Span 2) */}
-            <div className="lg:col-span-2 space-y-3">
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                Fitur Utama
-              </h4>
-              <ul className="space-y-2 text-xs">
-                <li>
-                  <Link href="/pos" className="text-slate-600 hover:text-slate-900 transition-colors">
-                    Smart Voice POS
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/dashboard" className="text-slate-600 hover:text-slate-900 transition-colors">
-                    3 Pertanyaan Pagi
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/reports" className="text-slate-600 hover:text-slate-900 transition-colors">
-                    Auto-Ledger Real-Time
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/stock" className="text-slate-600 hover:text-slate-900 transition-colors">
-                    Rekomendasi Mutasi
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/expenses" className="text-slate-600 hover:text-slate-900 transition-colors">
-                    Deteksi Anomali Biaya
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 3: Keamanan & Standar (Span 2) */}
-            <div className="lg:col-span-2 space-y-3">
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                Keamanan & Standar
-              </h4>
-              <ul className="space-y-2 text-xs text-slate-600">
-                <li className="flex items-center space-x-1.5">
-                  <Lock className="h-3 w-3 text-brand-600 shrink-0" />
-                  <span>RLS PostgreSQL</span>
-                </li>
-                <li className="flex items-center space-x-1.5">
-                  <ShieldCheck className="h-3 w-3 text-brand-600 shrink-0" />
-                  <span>Audit Log VOID</span>
-                </li>
-                <li className="flex items-center space-x-1.5">
-                  <FileText className="h-3 w-3 text-brand-600 shrink-0" />
-                  <span>Ekspor PDF KUR</span>
-                </li>
-                <li className="flex items-center space-x-1.5">
-                  <Server className="h-3 w-3 text-brand-600 shrink-0" />
-                  <span>Offline-First Resilien</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 4: GTNIC 2026 (Span 2) */}
-            <div className="lg:col-span-2 space-y-3">
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                GTNIC 2026
-              </h4>
-              <ul className="space-y-2 text-xs">
-                <li>
-                  <span className="text-slate-700">Garda Tech Competition</span>
-                </li>
-                <li>
-                  <span className="text-slate-500">Kategori Web Development</span>
-                </li>
-                <li>
-                  <Link href="/demo-guide" className="text-brand-700 hover:text-brand-800 font-semibold">
-                    6 Skenario Pengujian ↗
-                  </Link>
-                </li>
-                <li>
-                  <span className="text-slate-500">Zona Waktu: WIB (UTC+7)</span>
-                </li>
-                <li>
-                  <span className="text-slate-500">Standar Format Rupiah</span>
-                </li>
-              </ul>
-            </div>
-          </div>
+          </Reveal>
 
           {/* Bottom Copyright & Status Bar */}
-          <div className="border-t border-slate-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-            <div>
-              © 2026 BizPulse. Hak Cipta Dilindungi Undang-Undang. Inovasi untuk Garda Tech National Innovation Competition 2026.
-            </div>
+          <Reveal distance={12} delay={0.08}>
+            <div className="border-t border-slate-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+              <div>
+                © 2026 BizPulse. Hak Cipta Dilindungi Undang-Undang. Inovasi untuk Garda Tech National Innovation Competition 2026.
+              </div>
 
-            <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600 shadow-xs">
-              <span className="h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
-              <span className="font-mono text-xs">Sistem Normal • Asia/Jakarta (WIB)</span>
+              <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600 shadow-xs">
+                <span className="h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
+                <span className="font-mono text-xs">Sistem Normal • Asia/Jakarta (WIB)</span>
+              </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </footer>
     </BlueprintCanvas>
