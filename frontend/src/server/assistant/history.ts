@@ -8,7 +8,7 @@ export interface ChatHistoryMessage {
   content: string;
 }
 
-/** Property names are snake_case to match the RoL, DB and API layer. */
+/** Property names are snake_case to match the DB, API and event layer. */
 export interface ChatMessageRow {
   role: string;
   content: string;
