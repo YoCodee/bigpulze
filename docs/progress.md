@@ -2090,3 +2090,17 @@
 - [ ] Coba chat lagi; bila masih sering 503, tunggu beban Google mereda lalu uji demo.
 
 ---
+
+### A6 — Bugfix HTTP 400 "missing thought_signature" ✅
+**Selesai:** 2026-10-29
+
+**Akar masalah:** model Gemini 3.x menempelkan `thought_signature` pada part `functionCall` (dan sebagian `text`). Saat agent mereplay giliran model untuk dikembalikan bersama hasil tool, signature itu WAJIB dikirim ulang persis (docs thought-signatures). Implementasi lama menyusun ulang part sendiri sehingga signature hilang → `400 INVALID_ARGUMENT` pada putaran kedua.
+
+**Perbaikan (commit `fix: preserve Gemini thought_signature when replaying tool calls`):**
+- `frontend/src/server/assistant/gemini.ts` — `GeminiPart` jadi bentuk flat sesuai skema API (`thoughtSignature?` opsional); `extractPartsFromPayload` kini juga mengembalikan `rawParts` (part mentah persis diterima).
+- `frontend/src/server/assistant/agent.ts` — `streamModelRound` mendorong part mentah (signature ikut) ke `modelParts` yang direplay, bukan hasil rekonstruksi.
+- Test baru: rawParts mempertahankan `thoughtSignature` (159 test lulus).
+
+**Belum teruji (di luar kendali):** skenario tool-call dua putaran vs API nyata — Google sedang overload/429 saat pengujian terakhir (beberapa probe saya memaksa jadwal kuota gratis terpakai); verifikasi via chat UI oleh pemilik setelah trensien.
+
+---
