@@ -74,6 +74,12 @@ const navGroups: NavGroup[] = [
     groupName: 'Manajemen Bisnis',
     items: [
       {
+        name: 'Asisten AI',
+        href: '/asisten',
+        icon: Sparkles,
+        ownerOnly: true,
+      },
+      {
         name: 'Manajemen Organisasi',
         href: '/branches',
         icon: Building2,
