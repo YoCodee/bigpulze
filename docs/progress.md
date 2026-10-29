@@ -2023,3 +2023,47 @@
   - `npm run build`     : **Lulus 100%** (33/33 halaman terkompilasi sukses)
 
 ---
+
+## Fitur Tambahan: Asisten AI (29 Okt)
+
+> Fitur di luar PRD (permintaan langsung pemilik proyek; lihat `assumptions.md`). Asisten berbasis LLM read-only: owner dapat bertanya tentang kondisi bisnis, brainstorming, dan analisis, jawaban memakai data live dari database (stok, penghasilan, pengeluaran, forecast, rekomendasi ML) via tool-calling Gemini — bukan SQL bebas, aman terhadap RLS multi-tenant.
+
+### A1 — Skema Chat Asisten ✅
+**Selesai:** 2026-10-29
+
+- `database/schema_assistant.sql` — `chat_sessions` + `chat_messages` (RLS owner-only, trigger `touch_chat_session_updated_at`)
+- `docs/prdBigPulze.md` §7.1.2 — spesifikasi tabel baru sesuai pola §7.1
+- **Belum diuji:** SQL belum dijalankan di Supabase (perlu dieksekusi berurutan setelah `rls.sql`)
+
+### A2 — Tools Data Bisnis + Agent Gemini ✅
+**Selesai:** 2026-10-29
+
+- `frontend/src/server/assistant/tools/` — 7 tool read-only: `get_pnl_summary`, `get_top_products`, `get_branch_comparison`, `get_stock_status`, `get_forecasts`, `get_expense_breakdown`, `get_open_recommendations` (query via JWT owner, argumen tervalidasi Zod, rentang maksimum 90 hari)
+- `frontend/src/server/assistant/gemini.ts` — REST client `streamGenerateContent?alt=sse` tanpa SDK
+- `frontend/src/server/assistant/agent.ts` — agent loop (maksimal 4 putaran tool), streaming teks
+- `frontend/src/server/assistant/prompt.ts` + `history.ts` — system prompt Indonesia, riwayat 14 pesan
+- **Verifikasi:** typecheck/lint/test lulus; 20 test baru untuk helper murni
+
+### A3 — API Routes Chat & Sesi ✅
+**Selesai:** 2026-10-29
+
+- `POST /api/assistant/chat` — SSE streaming; prioritas auth owner, rate limit 20 pesan/menit (in-memory per instance)
+- `GET /api/assistant/sessions`, `GET|DELETE /api/assistant/sessions/[id]`, `GET /api/assistant/sessions/[id]/messages`
+- **Belum diuji end-to-end:** endpoint chat memerlukan `GEMINI_API_KEY` (lihat "Menunggu dari pemilik")
+
+### A4 — Halaman /asisten ✅
+**Selesai:** 2026-10-29
+
+- `frontend/src/app/(app)/asisten/page.tsx` + `RoleGuard ['OWNER']`
+- `frontend/src/components/assistant/` — workspace dua kolom (daftar sesi + chat), bubble streaming, chip sumber-data (transparansi tool), saran pertanyaan, state loading/error/kosong
+- `frontend/src/hooks/use-assistant-chat.ts` — streaming SSE manual (POST), kelola sesi
+- Navigasi sidebar diperbarui: item "Asisten AI" (group Manajemen Bisnis, khusus Owner)
+- `.env.example` ditambah `GEMINI_API_KEY` dan `GEMINI_MODEL` (template, tanpa nilai)
+- **Verifikasi:** `typecheck` lulus, `lint` 0 error, `test` 158/158 lulus, `build` sukses (rute `/asisten` 6.29 kB First Load)
+
+### Menunggu dari pemilik
+- [ ] Isi `GEMINI_API_KEY` (buat di aistudio.google.com/apikey) ke `.env.local`
+- [ ] Jalankan `database/schema_assistant.sql` di Supabase (setelah `schema.sql` → `functions.sql` → `rls.sql`)
+- [ ] Uji manual alur chat (pertanyaan data, pertanyaan umum, kasus tanpa data, 403 kasir) lalu uji demo
+
+---
