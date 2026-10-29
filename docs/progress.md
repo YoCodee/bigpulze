@@ -2155,3 +2155,20 @@
   - `npm run test`      : **Lulus 100%** (14 file tes, 138 tes lolos)
 
 ---
+
+### Tahap B2 — Penyederhanaan Landing Page: Penghapusan Pricing List ✅
+**Selesai:** 2026-10-29
+
+- **Penghapusan Kartu Pricing (`pricingPlans`):**
+  - Menghapus 4 kartu paket harga (*Starter UMKM*, *Pro Multi-Cabang*, *Scale Franchise*, dan *Juri Demo GTNIC*) dari Section 6 di `frontend/src/app/page.tsx`.
+  - Menghapus array data `pricingPlans` dan import `Check` yang tidak lagi digunakan.
+- **Penyelarasan Konten Section Arsitektur Solusi:**
+  - Section 6 kini secara murni berfokus pada **Arsitektur Solusi & Aliran Data Real-Time** (kapsul tab interaktif: *Kasir Suara 2 Detik*, *Auto-Ledger 3 Pagi*, *Deteksi Anomali Z-score*, dan *Mutasi Stok Multi-Cabang*).
+  - Tautan navigasi navbar dan footer diselaraskan dari `#paket` (*"Pilihan Paket"*) menjadi `#arsitektur` (*"Alur Kerja"* & *"Arsitektur Solusi"*).
+  - Teks transisi Section 5 disesuaikan menjadi *"Dirancang untuk Skalabilitas Nyata"*.
+- **Hasil Verifikasi:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 file tes, 138 tes lolos)
+
+---

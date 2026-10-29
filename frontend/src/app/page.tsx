@@ -19,7 +19,6 @@ import {
   Mic,
   FileSpreadsheet,
   Activity,
-  Check,
   Smartphone,
   RefreshCw,
   Building2,
@@ -175,82 +174,6 @@ const featureFlows = [
   },
 ];
 
-const pricingPlans = [
-  {
-    name: 'Starter UMKM',
-    tag: 'Gerai Pertama',
-    price: 'Rp 0',
-    unit: '/bulan',
-    period: 'Gratis selamanya',
-    desc: 'Solusi kasir suara lengkap untuk 1 gerai atau kedai kopi baru.',
-    features: [
-      'Smart Voice POS 2 Detik',
-      '1 Cabang Aktif',
-      'Katalog Produk Tak Terbatas',
-      'Kasir Tunai & Simulasi QRIS',
-      'Cetak Struk Transaksi Sah',
-    ],
-    cta: 'Mulai Gratis',
-    href: '/login',
-    popular: false,
-  },
-  {
-    name: 'Pro Multi-Cabang',
-    tag: 'Paling Populer',
-    price: 'Rp 49.000',
-    unit: '/bulan',
-    period: 'Ditagih per organisasi',
-    desc: 'Manajemen terpusat untuk pemilik usaha yang berkembang ke multi-cabang.',
-    features: [
-      'Hingga 3 Cabang Aktif',
-      'Auto-Ledger Laba Rugi Real-Time',
-      'Deteksi Anomali Z-score',
-      'Rekomendasi Mutasi Antarcabang',
-      'Dashboard 3 Pertanyaan Pagi',
-    ],
-    cta: 'Pilih Paket Pro',
-    href: '/login',
-    popular: true,
-  },
-  {
-    name: 'Scale Franchise',
-    tag: 'Multi-Gerai Penuh',
-    price: 'Rp 149.000',
-    unit: '/bulan',
-    period: 'Ditagih per organisasi',
-    desc: 'Fitur terlengkap untuk ekspansi usaha dengan kebutuhan audit finansial ketat.',
-    features: [
-      'Hingga 5 Cabang (Batas Maksimal)',
-      'Ekspor Dokumen PDF Standar Bank KUR',
-      'Ekspor Laporan Excel / CSV UTF-8 BOM',
-      'Wewenang Akun Kasir Tak Terbatas',
-      'Prioritas Deteksi Fraud Transaksi',
-    ],
-    cta: 'Pilih Paket Scale',
-    href: '/login',
-    popular: false,
-  },
-  {
-    name: 'Juri Demo GTNIC',
-    tag: 'Akses Evaluasi',
-    price: 'Bebas Akses',
-    unit: '',
-    period: 'Siap uji instan 1-klik',
-    desc: 'Paket evaluasi khusus dewan juri kompetisi dengan akun demo pre-populated.',
-    features: [
-      'Akun Owner Demo Kopi Senja',
-      'Akun Kasir Cabang Demo',
-      '6 Skenario Pengujian Terpandu',
-      'Simulator Suara & Audio TTS',
-      'Data Riil Transaksi 3 Cabang',
-    ],
-    cta: 'Mulai Demo 1-Klik',
-    href: '/demo-guide',
-    popular: false,
-    isJuri: true,
-  },
-];
-
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState(0);
   const [activeFeatureTab, setActiveFeatureTab] = useState(0);
@@ -308,8 +231,8 @@ export default function HomePage() {
             <a href="#testimoni" className="hover:text-slate-900 transition-colors">
               Cerita UMKM
             </a>
-            <a href="#paket" className="hover:text-slate-900 transition-colors">
-              Paket
+            <a href="#arsitektur" className="hover:text-slate-900 transition-colors">
+              Alur Kerja
             </a>
           </nav>
 
@@ -679,14 +602,14 @@ export default function HomePage() {
             </div>
           </Stagger>
 
-          {/* Section Transition Heading (Mengacu ke teks transisi info2.png) */}
+          {/* Section Transition Heading */}
           <Reveal distance={16} delay={0.1}>
             <div className="pt-10 text-center space-y-1.5">
               <h3 className="text-xl sm:text-3xl font-medium tracking-tight text-slate-900">
-                Investasi Terjangkau, Tumbuh Bersama Usaha Anda
+                Dirancang untuk Skalabilitas Nyata
               </h3>
               <p className="text-xs sm:text-sm text-slate-600">
-                (Mulai gratis untuk gerai pertama, siap berskala saat cabang bertambah.)
+                Mulai dari 1 gerai rintisan hingga jaringan multi-cabang terpadu.
               </p>
             </div>
           </Reveal>
@@ -694,17 +617,17 @@ export default function HomePage() {
       </section>
 
       {/* ======================================================== */}
-      {/* 6. PAKET & FLEKSIBILITAS UMKM (redesign/home/info3.png) */}
+      {/* 6. ARSITEKTUR SOLUSI & ALIRAN DATA REAL-TIME */}
       {/* ======================================================== */}
-      <section id="paket" className="relative w-full py-16 sm:py-24">
-        <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-12">
+      <section id="arsitektur" className="relative w-full py-16 sm:py-24">
+        <div className="max-w-[910px] mx-auto px-4 sm:px-6 space-y-10">
           {/* Section Header */}
           <SectionHeader className="text-center max-w-2xl mx-auto space-y-3">
             <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-900">
-              Pilihan Paket <span className="text-brand-700 underline decoration-brand-500/40 underline-offset-8">Sesuai Skala Usaha</span>
+              Arsitektur Solusi &amp; <span className="text-brand-700 underline decoration-brand-500/40 underline-offset-8">Aliran Data Real-Time</span>
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 tracking-tight">
-              Investasi transparan tanpa biaya royalti tersembunyi. Dari 1 gerai rintisan hingga 5 cabang terpadu.
+              Diproses seketika di tingkat perangkat kasir dan Supabase tanpa jeda antrean manual.
             </p>
           </SectionHeader>
 
@@ -775,99 +698,6 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-
-          {/* 4-Tier Pricing Cards Grid (info3.png bottom 4 columns) */}
-          <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch" distance={16} stagger={0.09}>
-            {pricingPlans.map((plan) => (
-              <div
-                key={plan.name}
-                className={`landing-card-hover relative rounded-none border p-5 sm:p-6 flex flex-col justify-between space-y-6 transition-all ${
-                  plan.popular
-                    ? 'bg-white border-2 border-brand-500 shadow-xl shadow-brand-500/10'
-                    : plan.isJuri
-                    ? 'bg-blue-50/30 border border-enterprise-300 shadow-sm'
-                    : 'bg-white border border-slate-200 shadow-sm'
-                }`}
-              >
-                <CornerMarks
-                  borderClass={
-                    plan.popular
-                      ? 'border-brand-500'
-                      : plan.isJuri
-                      ? 'border-enterprise-400'
-                      : 'border-slate-300'
-                  }
-                  bgClass="bg-white"
-                />
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={`text-xs font-bold px-2 py-0.5 rounded-none uppercase tracking-wider ${
-                        plan.popular
-                          ? 'bg-orange-50 text-brand-700 border border-orange-200'
-                          : plan.isJuri
-                          ? 'bg-blue-50 text-enterprise-700 border border-blue-200'
-                          : 'bg-slate-100 text-slate-700 border border-slate-200'
-                      }`}
-                    >
-                      {plan.tag}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h4 className="text-base font-bold text-slate-900 tracking-tight">
-                      {plan.name}
-                    </h4>
-                    <p className="text-xs text-slate-600 mt-1 line-clamp-2">
-                      {plan.desc}
-                    </p>
-                  </div>
-
-                  {/* Price Block */}
-                  <div className="pt-2 border-t border-slate-200">
-                    <div className="flex items-baseline space-x-1">
-                      <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 tabular-nums tracking-tight">
-                        {plan.price}
-                      </span>
-                      {plan.unit && (
-                        <span className="text-xs text-slate-500 font-medium">{plan.unit}</span>
-                      )}
-                    </div>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      {plan.period}
-                    </p>
-                  </div>
-
-                  {/* Feature Tags List */}
-                  <ul className="space-y-2 pt-2 text-xs text-slate-700">
-                    {plan.features.map((feat, fidx) => (
-                      <li key={fidx} className="flex items-start gap-2">
-                        <Check className="h-3.5 w-3.5 text-brand-600 shrink-0 mt-0.5" />
-                        <span className="text-slate-700 leading-tight">{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Bottom CTA Button */}
-                <div className="pt-4">
-                  <Link
-                    href={plan.href}
-                    className={`w-full inline-flex items-center justify-center py-2 px-3 text-xs font-bold rounded-full transition-all cursor-pointer ${
-                      plan.popular
-                        ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-md shadow-brand-500/20'
-                        : plan.isJuri
-                        ? 'bg-enterprise-600 text-white hover:bg-enterprise-700 shadow-md'
-                        : 'border border-slate-300 text-slate-700 hover:bg-slate-900 hover:text-white'
-                    }`}
-                  >
-                    {plan.cta}
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </Stagger>
         </div>
       </section>
 
@@ -1231,8 +1061,8 @@ export default function HomePage() {
                     </Link>
                   </li>
                   <li>
-                    <a href="#paket" className="text-slate-600 hover:text-slate-900 transition-colors">
-                      Pilihan Paket
+                    <a href="#arsitektur" className="text-slate-600 hover:text-slate-900 transition-colors">
+                      Alur Kerja &amp; Arsitektur
                     </a>
                   </li>
                 </ul>
