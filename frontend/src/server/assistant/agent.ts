@@ -115,12 +115,13 @@ async function streamModelRound(
       }
       if (extracted.text) {
         text += extracted.text;
-        modelParts.push({ text: extracted.text });
         input.emit({ type: 'text', text: extracted.text });
       }
+      // Push the RAW parts: they carry the model's thought_signature, which
+      // Gemini 3.x requires verbatim when replaying this turn with tool results.
+      modelParts.push(...extracted.rawParts);
       for (const call of extracted.functionCalls) {
         functionCalls.push(call);
-        modelParts.push({ functionCall: call });
       }
     }
   } catch (error) {

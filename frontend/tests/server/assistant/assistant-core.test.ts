@@ -101,16 +101,41 @@ describe('extractPartsFromPayload', () => {
     expect(result.functionCalls[0].args).toEqual({ date_from: '2026-01-01' });
   });
 
+  it('preserves thought_signature on all parts for replay (Gemini 3.x requirement)', () => {
+    const payload = {
+      candidates: [
+        {
+          content: {
+            parts: [
+              { text: 'Saya cek data dulu.', thoughtSignature: 'sig_text' },
+              {
+                functionCall: { name: 'get_pnl_summary', args: {} },
+                thoughtSignature: 'sig_call',
+              },
+            ],
+          },
+        },
+      ],
+    };
+    const result = extractPartsFromPayload(payload);
+    expect(result.rawParts).toEqual([
+      { text: 'Saya cek data dulu.', thoughtSignature: 'sig_text' },
+      {
+        functionCall: { name: 'get_pnl_summary', args: {} },
+        thoughtSignature: 'sig_call',
+      },
+    ]);
+  });
+
   it('reports prompt block reasons', () => {
     const payload = { promptFeedback: { blockReason: 'SAFETY' } };
     expect(extractPartsFromPayload(payload).blockedReason).toBe('SAFETY');
   });
 
   it('is tolerant to null-ish payloads', () => {
-    expect(extractPartsFromPayload(null)).toEqual({
-      text: '',
-      functionCalls: [],
-      blockedReason: null,
-    });
+    expect(extractPartsFromPayload(null).rawParts).toEqual([]);
+    expect(extractPartsFromPayload(null).text).toBe('');
+    expect(extractPartsFromPayload(null).functionCalls).toEqual([]);
+    expect(extractPartsFromPayload(null).blockedReason).toBeNull();
   });
 });

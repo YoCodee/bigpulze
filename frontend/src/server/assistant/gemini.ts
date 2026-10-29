@@ -16,15 +16,21 @@ export interface GeminiFunctionCall {
   args: Record<string, unknown>;
 }
 
-export type GeminiPart =
-  | { text: string }
-  | { functionCall: GeminiFunctionCall }
-  | {
-      functionResponse: {
-        name: string;
-        response: Record<string, unknown>;
-      };
-    };
+/**
+ * Mirrors the Gemini API Part shape. `thoughtSignature` (Gemini 3.x) is an
+ * opaque token the model attaches to parts it "reasoned" about — mainly
+ * functionCall parts. It MUST be preserved verbatim when the conversation is
+ * replayed, otherwise the API rejects the request with a 400.
+ */
+export interface GeminiPart {
+  thoughtSignature?: string;
+  text?: string;
+  functionCall?: GeminiFunctionCall;
+  functionResponse?: {
+    name: string;
+    response: Record<string, unknown>;
+  };
+}
 
 export interface GeminiContent {
   role: 'user' | 'model';
@@ -136,15 +142,22 @@ interface GeminiPayload {
 }
 
 /**
- * Extracts incremental text and function calls from one SSE payload.
- * Pure helper: text is concatenated by the caller.
+ * Extracts incremental text, function calls, and the RAW parts (with any
+ * thought_signature preserved) from one SSE payload. The raw parts are what
+ * the agent must push back when replaying this model turn.
  */
 export function extractPartsFromPayload(payload: unknown): {
   text: string;
   functionCalls: GeminiFunctionCall[];
+  rawParts: GeminiPart[];
   blockedReason: string | null;
 } {
-  const result = { text: '', functionCalls: [] as GeminiFunctionCall[], blockedReason: null as string | null };
+  const result = {
+    text: '',
+    functionCalls: [] as GeminiFunctionCall[],
+    rawParts: [] as GeminiPart[],
+    blockedReason: null as string | null,
+  };
   const typed = payload as GeminiPayload;
 
   if (typed?.promptFeedback?.blockReason) {
@@ -154,17 +167,22 @@ export function extractPartsFromPayload(payload: unknown): {
   const candidate = typed?.candidates?.[0];
   const parts = candidate?.content?.parts || [];
   for (const part of parts) {
-    if (typeof part.text === 'string') {
-      result.text += part.text;
-    } else if (
-      part.functionCall &&
-      typeof part.functionCall === 'object' &&
-      typeof (part.functionCall as GeminiFunctionCall).name === 'string'
+    // Copy the part as received so thoughtSignature (and any future opaque
+    // fields) survive the round-trip back into a follow-up request.
+    const rawPart = { ...part } as GeminiPart;
+    result.rawParts.push(rawPart);
+
+    if (typeof rawPart.text === 'string') {
+      result.text += rawPart.text;
+    }
+    if (
+      rawPart.functionCall &&
+      typeof rawPart.functionCall === 'object' &&
+      typeof rawPart.functionCall.name === 'string'
     ) {
-      const call = part.functionCall as GeminiFunctionCall;
       result.functionCalls.push({
-        name: call.name,
-        args: (call.args || {}) as Record<string, unknown>,
+        name: rawPart.functionCall.name,
+        args: (rawPart.functionCall.args || {}) as Record<string, unknown>,
       });
     }
   }
