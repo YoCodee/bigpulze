@@ -2067,3 +2067,26 @@
 - [ ] Uji manual alur chat (pertanyaan data, pertanyaan umum, kasus tanpa data, 403 kasir) lalu uji demo
 
 ---
+
+### A5 — Bugfix Chatbot Error "Layanan AI sedang sibuk" ✅
+**Selesai:** 2026-10-29
+
+**Akar masalah (diverifikasi dengan probe langsung ke API):**
+- `gemini-2.5-flash` dipensiunkan Google: HTTP 404 "no longer available to new users" — seluruh request asisten gagal sejak awal, pesan umum menyamarkan kondisi ini.
+- Model penerus `gemini-3.8-flash` disarankan API dan menerima bentuk request/tools agent yang sama persis (diverifikasi 200 + streaming + tool-call).
+- **Amaran berjalan:** sementara ini model baru dilaporkan sendiri oleh Google sedang "high demand" (503 *overloaded*, beberapa request menggantung) — kegagalan sesaat masih mungkin dari sisi Google, bukan kode.
+
+**Dibuat/diubah (commit `fix: switch assistant to gemini-3.8-flash and harden streaming`):**
+- Default model → `gemini-3.8-flash` (tetap bisa diganti via `GEMINI_MODEL`); `.env.example` diperbarui.
+- `streamGemini`: retri otomatis 3 kali untuk 429/500/503 + timeout koneksi 20 detik (abort → retri; body streaming tidak pernah terpotong karena timer dilepas saat header tiba).
+- `parseGeminiSseStream`: idle-timeout 30 detik (`GEMINI_STALL_TIMEOUT`) agar chat tidak menggantung jika server berhenti mengirim byte.
+- Logging presisi: detail error Gemini (`console.error`) di route server; pesan UI yang berbeda untuk stall/timeout dibanding overload.
+
+**Belum teruji:**
+- Verifikasi end-to-end tool-call dua putaran terhenti oleh kondisi Google yang sedang high demand saat pengujian (503/hang dari mesin ini); protokol putaran-1 dan streaming verifikasi sudah positif sebelum jendela lonjakan demand.
+
+**Menunggu dari pemilik:**
+- [ ] Ubah `GEMINI_MODEL=gemini-2.5-flash` → `gemini-3.8-flash` di `.env.local` (aturan: file .env diisi pemilik), lalu restart `npm run dev`.
+- [ ] Coba chat lagi; bila masih sering 503, tunggu beban Google mereda lalu uji demo.
+
+---
