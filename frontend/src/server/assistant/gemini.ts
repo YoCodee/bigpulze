@@ -5,7 +5,11 @@
  */
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
-const DEFAULT_MODEL = 'gemini-2.5-flash';
+/**
+ * gemini-2.5-flash is no longer available for new API users (HTTP 404);
+ * gemini-3.8-flash accepts the same v1beta streamGenerateContent + tools shape.
+ */
+const DEFAULT_MODEL = 'gemini-3.8-flash';
 
 export interface GeminiFunctionCall {
   name: string;
@@ -56,20 +60,71 @@ export function requireGeminiConfig(): GeminiConfig {
   return { apiKey, model: process.env.GEMINI_MODEL || DEFAULT_MODEL };
 }
 
-/** Starts a streaming Gemini generateContent request. */
+/** Statuses worth a transparent retry: transient capacity/quota hiccups. */
+const RETRYABLE_STATUS = new Set([429, 500, 503]);
+const RETRY_ATTEMPTS = 3;
+const RETRY_BASE_DELAY_MS = 700;
+/** Kill a fetch that never returns headers (server-side hang). */
+const CONNECT_TIMEOUT_MS = 20_000;
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Starts a streaming Gemini generateContent request.
+ * - Retries transient failures (429/500/503) with short backoff.
+ * - Aborts and retries when headers never arrive (GEMINI_CONNECT_TIMEOUT).
+ * The connect timer is cleared as soon as headers arrive, so the streaming
+ * body itself is never aborted by it; mid-stream stalls are handled by
+ * parseGeminiSseStream's idle timeout instead.
+ */
 export async function streamGemini(
   config: GeminiConfig,
   body: GeminiRequestBody
 ): Promise<Response> {
   const url = `${GEMINI_API_BASE}/${config.model}:streamGenerateContent?alt=sse`;
-  return fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': config.apiKey,
-    },
-    body: JSON.stringify(body),
-  });
+  const bodyJson = JSON.stringify(body);
+  let lastStatusResponse: Response | null = null;
+  let lastError: unknown = new Error('GEMINI_CONNECT_TIMEOUT');
+
+  for (let attempt = 0; attempt < RETRY_ATTEMPTS; attempt += 1) {
+    if (attempt > 0) {
+      await delay(RETRY_BASE_DELAY_MS * attempt);
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), CONNECT_TIMEOUT_MS);
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': config.apiKey,
+        },
+        body: bodyJson,
+        signal: controller.signal,
+      });
+
+      if (!RETRYABLE_STATUS.has(response.status)) {
+        return response;
+      }
+      lastStatusResponse = response;
+      lastError = null;
+    } catch (error) {
+      lastError =
+        error instanceof Error && error.name === 'AbortError'
+          ? new Error('GEMINI_CONNECT_TIMEOUT')
+          : error;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  if (lastStatusResponse) {
+    return lastStatusResponse;
+  }
+  throw lastError;
 }
 
 interface GeminiPayload {
@@ -116,19 +171,48 @@ export function extractPartsFromPayload(payload: unknown): {
   return result;
 }
 
+const DEFAULT_IDLE_TIMEOUT_MS = 30_000;
+
+/**
+ * Rejects when a promise does not settle within the deadline.
+ * Used so a stalled SSE connection cannot freeze a chat turn forever.
+ */
+function withIdleTimeout<T>(
+  promise: Promise<T>,
+  idleTimeoutMs: number
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error('GEMINI_STALL_TIMEOUT'));
+    }, idleTimeoutMs);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      }
+    );
+  });
+}
+
 /**
  * Parses the SSE response body of streamGenerateContent, yielding payloads.
- * Yields nothing for non-data lines (event boundaries are ignored).
+ * Bails out (GEMINI_STALL_TIMEOUT) when no bytes arrive within idleTimeoutMs,
+ * and yields nothing for non-data lines (event boundaries are ignored).
  */
 export async function* parseGeminiSseStream(
-  body: ReadableStream<Uint8Array>
+  body: ReadableStream<Uint8Array>,
+  idleTimeoutMs: number = DEFAULT_IDLE_TIMEOUT_MS
 ): AsyncGenerator<unknown, void, unknown> {
   const decoder = new TextDecoder();
   const reader = body.getReader();
   let buffer = '';
 
   for (;;) {
-    const { done, value } = await reader.read();
+    const { done, value } = await withIdleTimeout(reader.read(), idleTimeoutMs);
     if (done) break;
     buffer += decoder.decode(value, { stream: true });
 

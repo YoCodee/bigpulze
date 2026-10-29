@@ -24,6 +24,9 @@ function mapAssistantError(error: unknown): string {
   if (message.includes('MISSING_GEMINI_API_KEY')) {
     return 'Konfigurasi AI belum lengkap. Minta pemilik aplikasi mengisi GEMINI_API_KEY.';
   }
+  if (message === 'GEMINI_STALL_TIMEOUT' || message === 'GEMINI_CONNECT_TIMEOUT') {
+    return 'Layanan AI tidak merespons. Coba kirim ulang pertanyaan ini.';
+  }
   if (message.startsWith('GEMINI_HTTP_')) {
     return 'Layanan AI sedang sibuk atau bermasalah. Coba beberapa saat lagi.';
   }
@@ -154,6 +157,7 @@ export async function POST(request: NextRequest) {
 
           emit({ type: 'done', session_id: insertedSessionId, tool_trace: result.toolTrace });
         } catch (error) {
+          console.error('Assistant turn failed:', error);
           emit({ type: 'error', message: mapAssistantError(error) });
         } finally {
           controller.close();

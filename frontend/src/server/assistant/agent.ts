@@ -97,6 +97,7 @@ async function streamModelRound(
   const response = await streamGemini(config, requestBody);
   if (!response.ok || !response.body) {
     const detail = await response.text().catch(() => '');
+    console.error(`Gemini HTTP ${response.status}: ${detail.slice(0, 500)}`);
     throw new Error(
       `GEMINI_HTTP_${response.status}${detail ? `: ${detail.slice(0, 300)}` : ''}`
     );
@@ -106,20 +107,27 @@ async function streamModelRound(
   const functionCalls: GeminiFunctionCall[] = [];
   const modelParts: GeminiPart[] = [];
 
-  for await (const payload of parseGeminiSseStream(response.body)) {
-    const extracted = extractPartsFromPayload(payload);
-    if (extracted.blockedReason) {
-      throw new Error(`GEMINI_BLOCKED_${extracted.blockedReason}`);
+  try {
+    for await (const payload of parseGeminiSseStream(response.body)) {
+      const extracted = extractPartsFromPayload(payload);
+      if (extracted.blockedReason) {
+        throw new Error(`GEMINI_BLOCKED_${extracted.blockedReason}`);
+      }
+      if (extracted.text) {
+        text += extracted.text;
+        modelParts.push({ text: extracted.text });
+        input.emit({ type: 'text', text: extracted.text });
+      }
+      for (const call of extracted.functionCalls) {
+        functionCalls.push(call);
+        modelParts.push({ functionCall: call });
+      }
     }
-    if (extracted.text) {
-      text += extracted.text;
-      modelParts.push({ text: extracted.text });
-      input.emit({ type: 'text', text: extracted.text });
-    }
-    for (const call of extracted.functionCalls) {
-      functionCalls.push(call);
-      modelParts.push({ functionCall: call });
-    }
+  } catch (error) {
+    // Release the connection on stalls so the HTTP pool is not exhausted.
+    await response.body.cancel().catch(() => undefined);
+    console.error('Gemini stream failed:', error instanceof Error ? error.message : error);
+    throw error;
   }
 
   return { text, functionCalls, modelParts };
