@@ -414,6 +414,35 @@ create trigger trg_branch_limit before insert on branches
   for each row execute function enforce_branch_limit();
 ```
 
+#### 7.1.2 `schema_assistant.sql` — tabel Asisten AI (chat)
+
+> Dijalankan setelah `schema.sql`, `functions.sql`, dan `rls.sql`. Fitur khusus OWNER; bisnis data *tidak* diduplikasi — asisten membacanya live dari tabel operasional.
+
+```sql
+create table chat_sessions (
+  id uuid primary key default gen_random_uuid(),
+  org_id uuid not null references organizations(id) on delete cascade,
+  owner_id uuid not null references profiles(id) on delete cascade,
+  title varchar(150) not null default 'Percakapan Baru',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index idx_chat_sessions_org on chat_sessions(org_id, updated_at desc);
+
+create table chat_messages (
+  id uuid primary key default gen_random_uuid(),
+  session_id uuid not null references chat_sessions(id) on delete cascade,
+  org_id uuid not null references organizations(id) on delete cascade,
+  role text not null check (role in ('USER','ASSISTANT')),
+  content text not null,
+  tool_trace jsonb not null default '[]',
+  created_at timestamptz not null default now()
+);
+create index idx_chat_messages_session on chat_messages(session_id, created_at);
+```
+
+Trigger `trg_chat_message_touch_session` memperbarui `chat_sessions.updated_at` setiap pesan baru. RLS: hanya OWNER org (`auth_org_id()` + `auth_role() = 'OWNER'`), pesan hanya milik sesi sendiri — detail di `database/schema_assistant.sql`.
+
 ### 7.2 `functions.sql` (helper dan RPC)
 
 Semua RPC adalah `SECURITY DEFINER` dengan `set search_path = public`, **wajib memeriksa org dan role sendiri** (karena melewati RLS), dan di-`GRANT EXECUTE` hanya ke `authenticated`.
