@@ -443,8 +443,8 @@ export default function ExpensesPage() {
             badge: <Badge variant="enterprise">Dominan</Badge>,
           },
           {
-            label: 'Deteksi Anomali Z-score',
-            value: `${summaryMetrics.anomalyCount} Anomali`,
+            label: 'Pengeluaran Tidak Wajar',
+            value: `${summaryMetrics.anomalyCount} Perlu Dicek`,
             subtext:
               summaryMetrics.anomalyCount > 0
                 ? 'Perlu evaluasi pemilik cabang'
@@ -636,9 +636,9 @@ export default function ExpensesPage() {
                           variant="danger"
                           dot
                           className="text-[10px]"
-                          title={exp.anomaly_reason || 'Pengeluaran terdeteksi anomali (Z-score > 2.5)'}
+                          title={exp.anomaly_reason || 'Pengeluaran melonjak tidak wajar dibanding rata-rata biasanya'}
                         >
-                          <AlertTriangle className="w-3 h-3 mr-0.5" /> Anomali
+                          <AlertTriangle className="w-3 h-3 mr-0.5" /> Perlu Dicek
                         </Badge>
                       ) : (
                         <Badge variant="success" dot className="text-[10px]">

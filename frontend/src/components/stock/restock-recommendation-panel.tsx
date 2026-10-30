@@ -316,15 +316,15 @@ export function RestockRecommendationPanel({
               badge: <Badge variant="neutral">HPP</Badge>,
             },
             {
-              label: 'Akurasi Backtest (WAPE)',
+              label: 'Tingkat Akurasi Prediksi',
               value:
                 summary.avg_wape_pct === null ? '-' : `${summary.avg_wape_pct}%`,
-              subtext: 'Rata-rata seluruh produk · target < 25%',
+              subtext: 'Tingkat kepercayaan perkiraan penjualan',
               badge:
                 summary.avg_wape_pct !== null && summary.avg_wape_pct < 25 ? (
-                  <Badge variant="success">Sesuai target</Badge>
+                  <Badge variant="success">Akurat</Badge>
                 ) : (
-                  <Badge variant="warning">Di atas target</Badge>
+                  <Badge variant="warning">Cukup</Badge>
                 ),
             },
           ]}

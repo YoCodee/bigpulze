@@ -814,7 +814,7 @@ export default function TransactionsPage() {
                   {formatRupiah(voidingTx.total_revenue)}
                 </strong>
                 . Seluruh item produk akan{' '}
-                <strong className="text-emerald-700">otomatis dikembalikan ke stok cabang</strong> via RPC database.
+                <strong className="text-emerald-700">otomatis dikembalikan ke stok cabang</strong> secara aman.
               </p>
 
               <div className="space-y-1">

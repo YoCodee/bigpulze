@@ -84,14 +84,14 @@ export default function ImportPage() {
           title="Ketentuan Batch Migration Data (PRD §12.3)"
           action={
             <span className="text-xs text-slate-500 font-medium">
-              Standar Integritas: <strong className="text-slate-700">Atomik PostgreSQL RPC</strong>
+              Standar Integritas: <strong className="text-slate-700">Aman &amp; Terverifikasi</strong>
             </span>
           }
           metrics={[
             {
-              label: 'Validasi Skema Klien',
-              value: 'Strict Zod',
-              subtext: 'Pencegahan data rusak & format korup',
+              label: 'Pengecekan Otomatis',
+              value: 'Standar Ketat',
+              subtext: 'Mencegah format berkas salah atau rusak',
               badge: <Badge variant="enterprise">Validasi</Badge>,
             },
             {
@@ -107,7 +107,7 @@ export default function ImportPage() {
             {
               label: 'Format File Didukung',
               value: 'CSV & Excel',
-              subtext: '.csv, .xlsx, .xls berbasis PapaParse',
+              subtext: 'Mendukung format berkas .csv dan .xlsx',
               badge: <Badge variant="neutral">Universal</Badge>,
             },
             {
@@ -249,7 +249,7 @@ export default function ImportPage() {
             <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-900 text-xs flex items-start gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <span>
-                Seluruh batch diproses dalam transaksi atomik database untuk mencegah duplikasi data parsial.
+                Seluruh data diproses secara menyeluruh untuk memastikan tidak ada pencatatan ganda.
               </span>
             </div>
           </div>

@@ -282,7 +282,7 @@ export default function StaffPage() {
                 Kelola Akun Staf &amp; Kasir
               </h1>
               <Badge variant="enterprise">Khusus Owner</Badge>
-              <Badge variant="brand">RBAC &amp; RLS</Badge>
+              <Badge variant="brand">Hak Akses Terjaga</Badge>
             </div>
             <p className="text-sm text-slate-500 mt-0.5">
               Daftarkan akun kasir cabang baru, tugaskan gerai operasional, dan kelola hak akses Terminal POS
@@ -357,7 +357,7 @@ export default function StaffPage() {
           title="Ringkasan Akun Kasir &amp; Keamanan"
           action={
             <span className="text-xs text-slate-500 font-medium">
-              Standar Keamanan: <strong className="text-slate-700">Enterprise RBAC + PostgreSQL RLS</strong>
+              Standar Keamanan: <strong className="text-slate-700">Hak Akses Terproteksi</strong>
             </span>
           }
           metrics={[
@@ -639,11 +639,11 @@ export default function StaffPage() {
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-base font-bold text-slate-900">Isolasi Database (RLS)</h3>
-                <Badge variant="success">Kebijakan DB</Badge>
+                <h3 className="text-base font-bold text-slate-900">Pemisahan Data Antarcabang</h3>
+                <Badge variant="success">Otomatis</Badge>
               </div>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Setiap query database PostgreSQL dilindungi Row-Level Security. Akun kasir cabang Malioboro secara teknis tidak dapat mengintip stok atau nota transaksi cabang Sudirman.
+                Data tiap gerai terisolasi dengan aman. Kasir hanya dapat melihat stok dan transaksi di cabangnya sendiri tanpa bisa mengakses cabang lain.
               </p>
             </div>
             <ul className="text-xs text-slate-600 space-y-2 pt-2 border-t border-slate-100">
@@ -657,7 +657,7 @@ export default function StaffPage() {
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span>Keamanan level basis data PostgreSQL</span>
+                <span>Perlindungan data otomatis di tingkat sistem</span>
               </li>
             </ul>
           </div>
