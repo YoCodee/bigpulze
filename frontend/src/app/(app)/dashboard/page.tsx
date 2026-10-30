@@ -77,7 +77,6 @@ interface TransferRecommendationItem {
   to_days_of_supply_after: number;
   potential_saved_revenue: number;
   estimated_gross_profit: number;
-  logistics_cost: number;
   net_benefit: number;
   urgency: 'MEDIUM' | 'HIGH' | 'CRITICAL';
   reason: string;

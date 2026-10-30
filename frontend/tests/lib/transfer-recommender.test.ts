@@ -45,9 +45,7 @@ describe('generateStockTransferRecommendations', () => {
       },
     ];
 
-    const recommendations = generateStockTransferRecommendations(catalog, {
-      flatLogisticsCost: 15000,
-    });
+    const recommendations = generateStockTransferRecommendations(catalog);
 
     expect(recommendations.length).toBe(1);
     const rec = recommendations[0];
@@ -58,12 +56,12 @@ describe('generateStockTransferRecommendations', () => {
     expect(rec.transfer_qty).toBeGreaterThan(0);
     expect(rec.from_stock_after).toBeGreaterThanOrEqual(15); // Donor safe buffer preserved
     expect(rec.to_stock_after).toBe(rec.to_current_stock + rec.transfer_qty);
-    expect(rec.logistics_cost).toBe(15000);
+    expect(rec.net_benefit).toBe(rec.estimated_gross_profit);
     expect(rec.net_benefit).toBeGreaterThan(0);
     expect(rec.urgency).toBe('CRITICAL');
   });
 
-  it('rejects transfer when gross profit is less than logistics cost (unviable economics)', () => {
+  it('recommends even small-margin transfers (logistics cost excluded)', () => {
     const catalog: BranchProductStock[] = [
       {
         product_id: 'prod-t1',
@@ -94,12 +92,11 @@ describe('generateStockTransferRecommendations', () => {
     ];
 
     // Transferring ~9 units yields only 9 * 300 = Rp 2.700 gross profit.
-    // Logistics cost is Rp 15.000 -> Net Benefit is negative (-Rp 12.300).
-    const recommendations = generateStockTransferRecommendations(catalog, {
-      flatLogisticsCost: 15000,
-    });
+    // Logistics cost is no longer subtracted, so the move stays recommendable.
+    const recommendations = generateStockTransferRecommendations(catalog);
 
-    expect(recommendations.length).toBe(0);
+    expect(recommendations.length).toBe(1);
+    expect(recommendations[0].net_benefit).toBe(2700);
   });
 
   it('does not generate recommendation if donor has no surplus above safe reserve', () => {

@@ -106,7 +106,6 @@ export async function GET(request: NextRequest) {
 
     // 5. Generate smart recommendations
     const liveRecommendations = generateStockTransferRecommendations(catalog, {
-      flatLogisticsCost: 15000,
       minDaysOfSupplyThreshold: 3.0,
       targetDaysOfSupplyBuffer: 7.0,
       donorBufferMultiplier: 1.5,
@@ -152,7 +151,6 @@ export async function GET(request: NextRequest) {
           to_days_of_supply_after: payload.to_days_of_supply_after || 0,
           potential_saved_revenue: payload.potential_saved_revenue || 0,
           estimated_gross_profit: payload.estimated_gross_profit || 0,
-          logistics_cost: payload.logistics_cost || 15000,
           net_benefit: payload.net_benefit || 0,
           urgency: rec.severity === 'CRITICAL' ? 'CRITICAL' : 'HIGH',
           reason: rec.description,

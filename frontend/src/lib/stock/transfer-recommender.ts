@@ -31,14 +31,12 @@ export interface StockTransferRecommendation {
   to_days_of_supply_after: number;
   potential_saved_revenue: number;
   estimated_gross_profit: number;
-  logistics_cost: number;
   net_benefit: number;
   urgency: 'MEDIUM' | 'HIGH' | 'CRITICAL';
   reason: string;
 }
 
 export interface TransferRecommenderOptions {
-  flatLogisticsCost?: number; // Default flat delivery cost: Rp 15.000
   minDaysOfSupplyThreshold?: number; // Days of supply below which branch is critical (default: 3)
   targetDaysOfSupplyBuffer?: number; // Target supply days after transfer (default: 7)
   donorBufferMultiplier?: number; // Multiplier of min_stock_alert donor must retain (default: 1.5)
@@ -62,7 +60,6 @@ export function generateStockTransferRecommendations(
   catalog: BranchProductStock[],
   options: TransferRecommenderOptions = {}
 ): StockTransferRecommendation[] {
-  const flatLogisticsCost = options.flatLogisticsCost ?? 15000;
   const minDaysOfSupplyThreshold = options.minDaysOfSupplyThreshold ?? 3.0;
   const targetDaysOfSupplyBuffer = options.targetDaysOfSupplyBuffer ?? 7.0;
   const donorBufferMultiplier = options.donorBufferMultiplier ?? 1.5;
@@ -139,13 +136,13 @@ export function generateStockTransferRecommendations(
       const transferQty = Math.min(bestDonor.availableSurplus, deficit);
       if (transferQty <= 0) return;
 
-      // Financial feasibility check
+      // Financial feasibility check (logistics cost excluded per owner decision)
       const unitGrossProfit = Math.max(0, recipient.selling_price - recipient.cost_price);
       const potentialSavedRevenue = transferQty * recipient.selling_price;
       const estimatedGrossProfit = transferQty * unitGrossProfit;
-      const netBenefit = estimatedGrossProfit - flatLogisticsCost;
+      const netBenefit = estimatedGrossProfit;
 
-      // Only recommend if net financial benefit > 0 (profit covers logistics cost)
+      // Only recommend when the move actually earns something
       if (netBenefit <= 0) return;
 
       const daysBefore = calculateDaysOfSupply(recipient.current_stock, recipient.daily_sales_velocity);
@@ -181,10 +178,9 @@ export function generateStockTransferRecommendations(
         to_days_of_supply_after: daysAfter,
         potential_saved_revenue: potentialSavedRevenue,
         estimated_gross_profit: estimatedGrossProfit,
-        logistics_cost: flatLogisticsCost,
         net_benefit: netBenefit,
         urgency,
-        reason: `Stok ${recipient.name} di ${recipient.branch_name} tersisa ${recipient.current_stock} unit (aman: ${daysBefore} hari). Cabang ${bestDonor.donor.branch_name} memiliki surplus ${bestDonor.availableSurplus} unit. Mutasi ${transferQty} unit menghasilkan keuntungan bersih Rp ${netBenefit.toLocaleString('id-ID')} setelah ongkir Rp ${flatLogisticsCost.toLocaleString('id-ID')}.`,
+        reason: `Stok ${recipient.name} di ${recipient.branch_name} tersisa ${recipient.current_stock} unit (aman: ${daysBefore} hari). Cabang ${bestDonor.donor.branch_name} memiliki surplus ${bestDonor.availableSurplus} unit. Mutasi ${transferQty} unit menghasilkan keuntungan Rp ${netBenefit.toLocaleString('id-ID')}.`,
       });
 
       // Update donor's current stock in memory so subsequent recipients don't over-allocate

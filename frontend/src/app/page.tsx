@@ -1149,7 +1149,7 @@ export default function HomePage() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <Boxes className="h-4 w-4 shrink-0 text-white" />
-                  <span className="truncate">Mutasi Stok Hemat Ongkir Terhitung Otomatis</span>
+                  <span className="truncate">Mutasi Stok Antarcabang Rekomendasi Otomatis</span>
                 </div>
               </div>
             </div>
