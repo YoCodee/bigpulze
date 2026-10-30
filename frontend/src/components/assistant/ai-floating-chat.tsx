@@ -2,22 +2,37 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Sparkles,
   X,
   SendHorizontal,
   Loader2,
   AlertTriangle,
   MessageSquarePlus,
-  ChevronDown,
-  ChevronUp,
   MessagesSquare,
   Trash2,
   Bot,
   User,
-  ShieldAlert,
+  Database,
 } from 'lucide-react';
 import { useAssistantChat } from '@/hooks/use-assistant-chat';
 import { cn } from '@/lib/utils';
+
+/** Brand mark: the BizPulse pulse polyline (same as the app sidebar logo). */
+function PulseMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+    </svg>
+  );
+}
 
 const SUGGESTIONS = [
   'Bagaimana laba sehari terakhir?',
@@ -31,7 +46,7 @@ const TOOL_LABELS: Record<string, string> = {
   get_top_products: 'Produk terlaris',
   get_branch_comparison: 'Perbandingan cabang',
   get_stock_status: 'Kondisi stok',
-  get_forecasts: 'Forecast',
+  get_forecasts: 'Proyeksi',
   get_expense_breakdown: 'Pengeluaran',
   get_open_recommendations: 'Rekomendasi terbuka',
 };
@@ -40,12 +55,13 @@ function toolLabel(name: string): string {
   return TOOL_LABELS[name] || name.replace(/_/g, ' ');
 }
 
-// ── Dot animation ────────────────────────────────────────────────────────────
+// ── Dot animation (calm stagger, honors reduced motion) ─────────────────────
 function Dot({ delay }: { delay: string }) {
   return (
     <span
-      className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce"
+      className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-pulse motion-reduce:animate-none"
       style={{ animationDelay: delay }}
+      aria-hidden="true"
     />
   );
 }
@@ -66,8 +82,8 @@ function MessageBubble({
   return (
     <div className={cn('flex w-full gap-2', isUser ? 'justify-end' : 'justify-start')}>
       {!isUser && (
-        <div className="h-6 w-6 rounded-lg bg-brand-500 text-white flex items-center justify-center shadow-xs shrink-0 mt-0.5">
-          <Bot className="h-3.5 w-3.5" />
+        <div className="h-6 w-6 rounded-lg bg-brand-600 text-white flex items-center justify-center shadow-xs shrink-0 mt-0.5">
+          <Bot className="h-3.5 w-3.5" aria-hidden="true" />
         </div>
       )}
 
@@ -76,11 +92,11 @@ function MessageBubble({
           <div className="mb-1 flex flex-wrap gap-1 justify-start">
             {message.tool_trace.map((tool) => (
               <span
-                key={tool}
+                key={`${message.id}-${tool}`}
                 className="inline-flex items-center gap-1 rounded-md border border-enterprise-200 bg-enterprise-50 px-1.5 py-0.5 text-[10px] font-medium text-enterprise-700"
                 title="Data ditarik langsung dari database bisnis (read-only)"
               >
-                <ShieldAlert className="h-3 w-3" />
+                <Database className="h-3 w-3" aria-hidden="true" />
                 {toolLabel(tool)}
               </span>
             ))}
@@ -91,7 +107,7 @@ function MessageBubble({
           className={cn(
             'rounded-2xl px-3 py-2 text-xs leading-relaxed whitespace-pre-wrap shadow-xs',
             isUser
-              ? 'bg-brand-500 text-white rounded-br-sm'
+              ? 'bg-enterprise-600 text-white rounded-br-sm'
               : 'bg-white border border-slate-200 text-slate-900 rounded-bl-sm'
           )}
         >
@@ -104,13 +120,16 @@ function MessageBubble({
             </span>
           )}
           {message.streaming && message.content.length > 0 && (
-            <span className="ml-0.5 inline-block h-3 w-1.5 animate-pulse rounded-sm bg-slate-400 align-middle" />
+            <span
+              className="ml-0.5 inline-block h-3 w-1.5 animate-pulse motion-reduce:animate-none rounded-sm bg-slate-400 align-middle"
+              aria-hidden="true"
+            />
           )}
         </div>
 
         {isUser && (
           <div className="mt-1 h-6 w-6 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center shadow-xs">
-            <User className="h-3.5 w-3.5" />
+            <User className="h-3.5 w-3.5" aria-hidden="true" />
           </div>
         )}
       </div>
@@ -128,8 +147,8 @@ function Greeting({
 }) {
   return (
     <div className="flex flex-col items-center text-center py-6 px-4">
-      <div className="h-10 w-10 rounded-2xl bg-brand-500 text-white flex items-center justify-center shadow-sm mb-3">
-        <Sparkles className="h-5 w-5" />
+      <div className="h-10 w-10 rounded-2xl bg-brand-600 text-white flex items-center justify-center shadow-sm mb-3">
+        <PulseMark className="h-5 w-5" />
       </div>
       <h2 className="text-sm font-bold text-slate-900">Ada yang bisa dibantu?</h2>
       <p className="mt-1 text-[11px] text-slate-500 max-w-[260px]">
@@ -176,18 +195,18 @@ function SessionPanel({
         <button
           type="button"
           onClick={onNewChat}
-          className="flex-1 h-8 inline-flex items-center justify-center gap-1.5 rounded-lg bg-brand-500 px-2.5 text-xs font-semibold text-white transition-colors hover:bg-brand-600"
+          className="flex-1 h-9 inline-flex items-center justify-center gap-1.5 rounded-lg bg-enterprise-600 px-2.5 text-xs font-semibold text-white transition-colors hover:bg-enterprise-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-enterprise-500"
         >
-          <MessageSquarePlus className="h-3.5 w-3.5" />
+          <MessageSquarePlus className="h-3.5 w-3.5" aria-hidden="true" />
           Percakapan Baru
         </button>
         <button
           type="button"
           onClick={onClose}
-          className="h-8 w-8 shrink-0 inline-flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+          className="h-9 w-9 shrink-0 inline-flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-enterprise-500"
           aria-label="Tutup daftar percakapan"
         >
-          <X className="h-4 w-4" />
+          <X className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
 
@@ -209,34 +228,30 @@ function SessionPanel({
           <div
             key={session.id}
             className={cn(
-              'group flex items-center justify-between gap-1 px-2.5 py-2 rounded-lg cursor-pointer transition-colors',
+              'group flex items-stretch gap-0.5 pl-1 pr-1 py-1 rounded-lg transition-colors',
               session.id === activeSessionId ? 'bg-slate-100/90' : 'hover:bg-slate-50'
             )}
-            onClick={() => onSelect(session.id)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') onSelect(session.id);
-            }}
           >
-            <span
+            <button
+              type="button"
+              onClick={() => onSelect(session.id)}
               className={cn(
-                'truncate text-xs',
+                'flex-1 min-w-0 text-left px-1.5 py-1 rounded-md text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-enterprise-500',
                 session.id === activeSessionId ? 'font-semibold text-slate-900' : 'text-slate-600'
               )}
             >
               {session.title}
-            </span>
+            </button>
             <button
               type="button"
-              className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-rose-600 shrink-0"
+              className="w-9 shrink-0 inline-flex items-center justify-center rounded-md text-slate-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 transition-opacity"
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(session.id);
               }}
-              aria-label="Hapus percakapan"
+              aria-label={`Hapus percakapan: ${session.title}`}
             >
-              <Trash2 className="h-3.5 w-3.5" />
+              <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
           </div>
         ))}
@@ -267,6 +282,8 @@ export function AIFloatingChat() {
   const [draft, setDraft] = useState('');
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const fabRef = useRef<HTMLButtonElement | null>(null);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -281,14 +298,39 @@ export function AIFloatingChat() {
     }
   }, [isOpen]);
 
-  // Close on Escape
+  // Close on Escape, return focus to the launcher
+  function closePanel() {
+    setIsOpen(false);
+    fabRef.current?.focus();
+  }
+
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape' && isOpen) setIsOpen(false);
+      if (e.key === 'Escape' && isOpen) closePanel();
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isOpen]);
+
+  // Keep Tab cycling inside the open dialog
+  function handlePanelKeyDown(e: React.KeyboardEvent) {
+    if (e.key !== 'Tab' || !panelRef.current) return;
+    const focusables = Array.from(
+      panelRef.current.querySelectorAll<HTMLElement>(
+        'button:not(:disabled), [href], textarea:not(:disabled), input:not(:disabled), [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((el) => el.offsetParent !== null);
+    if (focusables.length === 0) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
 
   const canSend =
     !sending && draft.trim().length > 0 && draft.trim().length <= maxMessageLength;
@@ -316,6 +358,11 @@ export function AIFloatingChat() {
 
       {/* ── Chat Panel ── */}
       <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Asisten AI"
+        onKeyDown={handlePanelKeyDown}
         className={cn(
           'fixed z-[60] bg-white border border-slate-200 shadow-2xl flex flex-col overflow-hidden transition-all duration-300',
           // Desktop: floating panel bottom-right
@@ -349,10 +396,10 @@ export function AIFloatingChat() {
         )}
 
         {/* ── Header ── */}
-        <div className="shrink-0 border-b border-slate-200 bg-white px-3 py-2.5 flex items-center justify-between gap-2">
+        <div className="shrink-0 border-b border-slate-200 bg-white px-3 py-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            <div className="h-7 w-7 rounded-lg bg-brand-500 text-white flex items-center justify-center shadow-xs shrink-0">
-              <Sparkles className="h-4 w-4" />
+            <div className="h-8 w-8 rounded-lg bg-brand-600 text-white flex items-center justify-center shadow-xs shrink-0">
+              <PulseMark className="h-4 w-4" />
             </div>
             <div className="min-w-0">
               <p className="text-xs font-bold text-slate-900 leading-tight">Asisten AI</p>
@@ -371,37 +418,34 @@ export function AIFloatingChat() {
             <button
               type="button"
               onClick={() => setShowSessions((p) => !p)}
-              className="h-7 w-7 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 inline-flex items-center justify-center transition-colors"
+              className="h-9 w-9 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 inline-flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-enterprise-500"
               title="Riwayat percakapan"
               aria-label="Riwayat percakapan"
+              aria-expanded={showSessions}
             >
-              {showSessions ? (
-                <ChevronUp className="h-4 w-4" />
-              ) : (
-                <ChevronDown className="h-4 w-4" />
-              )}
+              <MessagesSquare className="h-4 w-4" aria-hidden="true" />
             </button>
 
             {/* New chat */}
             <button
               type="button"
               onClick={startNewChat}
-              className="h-7 w-7 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 inline-flex items-center justify-center transition-colors"
+              className="h-9 w-9 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 inline-flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-enterprise-500"
               title="Percakapan baru"
               aria-label="Percakapan baru"
             >
-              <MessageSquarePlus className="h-4 w-4" />
+              <MessageSquarePlus className="h-4 w-4" aria-hidden="true" />
             </button>
 
             {/* Close panel */}
             <button
               type="button"
-              onClick={() => setIsOpen(false)}
-              className="h-7 w-7 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-500 inline-flex items-center justify-center transition-colors"
+              onClick={closePanel}
+              className="h-9 w-9 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-500 inline-flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
               title="Tutup"
               aria-label="Tutup asisten"
             >
-              <X className="h-4 w-4" />
+              <X className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -409,6 +453,9 @@ export function AIFloatingChat() {
         {/* ── Messages area ── */}
         <div
           ref={scrollRef}
+          role="log"
+          aria-live="polite"
+          aria-label="Transkrip percakapan"
           className="flex-1 overflow-y-auto px-3 py-3 space-y-3 bg-slate-50/50"
         >
           {messagesLoading ? (
@@ -456,7 +503,7 @@ export function AIFloatingChat() {
               type="button"
               disabled={!canSend}
               onClick={() => handleSend()}
-              className="h-9 w-9 shrink-0 rounded-xl bg-brand-500 text-white flex items-center justify-center transition-colors hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="h-9 w-9 shrink-0 rounded-xl bg-enterprise-600 text-white flex items-center justify-center transition-colors hover:bg-enterprise-700 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-enterprise-500"
               aria-label="Kirim pertanyaan"
             >
               {sending ? (
@@ -472,20 +519,23 @@ export function AIFloatingChat() {
         </div>
       </div>
 
-      {/* ── Floating Action Button ── */}
+      {/* ── Floating Action Button (hidden on mobile while the sheet is open,
+           so it never covers the composer's send button) ── */}
       <button
+        ref={fabRef}
         type="button"
         onClick={() => setIsOpen((p) => !p)}
         className={cn(
-          'fixed bottom-6 right-6 z-[60] h-14 w-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2',
+          'fixed bottom-6 right-6 z-[60] h-14 w-14 rounded-full shadow-lg items-center justify-center transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:scale-100',
           isOpen
-            ? 'bg-slate-700 hover:bg-slate-800 rotate-[20deg]'
-            : 'bg-brand-500 hover:bg-brand-600 hover:scale-110'
+            ? 'hidden md:flex bg-slate-700 hover:bg-slate-800 rotate-[20deg]'
+            : 'flex bg-brand-600 hover:bg-brand-700 md:hover:scale-110'
         )}
         aria-label={isOpen ? 'Tutup Asisten AI' : 'Buka Asisten AI'}
+        aria-expanded={isOpen}
         title={isOpen ? 'Tutup Asisten AI' : 'Buka Asisten AI'}
       >
-        <Sparkles className="h-6 w-6 text-white" />
+        <PulseMark className="h-6 w-6 text-white" />
       </button>
     </>
   );
