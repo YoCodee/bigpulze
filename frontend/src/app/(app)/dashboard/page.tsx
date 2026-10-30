@@ -339,7 +339,7 @@ export default function DashboardPage() {
         {/* ======================================================== */}
         {/* 1. GREETING BANNER (redesign/dashboard/refrence1 (2).png) */}
         {/* ======================================================== */}
-        <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5">
+        <div id="tour-dashboard-greeting" className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="brand" dot>
@@ -362,6 +362,7 @@ export default function DashboardPage() {
 
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             <Button
+              id="tour-briefing-button"
               variant="secondary"
               size="sm"
               onClick={() => {
@@ -423,7 +424,7 @@ export default function DashboardPage() {
                 {/* ======================================================== */}
         {/* 3. SEGMENTED TABS SWITCHER (refrence1 (4).png) */}
         {/* ======================================================== */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+        <div id="tour-dashboard-tabs" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
           <Tabs
             variant="pill"
             activeId={activeTab}
@@ -458,6 +459,7 @@ export default function DashboardPage() {
         {/* ======================================================== */}
         {/* 4. SEGMENTED 4-KPI METRIC STRIP (refrence1 (4).png) */}
         {/* ======================================================== */}
+        <div id="tour-metric-strip">
         <MetricStrip
           title="Ringkasan 3 Pertanyaan Pagi"
           action={
@@ -468,6 +470,7 @@ export default function DashboardPage() {
           }
           metrics={morningMetrics}
         />
+        </div>
 
         {/* ======================================================== */}
         {/* 5. TWO-COLUMN LAYOUT (Main Rail 8-Col + Right Rail 4-Col) */}
@@ -481,7 +484,7 @@ export default function DashboardPage() {
             {activeTab !== 'branches' && (
               <>
                 {/* 5.1. PILAR 2: APA YANG HARUS DIPERHATIKAN? (DETEKSI ANOMALI) */}
-                <Card>
+                <Card id="tour-anomaly-card">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-slate-100 pb-4">
                     <div>
                       <div className="flex items-center gap-2">
@@ -582,7 +585,7 @@ export default function DashboardPage() {
                 </Card>
 
                 {/* 5.2. PILAR 3: APA YANG HARUS DILAKUKAN? (MUTASI STOK 1-KLIK) */}
-                <Card>
+                <Card id="tour-transfer-card">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-slate-100 pb-4">
                     <div>
                       <div className="flex items-center gap-2">
@@ -766,7 +769,7 @@ export default function DashboardPage() {
                 </Card>
 
                 {/* 5.3. TREN FINANSIAL 7 HARI TERAKHIR (AUTO-LEDGER) */}
-                <Card>
+                <Card id="tour-trend-chart">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-slate-100 pb-4">
                     <div>
                       <div className="flex items-center gap-2">
@@ -898,7 +901,7 @@ export default function DashboardPage() {
           {/* ========================================================================= */}
           <div className="lg:col-span-4 space-y-6">
             {/* 1. Target Penjualan Hari Ini per Cabang */}
-            <Card>
+            <Card id="tour-target-card">
               <CardHeader className="border-b border-slate-100 pb-3.5">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm font-bold">Target Penjualan Hari Ini</CardTitle>
@@ -940,7 +943,7 @@ export default function DashboardPage() {
             </Card>
 
             {/* 2. Ringkasan Kapasitas & Status Akun */}
-            <Card>
+            <Card id="tour-account-status">
               <CardHeader className="border-b border-slate-100 pb-3.5">
                 <CardTitle className="text-sm font-bold">Status Akun & Sistem</CardTitle>
               </CardHeader>
@@ -973,7 +976,7 @@ export default function DashboardPage() {
             </Card>
 
             {/* 3. Panduan Cepat Skenario */}
-            <Card className="bg-[#121316] text-white border-slate-800">
+            <Card id="tour-quick-guide" className="bg-[#121316] text-white border-slate-800">
               <CardHeader className="border-b border-slate-800/80 pb-3">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-brand-400" />

@@ -19,10 +19,11 @@ import {
   ChevronRight,
   Boxes,
   LayoutGrid,
+  Compass,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AIFloatingChat } from '@/components/assistant/ai-floating-chat';
-
+import { useDashboardTour } from '@/hooks/use-dashboard-tour';
 interface UserProfile {
   user_id: string;
   email: string;
@@ -39,6 +40,7 @@ interface NavItem {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   ownerOnly: boolean;
+  tourId?: string;
   badge?: string;
   matchPrefixes?: string[];
 }
@@ -52,9 +54,27 @@ const navGroups: NavGroup[] = [
   {
     groupName: 'Operasional Kasir',
     items: [
-      { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, ownerOnly: true },
-      { name: 'Kasir (POS)', href: '/pos', icon: ShoppingCart, ownerOnly: false },
-      { name: 'Riwayat Transaksi', href: '/transactions', icon: Receipt, ownerOnly: false },
+      {
+        name: 'Dashboard',
+        href: '/dashboard',
+        icon: LayoutDashboard,
+        ownerOnly: true,
+        tourId: 'tour-nav-dashboard',
+      },
+      {
+        name: 'Kasir (POS)',
+        href: '/pos',
+        icon: ShoppingCart,
+        ownerOnly: false,
+        tourId: 'tour-nav-pos',
+      },
+      {
+        name: 'Riwayat Transaksi',
+        href: '/transactions',
+        icon: Receipt,
+        ownerOnly: false,
+        tourId: 'tour-nav-transactions',
+      },
     ],
   },
   {
@@ -66,9 +86,22 @@ const navGroups: NavGroup[] = [
         icon: Boxes,
         ownerOnly: false,
         matchPrefixes: ['/inventory', '/products', '/stock'],
+        tourId: 'tour-nav-inventory',
       },
-      { name: 'Pengeluaran', href: '/expenses', icon: ArrowDownCircle, ownerOnly: false },
-      { name: 'Laporan Keuangan', href: '/reports', icon: FileSpreadsheet, ownerOnly: true },
+      {
+        name: 'Pengeluaran',
+        href: '/expenses',
+        icon: ArrowDownCircle,
+        ownerOnly: false,
+        tourId: 'tour-nav-expenses',
+      },
+      {
+        name: 'Laporan Keuangan',
+        href: '/reports',
+        icon: FileSpreadsheet,
+        ownerOnly: true,
+        tourId: 'tour-nav-reports',
+      },
     ],
   },
   {
@@ -80,6 +113,7 @@ const navGroups: NavGroup[] = [
         icon: LayoutGrid,
         ownerOnly: true,
         matchPrefixes: ['/management', '/branches', '/staff', '/import'],
+        tourId: 'tour-nav-management',
       },
     ],
   },
@@ -96,6 +130,13 @@ export default function AppLayout({
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [searchNav, setSearchNav] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Hook Driver.js Interactive Tour
+  const { startTour } = useDashboardTour({
+    role: profile?.role,
+    pathname,
+    autoStart: true,
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -180,7 +221,10 @@ export default function AppLayout({
         {/* ======================================================== */}
         <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-white border-r border-slate-200 z-30">
           {/* Header Sidebar: Workspace / Akun Selector (Tinggi 52px) */}
-          <div className="h-[52px] border-b border-slate-200 px-4 flex items-center justify-between shrink-0 bg-white">
+          <div
+            id="tour-sidebar-logo"
+            className="h-[52px] border-b border-slate-200 px-4 flex items-center justify-between shrink-0 bg-white"
+          >
             <div className="flex items-center space-x-2.5 min-w-0">
               {/* Logo Alur Icon */}
               <div className="h-7 w-7 rounded-lg bg-brand-500 text-white flex items-center justify-center shadow-xs shrink-0">
@@ -209,7 +253,7 @@ export default function AppLayout({
           </div>
 
           {/* Quick Search Bar (Ctrl+K) */}
-          <div className="px-3 pt-3 pb-2 shrink-0">
+          <div id="tour-sidebar-search" className="px-3 pt-3 pb-2 shrink-0">
             <div className="relative flex items-center w-full">
               <Search className="absolute left-2.5 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
               <input
@@ -240,6 +284,7 @@ export default function AppLayout({
                     return (
                       <Link
                         key={item.name}
+                        id={item.tourId}
                         href={item.href}
                         className={`group flex items-center justify-between px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors select-none ${
                           isActive
@@ -280,7 +325,7 @@ export default function AppLayout({
           </div>
 
           {/* Panduan Demo Link di Sidebar Footer */}
-          <div className="shrink-0 px-3 py-2 border-t border-slate-100 bg-white">
+          <div id="tour-sidebar-demo" className="shrink-0 px-3 py-2 border-t border-slate-100 bg-white">
             <Link
               href="/demo-guide"
               className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
@@ -299,8 +344,27 @@ export default function AppLayout({
             </Link>
           </div>
 
+          {/* Tombol Panduan Tur Fitur Aplikasi (Driver.js) */}
+          <div className="shrink-0 px-3 py-1.5 border-t border-slate-100 bg-white">
+            <button
+              id="tour-trigger-btn"
+              type="button"
+              onClick={startTour}
+              className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold text-enterprise-700 bg-enterprise-50 hover:bg-enterprise-100 border border-enterprise-200 transition-colors group cursor-pointer"
+              title="Mulai tur pemandu interaktif"
+            >
+              <div className="flex items-center min-w-0">
+                <Compass className="mr-2.5 h-4 w-4 text-enterprise-600 shrink-0 group-hover:rotate-45 transition-transform" />
+                <span className="truncate">Panduan Tur Fitur</span>
+              </div>
+              <span className="rounded bg-enterprise-200/60 px-1.5 py-0.5 text-[9px] font-mono font-bold text-enterprise-800">
+                Mulai
+              </span>
+            </button>
+          </div>
+
           {/* Footer Sidebar: Profil Pengguna & Keluar */}
-          <div className="shrink-0 border-t border-slate-200 p-3 bg-white">
+          <div id="tour-sidebar-user" className="shrink-0 border-t border-slate-200 p-3 bg-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center min-w-0 space-x-2">
                 <div className="h-7 w-7 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs uppercase shrink-0">
@@ -491,6 +555,26 @@ export default function AppLayout({
                     Juri
                   </span>
                 </Link>
+              </div>
+
+              {/* Panduan Tur di Mobile Drawer */}
+              <div className="pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    startTour();
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-semibold text-enterprise-700 bg-enterprise-50 hover:bg-enterprise-100 border border-enterprise-200"
+                >
+                  <div className="flex items-center">
+                    <Compass className="mr-3 h-4 w-4 text-enterprise-600" />
+                    <span>Panduan Tur Fitur</span>
+                  </div>
+                  <span className="rounded bg-enterprise-200/60 px-1.5 py-0.5 text-[10px] font-mono font-bold text-enterprise-800">
+                    Mulai
+                  </span>
+                </button>
               </div>
             </div>
           )}
