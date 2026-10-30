@@ -22,13 +22,8 @@ import {
   Printer,
   RotateCcw,
   Package,
-  Mic,
-  Sparkles,
   X,
-  HelpCircle,
 } from 'lucide-react';
-import { VoiceMicButton } from '@/components/voice-mic-button';
-import { parseVoiceOrder, VoiceParseResult, ParsedVoiceItem } from '@/lib/voice/voice-parser';
 
 interface Branch {
   id: string;
@@ -46,7 +41,6 @@ interface Product {
   selling_price: number;
   stock: number;
   min_stock_alert: number;
-  aliases: string[];
   is_active: boolean;
 }
 
@@ -93,13 +87,6 @@ export default function PosPage() {
   const [submitting, setSubmitting] = useState(false);
   const [qrisCountdown, setQrisCountdown] = useState<number>(3);
   const [qrisTimerActive, setQrisTimerActive] = useState<boolean>(false);
-
-  // Voice Order State
-  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
-  const [voiceParseResult, setVoiceParseResult] = useState<VoiceParseResult | null>(null);
-  const [voiceItems, setVoiceItems] = useState<ParsedVoiceItem[]>([]);
-  const [voiceTranscriptToSave, setVoiceTranscriptToSave] = useState<string | null>(null);
-  const [activeInputMethod, setActiveInputMethod] = useState<'MANUAL' | 'VOICE'>('MANUAL');
 
   // Completed Receipt Dialog
   const [completedTx, setCompletedTx] = useState<CompletedTransaction | null>(null);
@@ -165,8 +152,7 @@ export default function PosPage() {
       const matchQuery =
         !q ||
         p.name.toLowerCase().includes(q) ||
-        p.sku.toLowerCase().includes(q) ||
-        p.aliases.some((a) => a.toLowerCase().includes(q));
+        p.sku.toLowerCase().includes(q);
       return matchCategory && matchQuery;
     });
   }, [products, selectedCategory, searchQuery]);
@@ -261,77 +247,6 @@ export default function PosPage() {
     setIsPaymentModalOpen(true);
   };
 
-  // Voice Order Handlers
-  const handleVoiceTranscript = (transcript: string) => {
-    const result = parseVoiceOrder(transcript, products);
-    setVoiceParseResult(result);
-    setVoiceItems(result.items);
-    setIsVoiceModalOpen(true);
-  };
-
-  // Auto-trigger voice sample from URL if present (e.g. from Demo Guide)
-  useEffect(() => {
-    if (typeof window !== 'undefined' && products.length > 0) {
-      const params = new URLSearchParams(window.location.search);
-      const voiceSample = params.get('voice_sample');
-      if (voiceSample) {
-        handleVoiceTranscript(decodeURIComponent(voiceSample));
-        window.history.replaceState({}, '', window.location.pathname);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [products]);
-
-  const updateVoiceItemQty = (productId: string, delta: number) => {
-    setVoiceItems((prev) =>
-      prev
-        .map((it) => {
-          if (it.product_id === productId) {
-            const next = it.quantity + delta;
-            if (next <= 0) return null;
-            return { ...it, quantity: next, subtotal: next * it.unit_price };
-          }
-          return it;
-        })
-        .filter(Boolean) as ParsedVoiceItem[]
-    );
-  };
-
-  const removeVoiceItem = (productId: string) => {
-    setVoiceItems((prev) => prev.filter((it) => it.product_id !== productId));
-  };
-
-  const handleConfirmVoiceOrder = () => {
-    if (!voiceParseResult || voiceItems.length === 0) return;
-
-    setCart((prevCart) => {
-      const updated = [...prevCart];
-      for (const vItem of voiceItems) {
-        const prod = products.find((p) => p.id === vItem.product_id);
-        if (!prod) continue;
-
-        const idx = updated.findIndex((i) => i.product.id === prod.id);
-        if (idx >= 0) {
-          const nextQty = Math.min(prod.stock, updated[idx].quantity + vItem.quantity);
-          updated[idx] = { ...updated[idx], quantity: nextQty };
-        } else {
-          const qty = Math.min(prod.stock, vItem.quantity);
-          if (qty > 0) {
-            updated.push({ product: prod, quantity: qty });
-          }
-        }
-      }
-      return updated;
-    });
-
-    if (voiceParseResult.payment_method) {
-      setPaymentMethod(voiceParseResult.payment_method);
-    }
-    setVoiceTranscriptToSave(voiceParseResult.raw_transcript);
-    setActiveInputMethod('VOICE');
-    setIsVoiceModalOpen(false);
-  };
-
   // Process Checkout
   const handleProcessCheckout = useCallback(
     async (simulatedQRIS = false) => {
@@ -354,8 +269,6 @@ export default function PosPage() {
             quantity: item.quantity,
           })),
           payment_method: paymentMethod,
-          input_method: activeInputMethod,
-          voice_transcript: voiceTranscriptToSave,
           client_tx_id: clientTxId,
           cash_tendered: paymentMethod === 'CASH' ? Number(cashTendered) : totalAmount,
         };
@@ -376,8 +289,6 @@ export default function PosPage() {
         setIsPaymentModalOpen(false);
         setCompletedTx(json.data);
         setCart([]);
-        setActiveInputMethod('MANUAL');
-        setVoiceTranscriptToSave(null);
         // Refresh products to reflect new stock
         fetchProducts();
       } catch (err: unknown) {
@@ -396,8 +307,6 @@ export default function PosPage() {
       isCashInsufficient,
       cashTendered,
       totalAmount,
-      activeInputMethod,
-      voiceTranscriptToSave,
       fetchProducts,
     ]
   );
@@ -482,22 +391,17 @@ export default function PosPage() {
             <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-medium">
               Kasir Siap Transaksi
             </span>
-
-            <div className="hidden sm:flex items-center gap-1 text-[11px] text-slate-400">
-              <HelpCircle className="w-3.5 h-3.5" />
-              <span>Voice POS 2 Detik Aktif</span>
-            </div>
           </div>
         </div>
 
-        {/* Search Bar & Voice Order Mic Button */}
+        {/* Search Bar */}
         <div className="space-y-3">
           <div className="flex items-center gap-2.5">
             <div className="relative flex-1">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Cari produk (nama / SKU / alias) atau gunakan Perintah Suara..."
+                placeholder="Cari produk (nama / SKU)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-12 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-enterprise-500 shadow-xs"
@@ -511,11 +415,6 @@ export default function PosPage() {
                   Hapus
                 </button>
               )}
-            </div>
-
-            {/* Voice Mic Trigger Button (minimum 44px touch target) */}
-            <div className="shrink-0 min-h-[44px] flex items-center">
-              <VoiceMicButton onTranscriptComplete={handleVoiceTranscript} />
             </div>
           </div>
 
@@ -661,19 +560,6 @@ export default function PosPage() {
           )}
         </div>
 
-        {/* Voice Order Active Indicator Banner */}
-        {activeInputMethod === 'VOICE' && voiceTranscriptToSave && (
-          <div className="bg-blue-50/70 border-b border-blue-200 p-2.5 px-4 text-xs text-slate-900 flex items-center justify-between">
-            <div className="flex items-center gap-2 truncate">
-              <Mic className="w-3.5 h-3.5 text-enterprise-600 shrink-0" />
-              <span className="truncate italic font-medium">&quot;{voiceTranscriptToSave}&quot;</span>
-            </div>
-            <span className="text-[10px] font-medium bg-blue-100 text-enterprise-900 px-2 py-0.5 rounded-md shrink-0 ml-2">
-              Voice POS
-            </span>
-          </div>
-        )}
-
         {/* Cart Items List */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {cart.length === 0 ? (
@@ -683,7 +569,7 @@ export default function PosPage() {
               </div>
               <p className="font-bold text-slate-700 text-sm">Keranjang Masih Kosong</p>
               <p className="text-xs text-slate-400 mt-1 max-w-[220px]">
-                Ketuk produk dari katalog di sebelah kiri atau gunakan tombol mikrofon suara.
+                Ketuk produk dari katalog di sebelah kiri.
               </p>
             </div>
           ) : (
@@ -1090,191 +976,6 @@ export default function PosPage() {
         </div>
       )}
 
-      {/* ======================================================== */}
-      {/* VOICE ORDER CONFIRMATION MODAL */}
-      {/* ======================================================== */}
-      {isVoiceModalOpen && voiceParseResult && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
-            {/* Header */}
-            <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-slate-900">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-enterprise-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                  <Mic className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold flex items-center gap-1.5">
-                    Hasil Deteksi Perintah Suara
-                    <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[10px] font-medium bg-blue-100 text-enterprise-800">
-                      <Sparkles className="w-2.5 h-2.5 text-enterprise-600" />
-                      Akurasi {Math.round(voiceParseResult.confidence * 100)}%
-                    </span>
-                  </h3>
-                  <p className="text-[11px] text-slate-500">
-                    Bahasa Alami Kasir Bahasa Indonesia
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsVoiceModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-md"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-              {/* Original Voice Transcript Bubble */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
-                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
-                  Transkrip Asli Suara Kasir
-                </span>
-                <p className="text-xs text-slate-900 font-medium italic">
-                  &quot;{voiceParseResult.raw_transcript}&quot;
-                </p>
-              </div>
-
-              {/* Unmatched phrases warning (if any) */}
-              {voiceParseResult.unmatched_phrases.length > 0 && (
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold block">Frasa kata tidak dikenali:</span>
-                    <span className="italic">
-                      &quot;{voiceParseResult.unmatched_phrases.join(', ')}&quot;
-                    </span>
-                    <p className="text-[10px] text-amber-700 mt-0.5">
-                      Frasa ini diabaikan karena tidak cocok dengan katalog produk cabang ini.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Items detected */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-slate-700 uppercase">
-                    Produk Terdeteksi ({voiceItems.length})
-                  </span>
-                  <span className="text-[11px] text-slate-500">
-                    Bisa disesuaikan bila ada salah dengar
-                  </span>
-                </div>
-
-                {voiceItems.length === 0 ? (
-                  <div className="p-8 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200 text-slate-500">
-                    <p className="text-xs font-semibold text-slate-700">
-                      Tidak ada produk terdeteksi
-                    </p>
-                    <p className="text-[11px] text-slate-400 mt-1">
-                      Nama atau alias produk tidak ditemukan dalam katalog cabang ini. Silakan coba bicara ulang.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-2.5">
-                    {voiceItems.map((vItem) => (
-                      <div
-                        key={vItem.product_id}
-                        className="p-3 bg-white border border-slate-200 rounded-xl flex items-center justify-between gap-3 shadow-xs hover:border-slate-300 transition-colors"
-                      >
-                        <div className="flex-1">
-                          <h4 className="text-xs font-bold text-slate-900">
-                            {vItem.product_name}
-                          </h4>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span className="font-mono text-[10px] text-slate-400">
-                              {vItem.sku}
-                            </span>
-                            <span className="text-[10px] text-enterprise-700 bg-blue-50 px-1.5 py-0.5 rounded font-semibold border border-blue-200">
-                              Cocok: {vItem.matched_by}
-                            </span>
-                            <span className="text-xs font-medium text-slate-600 font-mono">
-                              {formatRupiah(vItem.unit_price)}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Stepper with Touch Target */}
-                        <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg">
-                          <button
-                            type="button"
-                            aria-label="Kurangi"
-                            onClick={() => updateVoiceItemQty(vItem.product_id, -1)}
-                            className="min-w-[36px] min-h-[36px] rounded-l flex items-center justify-center text-slate-600 hover:bg-slate-200"
-                          >
-                            <Minus className="w-3.5 h-3.5" />
-                          </button>
-                          <span className="w-7 text-center text-xs font-bold text-slate-900 font-mono">
-                            {vItem.quantity}
-                          </span>
-                          <button
-                            type="button"
-                            aria-label="Tambah"
-                            onClick={() => updateVoiceItemQty(vItem.product_id, 1)}
-                            className="min-w-[36px] min-h-[36px] rounded-r flex items-center justify-center text-slate-600 hover:bg-slate-200"
-                          >
-                            <Plus className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-
-                        {/* Subtotal & Delete */}
-                        <div className="text-right flex items-center gap-2">
-                          <span className="text-xs font-bold text-slate-900 font-mono">
-                            {formatRupiah(vItem.subtotal)}
-                          </span>
-                          <button
-                            type="button"
-                            aria-label="Hapus item suara"
-                            onClick={() => removeVoiceItem(vItem.product_id)}
-                            className="min-w-[36px] min-h-[36px] flex items-center justify-center text-slate-400 hover:text-rose-600 rounded"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Payment Method Detected */}
-              {voiceParseResult.payment_method && (
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs flex items-center justify-between">
-                  <span className="text-slate-900 font-medium">
-                    Metode Pembayaran Terdeteksi:
-                  </span>
-                  <span className="font-bold text-enterprise-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
-                    {voiceParseResult.payment_method === 'CASH' ? 'Tunai (CASH)' : 'QRIS Simulasi'}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Actions */}
-            <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2">
-              <Button
-                variant="secondary"
-                size="md"
-                onClick={() => setIsVoiceModalOpen(false)}
-              >
-                Batal / Ulangi
-              </Button>
-
-              <Button
-                variant="primary"
-                size="touch"
-                disabled={voiceItems.length === 0}
-                onClick={handleConfirmVoiceOrder}
-                className="bg-enterprise-600 hover:bg-enterprise-700 gap-1.5 shadow-sm"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Tambahkan ke Keranjang Kasir</span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -19,7 +19,6 @@ import {
   Printer,
   AlertCircle,
   Loader2,
-  Mic,
   FileSpreadsheet,
   MousePointer,
   Sparkles,
@@ -59,7 +58,6 @@ interface Transaction {
   total_revenue: number;
   total_cogs: number;
   gross_profit: number;
-  voice_transcript?: string | null;
   voided_at?: string | null;
   void_reason?: string | null;
   transaction_items: TransactionItem[];
@@ -242,12 +240,6 @@ export default function TransactionsPage() {
   // Render input method badge
   const renderInputBadge = (method: string) => {
     switch (method) {
-      case 'VOICE':
-        return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-enterprise-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
-            <Mic className="w-3 h-3 text-enterprise-600" /> Voice
-          </span>
-        );
       case 'IMPORT':
         return (
           <span className="inline-flex items-center gap-1 text-[10px] font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
@@ -696,18 +688,6 @@ export default function TransactionsPage() {
                   <span className="font-bold text-slate-800">{selectedTx.input_method}</span>
                 </div>
               </div>
-
-              {/* Voice Transcript (if available) */}
-              {selectedTx.voice_transcript && (
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs">
-                  <span className="font-bold text-slate-900 block mb-1">
-                    Transkrip Suara Kasir:
-                  </span>
-                  <p className="text-slate-700 italic font-medium">
-                    &quot;{selectedTx.voice_transcript}&quot;
-                  </p>
-                </div>
-              )}
 
               {/* Purchased Items Table */}
               <div>

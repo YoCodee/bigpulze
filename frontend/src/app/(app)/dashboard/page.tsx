@@ -984,7 +984,7 @@ export default function DashboardPage() {
 
               <CardContent className="p-5 space-y-3 text-xs text-slate-300">
                 <p className="leading-relaxed text-[11px] text-slate-300">
-                  Coba skenario interaktif untuk menguji input suara kasir, pencatatan pengeluaran, dan mutasi stok.
+                  Coba skenario interaktif untuk menguji transaksi kasir, pencatatan pengeluaran, dan mutasi stok.
                 </p>
 
                 <div className="space-y-1.5 pt-1">

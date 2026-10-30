@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('products')
-      .select('id, org_id, branch_id, sku, name, category, cost_price, selling_price, stock, min_stock_alert, aliases, is_active, updated_at')
+      .select('id, org_id, branch_id, sku, name, category, cost_price, selling_price, stock, min_stock_alert, is_active, updated_at')
       .order('name', { ascending: true });
 
     if (!includeInactive) {
@@ -90,7 +90,6 @@ export async function POST(request: NextRequest) {
       cost_price,
       selling_price,
       min_stock_alert,
-      aliases,
     } = result.data;
 
     // Verify that branch belongs to the user's org
@@ -118,10 +117,9 @@ export async function POST(request: NextRequest) {
         selling_price,
         stock: 0,
         min_stock_alert,
-        aliases,
         is_active: true,
       })
-      .select('id, org_id, branch_id, sku, name, category, cost_price, selling_price, stock, min_stock_alert, aliases, is_active, updated_at')
+      .select('id, org_id, branch_id, sku, name, category, cost_price, selling_price, stock, min_stock_alert, is_active, updated_at')
       .single();
 
     if (insertError) {

@@ -17,16 +17,11 @@ import {
   Loader2,
   AlertCircle,
   FileSpreadsheet,
-  Mic,
   MousePointer,
   Sparkles,
-  Volume2,
   RotateCcw,
-  CheckCircle2,
   X,
 } from 'lucide-react';
-import { VoiceMicButton } from '@/components/voice-mic-button';
-import { parseVoiceExpense, ParsedVoiceExpense } from '@/lib/voice/expense-voice-parser';
 import { MetricStrip } from '@/components/ui/metric-strip';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -48,7 +43,6 @@ interface Expense {
   description: string;
   amount: number;
   input_method: 'MANUAL' | 'VOICE' | 'IMPORT' | 'DEMO';
-  voice_transcript?: string | null;
   is_anomaly: boolean;
   anomaly_score: number;
   anomaly_reason?: string | null;
@@ -81,17 +75,6 @@ export default function ExpensesPage() {
   const [formCategory, setFormCategory] = useState<ExpenseCategory>('Utilitas');
   const [formDescription, setFormDescription] = useState<string>('');
   const [formAmount, setFormAmount] = useState<number | ''>('');
-
-  // Voice Expense Modal State
-  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
-  const [voiceExpenseData, setVoiceExpenseData] = useState<ParsedVoiceExpense | null>(null);
-  const [voiceTranscript, setVoiceTranscript] = useState<string>('');
-  const [voiceBranchId, setVoiceBranchId] = useState<string>('');
-  const [voiceDate, setVoiceDate] = useState<string>(getBusinessDate());
-  const [voiceCategory, setVoiceCategory] = useState<ExpenseCategory>('Utilitas');
-  const [voiceDescription, setVoiceDescription] = useState<string>('');
-  const [voiceAmount, setVoiceAmount] = useState<number | ''>('');
-  const [voiceModalSubmitting, setVoiceModalSubmitting] = useState(false);
 
   // Delete Modal
   const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
@@ -311,84 +294,6 @@ export default function ExpensesPage() {
     }
   };
 
-  // Handle Voice Transcript Parsing & Open Voice Modal
-  const handleVoiceTranscript = (transcript: string) => {
-    if (!transcript || !transcript.trim()) return;
-    const parsed = parseVoiceExpense(transcript);
-    setVoiceExpenseData(parsed);
-    setVoiceTranscript(transcript);
-    setVoiceBranchId(
-      currentUserRole !== 'OWNER' && userBranchId
-        ? userBranchId
-        : (selectedBranchId !== 'ALL' ? selectedBranchId : branches[0]?.id || '')
-    );
-    setVoiceDate(getBusinessDate());
-    setVoiceCategory(parsed.category);
-    setVoiceDescription(parsed.description);
-    setVoiceAmount(parsed.amount > 0 ? parsed.amount : '');
-    setIsVoiceModalOpen(true);
-  };
-
-  // Auto-trigger voice sample from URL if present (e.g. from Demo Guide)
-  useEffect(() => {
-    if (typeof window !== 'undefined' && branches.length > 0) {
-      const params = new URLSearchParams(window.location.search);
-      const voiceSample = params.get('voice_sample');
-      if (voiceSample) {
-        handleVoiceTranscript(decodeURIComponent(voiceSample));
-        window.history.replaceState({}, '', window.location.pathname);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [branches]);
-
-  // Submit Voice Expense
-  const handleVoiceExpenseSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!voiceBranchId) {
-      alert('Cabang wajib dipilih.');
-      return;
-    }
-    if (!voiceDescription.trim() || voiceDescription.trim().length < 3) {
-      alert('Deskripsi pengeluaran minimal 3 karakter.');
-      return;
-    }
-    if (typeof voiceAmount !== 'number' || voiceAmount <= 0) {
-      alert('Nominal pengeluaran harus lebih besar dari Rp 0.');
-      return;
-    }
-
-    try {
-      setVoiceModalSubmitting(true);
-      const res = await fetch('/api/expenses', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          branch_id: voiceBranchId,
-          category: voiceCategory,
-          description: voiceDescription.trim(),
-          amount: voiceAmount,
-          expense_date: voiceDate,
-          input_method: 'VOICE',
-          voice_transcript: voiceTranscript,
-        }),
-      });
-
-      const json = await res.json();
-      if (!res.ok) {
-        throw new Error(json.error?.message || 'Gagal menyimpan pengeluaran suara');
-      }
-
-      setIsVoiceModalOpen(false);
-      fetchExpenses();
-    } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : 'Terjadi kesalahan saat menyimpan data');
-    } finally {
-      setVoiceModalSubmitting(false);
-    }
-  };
-
   // Delete Expense
   const handleDeleteSubmit = async () => {
     if (!deletingExpense) return;
@@ -414,12 +319,6 @@ export default function ExpensesPage() {
   // Input badge
   const renderInputBadge = (method: string) => {
     switch (method) {
-      case 'VOICE':
-        return (
-          <Badge variant="enterprise" className="text-[10px] py-0.5">
-            <Mic className="w-2.5 h-2.5 mr-0.5" /> Suara
-          </Badge>
-        );
       case 'IMPORT':
         return (
           <Badge variant="neutral" className="text-[10px] py-0.5">
@@ -493,21 +392,11 @@ export default function ExpensesPage() {
             <Badge variant="neutral">Auto-Ledger</Badge>
           </div>
           <p className="text-sm text-slate-500 mt-0.5">
-            Pencatatan biaya operasional harian cabang, integrasi voice AI, dan audit anomali Z-score
+            Pencatatan biaya operasional harian cabang dan deteksi biaya tidak wajar
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 shadow-2xs">
-            <VoiceMicButton onTranscriptComplete={handleVoiceTranscript} disabled={loading} />
-            <div className="text-left hidden sm:block">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-enterprise-700 flex items-center gap-1">
-                <Sparkles className="w-2.5 h-2.5" /> Smart Voice
-              </div>
-              <div className="text-[10px] text-slate-500">Bicara catat biaya</div>
-            </div>
-          </div>
-
           <Button
             variant="primary"
             size="md"
@@ -573,44 +462,6 @@ export default function ExpensesPage() {
           },
         ]}
       />
-
-      {/* Quick Voice Simulation Banner */}
-      <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-2xs">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-enterprise-600 text-white shadow-2xs">
-              <Volume2 className="h-4 w-4" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-bold text-slate-900">Simulasi Voice Input AI:</span>
-                <span className="text-[11px] text-slate-500 hidden sm:inline">
-                  Klik kalimat untuk simulasi pencatatan otomatis
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-1.5">
-            {[
-              'catat beli galon air dua puluh ribu',
-              'bayar listrik seratus lima puluh ribu',
-              'beli kresek dan sedotan 25rb',
-              'gaji harian barista seratus ribu',
-              'servis mesin espresso 350 ribu',
-              'beli genset darurat satu juta lima ratus ribu',
-            ].map((sample) => (
-              <button
-                key={sample}
-                type="button"
-                onClick={() => handleVoiceTranscript(sample)}
-                className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700 shadow-2xs hover:bg-slate-100 hover:border-slate-300 transition-colors cursor-pointer"
-              >
-                &ldquo;{sample}&rdquo;
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {/* Filters Toolbar */}
       <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
@@ -740,7 +591,7 @@ export default function ExpensesPage() {
             <EmptyState
               icon={Wallet}
               title="Tidak ada pengeluaran pada periode ini"
-              description="Belum ada transaksi beban operasional yang dicatat untuk filter saat ini. Gunakan tombol 'Catat Pengeluaran' atau voice AI untuk menambah pengeluaran."
+              description="Belum ada transaksi beban operasional yang dicatat untuk filter saat ini. Gunakan tombol 'Catat Pengeluaran' untuk menambah pengeluaran."
               actionLabel="Catat Pengeluaran Baru"
               onAction={handleOpenAdd}
             />
@@ -966,203 +817,6 @@ export default function ExpensesPage() {
                     </>
                   ) : (
                     'Simpan Pengeluaran'
-                  )}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* VOICE EXPENSE CONFIRMATION MODAL */}
-      {isVoiceModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
-            {/* Header */}
-            <div className="px-6 py-4 bg-enterprise-600 text-white flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center">
-                  <Mic className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold flex items-center gap-1.5">
-                    Konfirmasi Pengeluaran Suara
-                    <span className="px-2 py-0.5 rounded-md text-[10px] bg-white/20 font-mono">
-                      AI Voice
-                    </span>
-                  </h3>
-                  <p className="text-[11px] text-white/80 italic line-clamp-1">
-                    &ldquo;{voiceTranscript}&rdquo;
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsVoiceModalOpen(false)}
-                className="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* AI Parsing Explanation & Confidence */}
-            {voiceExpenseData && (
-              <div className="px-6 pt-4 pb-1">
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-start gap-2.5">
-                  <Sparkles className="w-4 h-4 text-enterprise-600 shrink-0 mt-0.5" />
-                  <div className="flex-1 text-xs">
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="font-bold text-slate-900">Hasil Analisis Suara</span>
-                      <span
-                        className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${
-                          voiceExpenseData.confidence >= 0.8
-                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                            : 'bg-amber-100 text-amber-800 border border-amber-200'
-                        }`}
-                      >
-                        Akurasi {Math.round(voiceExpenseData.confidence * 100)}%
-                      </span>
-                    </div>
-                    <p className="text-slate-600 text-[11px] leading-relaxed">
-                      {voiceExpenseData.explanation}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Edit / Confirmation Form */}
-            <form onSubmit={handleVoiceExpenseSubmit} className="p-6 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Branch */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                    Cabang <span className="text-rose-500">*</span>
-                  </label>
-                  <select
-                    aria-label="Pilih cabang pengeluaran suara"
-                    disabled={currentUserRole !== 'OWNER'}
-                    value={voiceBranchId}
-                    onChange={(e) => setVoiceBranchId(e.target.value)}
-                    className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 disabled:bg-slate-100 transition-colors"
-                  >
-                    {branches.map((b) => (
-                      <option key={b.id} value={b.id}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Date */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                    Tanggal Pengeluaran <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    aria-label="Tanggal pengeluaran suara"
-                    type="date"
-                    required
-                    value={voiceDate}
-                    onChange={(e) => setVoiceDate(e.target.value)}
-                    className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
-                  />
-                </div>
-              </div>
-
-              {/* Category */}
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-semibold text-slate-700">
-                    Kategori Pengeluaran <span className="text-rose-500">*</span>
-                  </label>
-                  {voiceExpenseData?.matched_keyword && (
-                    <span className="text-[10px] text-enterprise-600 font-medium">
-                      Kata kunci: &ldquo;{voiceExpenseData.matched_keyword}&rdquo;
-                    </span>
-                  )}
-                </div>
-                <select
-                  aria-label="Pilih kategori pengeluaran suara"
-                  value={voiceCategory}
-                  onChange={(e) => setVoiceCategory(e.target.value as ExpenseCategory)}
-                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 font-medium transition-colors"
-                >
-                  {EXPENSE_CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Keterangan / Deskripsi <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  aria-label="Keterangan pengeluaran suara"
-                  type="text"
-                  required
-                  value={voiceDescription}
-                  onChange={(e) => setVoiceDescription(e.target.value)}
-                  placeholder="Contoh: Beli galon air..."
-                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
-                />
-              </div>
-
-              {/* Amount */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Nominal Biaya (Rp) <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  aria-label="Nominal pengeluaran suara"
-                  type="number"
-                  min="1"
-                  required
-                  value={voiceAmount}
-                  onChange={(e) =>
-                    setVoiceAmount(e.target.value === '' ? '' : parseInt(e.target.value, 10))
-                  }
-                  placeholder="50000"
-                  className="w-full h-10 px-3 bg-white border border-slate-300 rounded-xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
-                />
-                {typeof voiceAmount === 'number' && voiceAmount > 0 && (
-                  <p className="text-[11px] text-enterprise-600 font-semibold mt-1">
-                    Terbaca: {formatRupiah(voiceAmount)}
-                  </p>
-                )}
-              </div>
-
-              {/* Modal Actions */}
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
-                <Button
-                  variant="secondary"
-                  size="md"
-                  disabled={voiceModalSubmitting}
-                  onClick={() => setIsVoiceModalOpen(false)}
-                >
-                  Batal
-                </Button>
-                <Button
-                  variant="primary"
-                  size="md"
-                  type="submit"
-                  disabled={voiceModalSubmitting}
-                  className="flex items-center gap-1.5"
-                >
-                  {voiceModalSubmitting ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      Menyimpan...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      Simpan Pengeluaran Suara
-                    </>
                   )}
                 </Button>
               </div>

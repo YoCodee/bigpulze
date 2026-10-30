@@ -47,7 +47,7 @@ export async function PATCH(
       .update(updateData)
       .eq('id', productId)
       .eq('org_id', profile.org_id)
-      .select('id, org_id, branch_id, sku, name, category, cost_price, selling_price, stock, min_stock_alert, aliases, is_active, updated_at')
+      .select('id, org_id, branch_id, sku, name, category, cost_price, selling_price, stock, min_stock_alert, is_active, updated_at')
       .single();
 
     if (updateError) {

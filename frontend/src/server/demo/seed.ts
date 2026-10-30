@@ -51,7 +51,6 @@ interface DemoProductSpec {
   category: string;
   cost_price: number;
   selling_price: number;
-  aliases: string[];
   /** Permintaan dasar per hari (unit) pada kondisi normal. */
   demand: number;
   min_stock_alert: number;
@@ -63,9 +62,8 @@ interface TransactionSeed {
   branch_id: string;
   business_date: string;
   transaction_date: string;
-  input_method: 'DEMO' | 'VOICE';
+  input_method: 'DEMO';
   payment_method: 'CASH' | 'QRIS_SIM';
-  voice_transcript: string | null;
   revenue: number;
   cogs: number;
 }
@@ -133,18 +131,18 @@ const BRANCHES: DemoBranchSpec[] = [
 ];
 
 const PRODUCTS: DemoProductSpec[] = [
-  { sku: 'KP-001', name: 'Es Kopi Susu', category: 'Minuman', cost_price: 7000, selling_price: 18000, aliases: ['kopsu', 'kopi susu'], demand: 32, min_stock_alert: 10 },
-  { sku: 'KP-002', name: 'Kopi Hitam', category: 'Minuman', cost_price: 3000, selling_price: 12000, aliases: ['kopi hitam'], demand: 12, min_stock_alert: 8 },
-  { sku: 'KP-003', name: 'Americano', category: 'Minuman', cost_price: 4000, selling_price: 16000, aliases: ['americano'], demand: 10, min_stock_alert: 8 },
-  { sku: 'KP-004', name: 'Latte', category: 'Minuman', cost_price: 8000, selling_price: 22000, aliases: ['latte'], demand: 14, min_stock_alert: 8 },
-  { sku: 'KP-005', name: 'Matcha Latte', category: 'Minuman', cost_price: 10000, selling_price: 25000, aliases: ['matcha'], demand: 16, min_stock_alert: 8 },
-  { sku: 'KP-006', name: 'Teh Manis', category: 'Minuman', cost_price: 2000, selling_price: 8000, aliases: ['teh manis'], demand: 8, min_stock_alert: 10 },
-  { sku: 'KP-007', name: 'Air Mineral', category: 'Minuman', cost_price: 2000, selling_price: 5000, aliases: ['air mineral', 'air putih'], demand: 10, min_stock_alert: 12 },
-  { sku: 'MK-001', name: 'Roti Bakar', category: 'Makanan', cost_price: 6000, selling_price: 15000, aliases: ['roti bakar'], demand: 9, min_stock_alert: 8 },
-  { sku: 'MK-002', name: 'Kentang Goreng', category: 'Makanan', cost_price: 7000, selling_price: 18000, aliases: ['kentang', 'fries'], demand: 13, min_stock_alert: 8 },
-  { sku: 'MK-003', name: 'Nasi Goreng', category: 'Makanan', cost_price: 11000, selling_price: 25000, aliases: ['nasi goreng', 'nasgor'], demand: 11, min_stock_alert: 8 },
-  { sku: 'MK-004', name: 'Mie Goreng', category: 'Makanan', cost_price: 9000, selling_price: 22000, aliases: ['mie goreng', 'mieg'], demand: 7, min_stock_alert: 8 },
-  { sku: 'MK-005', name: 'Pisang Goreng', category: 'Makanan', cost_price: 4000, selling_price: 12000, aliases: ['pisang goreng'], demand: 6, min_stock_alert: 10 },
+  { sku: 'KP-001', name: 'Es Kopi Susu', category: 'Minuman', cost_price: 7000, selling_price: 18000, demand: 32, min_stock_alert: 10 },
+  { sku: 'KP-002', name: 'Kopi Hitam', category: 'Minuman', cost_price: 3000, selling_price: 12000, demand: 12, min_stock_alert: 8 },
+  { sku: 'KP-003', name: 'Americano', category: 'Minuman', cost_price: 4000, selling_price: 16000, demand: 10, min_stock_alert: 8 },
+  { sku: 'KP-004', name: 'Latte', category: 'Minuman', cost_price: 8000, selling_price: 22000, demand: 14, min_stock_alert: 8 },
+  { sku: 'KP-005', name: 'Matcha Latte', category: 'Minuman', cost_price: 10000, selling_price: 25000, demand: 16, min_stock_alert: 8 },
+  { sku: 'KP-006', name: 'Teh Manis', category: 'Minuman', cost_price: 2000, selling_price: 8000, demand: 8, min_stock_alert: 10 },
+  { sku: 'KP-007', name: 'Air Mineral', category: 'Minuman', cost_price: 2000, selling_price: 5000, demand: 10, min_stock_alert: 12 },
+  { sku: 'MK-001', name: 'Roti Bakar', category: 'Makanan', cost_price: 6000, selling_price: 15000, demand: 9, min_stock_alert: 8 },
+  { sku: 'MK-002', name: 'Kentang Goreng', category: 'Makanan', cost_price: 7000, selling_price: 18000, demand: 13, min_stock_alert: 8 },
+  { sku: 'MK-003', name: 'Nasi Goreng', category: 'Makanan', cost_price: 11000, selling_price: 25000, demand: 11, min_stock_alert: 8 },
+  { sku: 'MK-004', name: 'Mie Goreng', category: 'Makanan', cost_price: 9000, selling_price: 22000, demand: 7, min_stock_alert: 8 },
+  { sku: 'MK-005', name: 'Pisang Goreng', category: 'Makanan', cost_price: 4000, selling_price: 12000, demand: 6, min_stock_alert: 10 },
 ];
 
 /**
@@ -162,13 +160,6 @@ const EXPENSE_TEMPLATES: { category: string; description: string; amount: number
   { category: 'Gaji', description: 'Gaji harian kasir & barista', amount: 200_000 },
   { category: 'Perlengkapan Operasional', description: 'Gelas, sedotan, tisu', amount: 100_000 },
   { category: 'Transportasi', description: 'Bensin antar cabang', amount: 20_000 },
-];
-
-const VOICE_TRANSCRIPTS = [
-  'kopi susu dua teh manis satu bayar tunai',
-  'americano satu kentang goreng dua',
-  'matcha latte dua roti bakar satu qris',
-  'nasi goreng satu air mineral dua',
 ];
 
 function createAdminClient(): SupabaseClient {
@@ -361,7 +352,6 @@ export async function seedDemoData(input: DemoSeedInput): Promise<SeedResult> {
     selling_price: number;
     stock: number;
     min_stock_alert: number;
-    aliases: string[];
     is_active: boolean;
   }[] = [];
   const productsByBranch = new Map<string, ProductRow[]>();
@@ -401,7 +391,6 @@ export async function seedDemoData(input: DemoSeedInput): Promise<SeedResult> {
         selling_price: productSpec.selling_price,
         stock,
         min_stock_alert: productSpec.min_stock_alert,
-        aliases: productSpec.aliases,
         is_active: true,
       });
 
@@ -516,8 +505,6 @@ export async function seedDemoData(input: DemoSeedInput): Promise<SeedResult> {
           minute
         ).padStart(2, '0')}:00+07:00`;
 
-        // 10% transaksi input voice (PRD §11.1: sebagian kecil VOICE).
-        const isVoice = rng() < 0.1;
         // 70% tunai, 30% QRIS (PRD §11.1).
         const isQris = rng() < 0.3;
 
@@ -527,11 +514,8 @@ export async function seedDemoData(input: DemoSeedInput): Promise<SeedResult> {
           branch_id: branchId,
           business_date: businessDate,
           transaction_date: transactionDate,
-          input_method: isVoice ? 'VOICE' : 'DEMO',
+          input_method: 'DEMO',
           payment_method: isQris ? 'QRIS_SIM' : 'CASH',
-          voice_transcript: isVoice
-            ? VOICE_TRANSCRIPTS[Math.floor(rng() * VOICE_TRANSCRIPTS.length)]
-            : null,
           revenue: 0,
           cogs: 0,
         };
@@ -578,7 +562,6 @@ export async function seedDemoData(input: DemoSeedInput): Promise<SeedResult> {
       status: 'COMPLETED',
       total_revenue: tx.revenue,
       total_cogs: tx.cogs,
-      voice_transcript: tx.voice_transcript,
     }))
   );
   if (insertedTx.length !== transactions.length) {
@@ -713,7 +696,6 @@ export async function seedDemoData(input: DemoSeedInput): Promise<SeedResult> {
     description: string;
     amount: number;
     input_method: string;
-    voice_transcript: string | null;
     is_anomaly: boolean;
     anomaly_score: number;
     anomaly_reason: string | null;
@@ -750,7 +732,6 @@ export async function seedDemoData(input: DemoSeedInput): Promise<SeedResult> {
           description: template.description,
           amount,
           input_method: 'DEMO',
-          voice_transcript: null,
           is_anomaly: false,
           anomaly_score: 0,
           anomaly_reason: null,

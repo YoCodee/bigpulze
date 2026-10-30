@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('expenses')
-      .select('id, org_id, branch_id, created_by, expense_date, category, description, amount, input_method, voice_transcript, is_anomaly, anomaly_score, anomaly_reason, created_at')
+      .select('id, org_id, branch_id, created_by, expense_date, category, description, amount, input_method, is_anomaly, anomaly_score, anomaly_reason, created_at')
       .order('expense_date', { ascending: false })
       .order('created_at', { ascending: false });
 
@@ -151,7 +151,6 @@ export async function POST(request: NextRequest) {
         description: parsed.data.description,
         amount: parsed.data.amount,
         input_method: parsed.data.input_method || 'MANUAL',
-        voice_transcript: parsed.data.voice_transcript ?? null,
         is_anomaly: isAnomaly,
         anomaly_score: anomalyScore,
         anomaly_reason: anomalyReason,

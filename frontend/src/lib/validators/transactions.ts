@@ -16,7 +16,6 @@ export const createSaleSchema = z.object({
     .min(1, 'Keranjang transaksi tidak boleh kosong'),
   payment_method: z.enum(['CASH', 'QRIS_SIM']).default('CASH'),
   input_method: z.enum(['MANUAL', 'VOICE', 'IMPORT', 'DEMO']).default('MANUAL'),
-  voice_transcript: z.string().trim().max(1000).optional().nullable(),
   client_tx_id: z.string().uuid('Format client_tx_id harus UUIDv4 valid').optional().nullable(),
   cash_tendered: z
     .number()

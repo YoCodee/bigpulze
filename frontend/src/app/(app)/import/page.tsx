@@ -35,10 +35,10 @@ export default function ImportPage() {
 
   const downloadSampleProductsCsv = () => {
     const csvContent =
-      'data:text/csv;charset=utf-8,sku,name,category,cost_price,selling_price,min_stock_alert,aliases\n' +
-      'KP-001,Es Kopi Susu Aren,Minuman,7000,18000,10,kopsu;kopi susu\n' +
-      'MN-002,Red Velvet Latte,Minuman,9000,22000,10,red velvet\n' +
-      'SN-001,Butter Croissant,Makanan,5000,15000,5,croissant;roti\n';
+      'data:text/csv;charset=utf-8,sku,name,category,cost_price,selling_price,min_stock_alert\n' +
+      'KP-001,Es Kopi Susu Aren,Minuman,7000,18000,10\n' +
+      'MN-002,Red Velvet Latte,Minuman,9000,22000,10\n' +
+      'SN-001,Butter Croissant,Makanan,5000,15000,5\n';
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
@@ -232,7 +232,6 @@ export default function ImportPage() {
                   <li>• cost_price (HPP Modal Satuan)</li>
                   <li>• selling_price (Harga Jual)</li>
                   <li>• min_stock_alert (Batas Peringatan)</li>
-                  <li>• aliases (Alias Suara Pisah Titik Koma)</li>
                 </ul>
                 <div className="pt-2">
                   <Button

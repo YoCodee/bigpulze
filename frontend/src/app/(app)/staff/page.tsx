@@ -613,13 +613,13 @@ export default function StaffPage() {
                 <Badge variant="enterprise">Operasional</Badge>
               </div>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Kasir memiliki akses langsung ke Terminal Smart Voice POS untuk melayani transaksi belanja pelanggan, cetak struk thermal, dan melihat katalog menu cabang tugasnya.
+                Kasir memiliki akses langsung ke Terminal POS untuk melayani transaksi belanja pelanggan, cetak struk thermal, dan melihat katalog menu cabang tugasnya.
               </p>
             </div>
             <ul className="text-xs text-slate-600 space-y-2 pt-2 border-t border-slate-100">
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span>Input pesanan via sentuh &amp; perintah suara AI</span>
+                <span>Input pesanan via sentuh &amp; pencarian cepat</span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
