@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { RoleGuard } from '@/components/role-guard';
 import { formatRupiah } from '@/lib/format';
+import { formatUnitCount } from '@/lib/stock/recommendation-explainer';
 import { formatDateId } from '@/lib/date';
 import {
   Boxes,
@@ -922,13 +923,20 @@ export default function StockPage() {
                           <p className="text-[11px] text-slate-400 font-mono mt-0.5">SKU: {rec.sku}</p>
                         </div>
 
-                        {/* Route Transfer */}
+                        {/* Route Transfer (stock levels shown inline; reason stays below) */}
                         <div className="p-3 bg-slate-50/80 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
-                          <div className="text-left">
+                          <div className="text-left min-w-0">
                             <span className="text-[10px] text-slate-400 block font-medium uppercase tracking-wider">
                               Asal (Surplus)
                             </span>
-                            <span className="font-bold text-slate-800">{rec.from_branch_name}</span>
+                            <span className="font-bold text-slate-800 block truncate">
+                              {rec.from_branch_name}
+                            </span>
+                            <span className="text-[10px] text-slate-500">
+                              Stok: <span className="font-mono font-bold text-slate-700">{formatUnitCount(rec.from_current_stock)}</span>
+                              {' → '}
+                              {formatUnitCount(rec.from_stock_after)}
+                            </span>
                           </div>
                           <div className="flex flex-col items-center px-2">
                             <span className="text-[10px] font-medium text-enterprise-700 bg-enterprise-100 px-2 py-0.5 rounded-md">
@@ -936,11 +944,18 @@ export default function StockPage() {
                             </span>
                             <ArrowRight className="w-3.5 h-3.5 text-slate-400 my-0.5" />
                           </div>
-                          <div className="text-right">
+                          <div className="text-right min-w-0">
                             <span className="text-[10px] text-slate-400 block font-medium uppercase tracking-wider">
                               Tujuan (Defisit)
                             </span>
-                            <span className="font-bold text-slate-800">{rec.to_branch_name}</span>
+                            <span className="font-bold text-slate-800 block truncate">
+                              {rec.to_branch_name}
+                            </span>
+                            <span className="text-[10px] text-slate-500">
+                              Stok: <span className="font-mono font-bold text-slate-700">{formatUnitCount(rec.to_current_stock)}</span>
+                              {' → '}
+                              {formatUnitCount(rec.to_stock_after)}
+                            </span>
                           </div>
                         </div>
 
