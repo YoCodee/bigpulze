@@ -2137,5 +2137,21 @@
 **Verifikasi:** typecheck ✅ lint ✅ test 153/153 ✅ build ✅ detektor Impeccable 0 temuan.
 
 **Belum teruji:** render nyata — cek manual tabel di 360px (kolom Butuh vs Ada) dan modal detail.
+---
+
+### Tahap B1 — Rebranding Identitas: "Alur" ✅
+**Selesai:** 2026-10-29
+
+- **Perubahan Identitas Merek (BigPulze / BizPulse → Alur):**
+  - **Landing Page (`/`):** Logo navbar & footer, judul komparasi (*"Mengapa Memilih Alur?"*), kartu solusi (*"Bergerak Cepat & Terukur dengan Alur"*), heading banner (*"Tumbuh Tanpa Batas Bersama Alur"*), kutipan testimonial, dan hak cipta.
+  - **Metadata & Root Layout:** Title halaman diubah menjadi *"Alur — Platform Audit Multi-Cabang & Smart Voice POS UMKM"*.
+  - **Autentikasi (`/login`, `/register`, layout):** Logo brand, headline login (*"Sign in to Alur"*), terms notice (*"agree to Alur's terms"*), banner samping (*"Alur Connect 2026"*), dan kredensial demo (`owner.demo@alur.id`, `kasir.demo@alur.id`).
+  - **Workspace & Kasir POS (`/pos`, layout internal):** Header workspace (`Alur POS`), breadcrumb (`Alur / ...`), simulasi QRIS (`ALUR-QRIS-SIM`), dan cetakan struk thermal resmi (*"ALUR POS"* & *"Struk Kasir Sah Alur"*).
+  - **Laporan Keuangan & Ekspor (`/reports`, `report-exporter.ts`):** Nama usaha default (*"Alur UMKM"*), sistem verifikasi (*"Alur Auto-Ledger v1.0"*), stempel hash (*"ALUR-XXXX"*), dan verifikator (*"Alur Cloud Ledger"*).
+  - **Impor & Demo Guide:** File unduhan sampel (`sample_penjualan_alur.csv`, `sample_produk_alur.csv`), dan seluruh narasi panduan evaluasi juri GTNIC 2026.
+- **Hasil Verifikasi:**
+  - `npm run typecheck` : **Lulus 100%** (0 error)
+  - `npm run lint`      : **Lulus 100%** (0 warning, 0 error)
+  - `npm run test`      : **Lulus 100%** (14 file tes, 138 tes lolos)
 
 ---

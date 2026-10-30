@@ -180,10 +180,10 @@ export default function DemoGuidePage() {
               Finalis
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-              Panduan Uji Juri BizPulse
+              Panduan Uji Juri Alur
             </h1>
             <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Verifikasi interaktif 5 skenario pengujian alur penuh BizPulse (PRD §11.2): dari
+              Verifikasi interaktif 5 skenario pengujian alur penuh Alur (PRD §11.2): dari
               autentikasi multi-role, master data multi-cabang, transaksi kasir, intelijen
               inventaris, hingga keputusan finansial.
             </p>
@@ -279,7 +279,7 @@ export default function DemoGuidePage() {
           </div>
           <p className="text-xs text-slate-500 mt-1">
             Panduan komprehensif bagi dewan juri GTNIC 2026 untuk menguji setiap pilar keunggulan
-            BizPulse secara terstruktur.
+            Alur secara terstruktur.
           </p>
         </div>
 

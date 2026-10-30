@@ -1,5 +1,5 @@
 /**
- * Auto-Ledger Calculation Engine & Profit/Loss Aggregator for BizPulse
+ * Auto-Ledger Calculation Engine & Profit/Loss Aggregator for Alur
  * GTNIC 2026 - Smart Multi-Branch Auto-Ledger & Financial Reporting
  * 
  * Rules:

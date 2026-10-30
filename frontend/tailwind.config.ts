@@ -56,7 +56,7 @@ const config: Config = {
           900: "#1E3A8A",
           DEFAULT: "#0051C7",
         },
-        // Tokens Identitas Merek BizPulse (Brand Orange #F6821F)
+        // Tokens Identitas Merek Alur (Brand Orange #F6821F)
         brand: {
           50: "#FFF7ED",
           100: "#FFEDD5",

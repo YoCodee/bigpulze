@@ -1,5 +1,5 @@
 /**
- * BizPulse Morning Briefing Script Builder
+ * Alur Morning Briefing Script Builder
  *
  * Pure functions that convert structured financial data into a natural
  * Bahasa Indonesia narration script for Web Speech Synthesis (TTS).

@@ -808,7 +808,7 @@ export default function PosPage() {
                   <div className="w-44 h-44 mx-auto bg-slate-900 text-white rounded-xl p-4 flex flex-col items-center justify-center relative shadow-inner">
                     <QrCode className="w-28 h-28 text-white" />
                     <span className="text-[10px] font-mono tracking-widest text-slate-300 mt-1">
-                      BIZPULSE-QRIS-SIM
+                      ALUR-QRIS-SIM
                     </span>
                   </div>
 
@@ -890,13 +890,13 @@ export default function PosPage() {
                 <CheckCircle2 className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-lg font-bold">Transaksi Berhasil!</h3>
-              <p className="text-xs text-emerald-100 mt-0.5">Struk Kasir Sah BizPulse</p>
+              <p className="text-xs text-emerald-100 mt-0.5">Struk Kasir Sah Alur</p>
             </div>
 
             {/* Thermal Receipt Content */}
             <div className="p-6 font-mono text-xs text-slate-800 space-y-4 bg-slate-50/50">
               <div className="text-center border-b border-dashed border-slate-300 pb-3">
-                <h4 className="font-bold text-sm tracking-wider">BIZPULSE POS</h4>
+                <h4 className="font-bold text-sm tracking-wider">ALUR POS</h4>
                 <p className="text-[11px] text-slate-500">{activeBranchName}</p>
                 <p className="text-[10px] text-slate-400 mt-1">
                   ID: {completedTx.id.slice(0, 8)} •{' '}

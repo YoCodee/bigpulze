@@ -195,7 +195,7 @@ export default function RegisterPage() {
 
       {/* Disclaimer Terms ala Cloudflare */}
       <p className="text-[11px] text-slate-400 text-center leading-relaxed pt-2">
-        By signing up, I agree to BizPulse&apos;s{' '}
+        By signing up, I agree to Alur&apos;s{' '}
         <span className="text-blue-600 underline cursor-pointer">terms</span>,{' '}
         <span className="text-blue-600 underline cursor-pointer">privacy policy</span>, and{' '}
         <span className="text-blue-600 underline cursor-pointer">cookie policy</span>.

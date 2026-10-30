@@ -182,7 +182,7 @@ export default function AppLayout({
           {/* Header Sidebar: Workspace / Akun Selector (Tinggi 52px) */}
           <div className="h-[52px] border-b border-slate-200 px-4 flex items-center justify-between shrink-0 bg-white">
             <div className="flex items-center space-x-2.5 min-w-0">
-              {/* Logo BizPulse Icon */}
+              {/* Logo Alur Icon */}
               <div className="h-7 w-7 rounded-lg bg-brand-500 text-white flex items-center justify-center shadow-xs shrink-0">
                 <svg
                   viewBox="0 0 24 24"
@@ -198,7 +198,7 @@ export default function AppLayout({
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-bold text-slate-900 truncate">
-                  {profile?.org_name || 'BizPulse POS'}
+                  {profile?.org_name || 'Alur POS'}
                 </p>
                 <p className="text-[10px] text-slate-500 truncate">
                   {profile?.role === 'CASHIER' ? 'Kasir Cabang' : 'Owner Pusat'}
@@ -338,7 +338,7 @@ export default function AppLayout({
           <header className="hidden md:flex h-[52px] sticky top-0 z-20 bg-white border-b border-slate-200 items-center justify-between px-6 shrink-0">
             {/* Breadcrumb / Halaman Aktif */}
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-medium text-slate-400">BizPulse</span>
+              <span className="text-xs font-medium text-slate-400">Alur</span>
               <span className="text-slate-300">/</span>
               <span className="text-xs font-semibold text-slate-800">
                 {currentItem?.name || 'Area Kerja'}
@@ -409,7 +409,7 @@ export default function AppLayout({
                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                   </svg>
                 </div>
-                <span className="text-sm font-bold text-slate-900">BizPulse</span>
+                <span className="text-sm font-bold text-slate-900">Alur</span>
               </div>
             </div>
 

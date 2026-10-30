@@ -1,5 +1,5 @@
 /**
- * Konfigurasi Terpadu Animasi GSAP Landing Page BizPulse
+ * Konfigurasi Terpadu Animasi GSAP Landing Page Alur
  * Memastikan durasi, easing, stagger, dan jarak gerak konsisten di seluruh komponen.
  */
 

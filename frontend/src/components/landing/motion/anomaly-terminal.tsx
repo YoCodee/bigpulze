@@ -8,7 +8,7 @@ import { MOTION_CONFIG } from '@/lib/motion.config';
 /**
  * Komponen Bento Card 4: Terminal Anomali ("Deteksi Dini Masalah Operasional")
  * Timeline GSAP loop berulang ±9.5 detik:
- * 1. Baris "Menjalankan mesin anomali BizPulse..." muncul dengan efek visual mengetik (clip-path mask)
+ * 1. Baris "Menjalankan mesin anomali Alur..." muncul dengan efek visual mengetik (clip-path mask)
  * 2. Baris "3 modul pengawasan aktif" muncul, titik status berdenyut
  * 3. Tiga sub-baris anomali masuk berurutan (stagger)
  * 4. Baris perintah di bawah mengetik, kursor berkedip, tombol "Eksekusi" tampil efek ditekan (scale: 1 -> 0.94 -> 1)
@@ -270,7 +270,7 @@ export function AnomalyTerminalDemo() {
             className="text-slate-500 text-[11px] leading-tight select-none whitespace-nowrap overflow-hidden"
             style={{ clipPath: 'inset(0 0% 0 0)' }}
           >
-            Menjalankan mesin anomali BizPulse...
+            Menjalankan mesin anomali Alur...
           </p>
 
           {/* Baris 2: Modul Pengawasan Aktif */}

@@ -1,5 +1,5 @@
 /**
- * Financial Report Exporter for BizPulse
+ * Financial Report Exporter for Alur
  * GTNIC 2026 - Official Bank Loan Statement & Excel/CSV Export Engine
  */
 
@@ -13,7 +13,7 @@ import { formatDateId } from '@/lib/date';
  */
 export function generateFinancialReportCsv(
   report: FinancialReportSummary,
-  orgName = 'BizPulse UMKM'
+  orgName = 'Alur UMKM'
 ): string {
   const lines: string[] = [];
 
@@ -88,7 +88,7 @@ export function generateFinancialReportCsv(
  */
 export function downloadFinancialReportCsv(
   report: FinancialReportSummary,
-  orgName = 'BizPulse UMKM'
+  orgName = 'Alur UMKM'
 ): void {
   const csvContent = generateFinancialReportCsv(report, orgName);
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -110,7 +110,7 @@ export function downloadFinancialReportCsv(
  */
 export function generatePrintableReportHtml(
   report: FinancialReportSummary,
-  orgName = 'BizPulse UMKM',
+  orgName = 'Alur UMKM',
   branchName = 'Konsolidasi Seluruh Cabang'
 ): string {
   const nowStr = new Date().toLocaleString('id-ID', {
@@ -284,7 +284,7 @@ export function generatePrintableReportHtml(
     </div>
     <div class="meta-box">
       <div>Tanggal Cetak: <strong>${nowStr} WIB</strong></div>
-      <div>Sistem Verifikasi: <strong>BizPulse Auto-Ledger v1.0</strong></div>
+      <div>Sistem Verifikasi: <strong>Alur Auto-Ledger v1.0</strong></div>
       <div>Status Dokumen: <strong>FINAL / RESMI</strong></div>
     </div>
   </div>
@@ -436,16 +436,16 @@ export function generatePrintableReportHtml(
   <!-- Bank Submission Disclaimer Notice -->
   <div class="bank-notice">
     <strong>KETERANGAN RESMI UNTUK KEPERLUAN PENGAJUAN PINJAMAN BANK / KUR / INVESTOR:</strong><br>
-    Dokumen pembukuan digital ini di-generate otomatis secara sistematis dan matematis oleh platform BizPulse Auto-Ledger berdasarkan rekaman transaksi kasir titik penjualan (POS) dan kartu pergerakan stok barang yang telah terotentikasi. Data bebas dari modifikasi manual pihak ketiga.
+    Dokumen pembukuan digital ini di-generate otomatis secara sistematis dan matematis oleh platform Alur Auto-Ledger berdasarkan rekaman transaksi kasir titik penjualan (POS) dan kartu pergerakan stok barang yang telah terotentikasi. Data bebas dari modifikasi manual pihak ketiga.
   </div>
 
   <!-- Signatures -->
   <div class="signatures">
     <div class="sign-box">
       <div>Diverifikasi Sistem:</div>
-      <div style="font-weight: 700; color: #2563eb; margin-top: 4px;">BizPulse Cloud Ledger</div>
+      <div style="font-weight: 700; color: #2563eb; margin-top: 4px;">Alur Cloud Ledger</div>
       <div class="sign-line">SISTEM TERVALIDASI</div>
-      <div style="font-size: 8pt; color: #64748b; margin-top: 2px;">Kode Hash: BP-${Date.now().toString(36).toUpperCase()}</div>
+      <div style="font-size: 8pt; color: #64748b; margin-top: 2px;">Kode Hash: ALUR-${Date.now().toString(36).toUpperCase()}</div>
     </div>
 
     <div class="sign-box">
@@ -472,7 +472,7 @@ export function generatePrintableReportHtml(
  */
 export function openPrintableReportPdf(
   report: FinancialReportSummary,
-  orgName = 'BizPulse UMKM',
+  orgName = 'Alur UMKM',
   branchName = 'Konsolidasi Seluruh Cabang'
 ): void {
   const html = generatePrintableReportHtml(report, orgName, branchName);

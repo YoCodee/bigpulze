@@ -62,9 +62,9 @@ export default function LoginPage() {
   }
 
   function handleQuickDemo(role: 'OWNER' | 'CASHIER') {
-    const demoOwnerEmail = process.env.NEXT_PUBLIC_DEMO_OWNER_EMAIL || 'owner.demo@bizpulse.id';
+    const demoOwnerEmail = process.env.NEXT_PUBLIC_DEMO_OWNER_EMAIL || 'owner.demo@alur.id';
     const demoOwnerPass = process.env.NEXT_PUBLIC_DEMO_OWNER_PASSWORD || 'Demo2026!';
-    const demoCashierEmail = process.env.NEXT_PUBLIC_DEMO_CASHIER_EMAIL || 'kasir.demo@bizpulse.id';
+    const demoCashierEmail = process.env.NEXT_PUBLIC_DEMO_CASHIER_EMAIL || 'kasir.demo@alur.id';
     const demoCashierPass = process.env.NEXT_PUBLIC_DEMO_CASHIER_PASSWORD || 'Demo2026!';
 
     if (role === 'OWNER') {
@@ -83,7 +83,7 @@ export default function LoginPage() {
       {/* Title ala Cloudflare */}
       <div className="text-center">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          Sign in to BizPulse
+          Sign in to Alur
         </h1>
         <p className="mt-1 text-xs text-slate-500">
           Kelola 5 cabang usaha atau operasikan terminal kasir
@@ -117,7 +117,7 @@ export default function LoginPage() {
             </div>
             <div className="text-left">
               <span className="text-xs sm:text-sm font-semibold text-slate-800 block">
-                owner.demo@bizpulse.id
+                owner.demo@alur.id
               </span>
               <span className="text-[10px] text-slate-500 block">
                 Akses Dashboard & 5 Cabang
@@ -149,7 +149,7 @@ export default function LoginPage() {
             </div>
             <div className="text-left">
               <span className="text-xs sm:text-sm font-semibold text-slate-800 block">
-                kasir.demo@bizpulse.id
+                kasir.demo@alur.id
               </span>
               <span className="text-[10px] text-slate-500 block">
                 Terminal Kasir Cabang Malioboro
@@ -257,7 +257,7 @@ export default function LoginPage() {
 
       {/* Disclaimer Terms ala Cloudflare */}
       <p className="text-[11px] text-slate-400 text-center leading-relaxed pt-2">
-        By continuing, I agree to BizPulse&apos;s{' '}
+        By continuing, I agree to Alur&apos;s{' '}
         <span className="text-blue-600 underline cursor-pointer">terms</span>,{' '}
         <span className="text-blue-600 underline cursor-pointer">privacy policy</span>, and{' '}
         <span className="text-blue-600 underline cursor-pointer">cookie policy</span>.

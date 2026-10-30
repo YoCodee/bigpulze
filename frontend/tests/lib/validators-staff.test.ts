@@ -6,7 +6,7 @@ describe('Staff & Cashier Validators', () => {
     it('validates a correct cashier creation payload', () => {
       const valid = {
         full_name: 'Siti Barista',
-        email: 'siti.barista@bizpulse.id',
+        email: 'siti.barista@alur.id',
         password: 'Password123!',
         branch_id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       };
@@ -14,7 +14,7 @@ describe('Staff & Cashier Validators', () => {
       const result = createCashierSchema.safeParse(valid);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.email).toBe('siti.barista@bizpulse.id');
+        expect(result.data.email).toBe('siti.barista@alur.id');
         expect(result.data.full_name).toBe('Siti Barista');
       }
     });

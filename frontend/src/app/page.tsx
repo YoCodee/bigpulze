@@ -94,7 +94,7 @@ const testimonials = [
     branches: '2 Cabang Ritel',
     icon: ShoppingBag,
     quote:
-      'Format ekspor PDF laba-rugi BizPulse resmi kami gunakan untuk pengajuan pinjaman modal usaha KUR ke bank tanpa perlu menyewa akuntan eksternal. Struktur laporan income statement dan cashflow-nya sangat rapi dan langsung disetujui pihak analis perbankan.',
+      'Format ekspor PDF laba-rugi Alur resmi kami gunakan untuk pengajuan pinjaman modal usaha KUR ke bank tanpa perlu menyewa akuntan eksternal. Struktur laporan income statement dan cashflow-nya sangat rapi dan langsung disetujui pihak analis perbankan.',
     author: 'Hendra Wijaya',
     role: 'Owner Toko Berkah Mart',
     initials: 'HW',
@@ -294,7 +294,7 @@ export default function HomePage() {
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
               </svg>
             </div>
-            <span className="text-xl font-extrabold tracking-tight text-slate-900">BizPulse</span>
+            <span className="text-xl font-extrabold tracking-tight text-slate-900">Alur</span>
           </Link>
 
           {/* Desktop Navigation Links (Clean & Ringkas) */}
@@ -584,7 +584,7 @@ export default function HomePage() {
           {/* Section Header */}
           <SectionHeader className="text-center max-w-2xl mx-auto space-y-2.5">
             <h2 className="text-2xl sm:text-4xl font-medium tracking-tight text-slate-900">
-              Mengapa Memilih BizPulse?
+              Mengapa Memilih Alur?
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 tracking-tight">
               Menghilangkan friksi pencatatan manual dan memberi kepastian angka bagi pemilik usaha setiap hari.
@@ -638,7 +638,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Kartu Kanan: Solusi Gesit BizPulse (Vibrant Orange Card) */}
+            {/* Kartu Kanan: Solusi Gesit Alur (Vibrant Orange Card) */}
             <div className="landing-card-hover relative rounded-none border border-brand-500/40 bg-hero-gradient p-6 sm:p-8 flex flex-col justify-between space-y-6 text-white shadow-xl shadow-brand-500/15">
               <CornerMarks borderClass="border-white/50" bgClass="bg-brand-600" />
 
@@ -649,7 +649,7 @@ export default function HomePage() {
                 </div>
 
                 <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-snug">
-                  Bergerak Cepat & Terukur dengan BizPulse
+                  Bergerak Cepat & Terukur dengan Alur
                 </h3>
 
                 <ul className="space-y-3 text-xs sm:text-[13px] text-white/95 leading-relaxed pt-2">
@@ -1106,7 +1106,7 @@ export default function HomePage() {
 
             {/* Headline (Build without boundaries in footer.png) */}
             <h2 className="cta-animate-item relative z-10 text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white max-w-3xl leading-tight">
-              Tumbuh Tanpa Batas Bersama BizPulse
+              Tumbuh Tanpa Batas Bersama Alur
             </h2>
 
             {/* Subtitle */}
@@ -1185,7 +1185,7 @@ export default function HomePage() {
                     </svg>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-xl font-extrabold tracking-tight text-slate-900">BizPulse</span>
+                    <span className="text-xl font-extrabold tracking-tight text-slate-900">Alur</span>
                     <span className="text-xs font-bold px-2 py-0.5 rounded bg-orange-50 text-brand-700 border border-orange-200 uppercase tracking-wider">
                       GTNIC 2026
                     </span>
@@ -1329,7 +1329,7 @@ export default function HomePage() {
           <Reveal distance={12} delay={0.08}>
             <div className="border-t border-slate-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
               <div>
-                © 2026 BizPulse. Hak Cipta Dilindungi Undang-Undang. Inovasi untuk Garda Tech National Innovation Competition 2026.
+                © 2026 Alur. Hak Cipta Dilindungi Undang-Undang. Inovasi untuk Garda Tech National Innovation Competition 2026.
               </div>
 
               <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600 shadow-xs">

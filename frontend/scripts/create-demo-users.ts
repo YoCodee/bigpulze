@@ -1,5 +1,5 @@
 /**
- * BizPulse: Script to initialize Demo Users & Organization
+ * Alur: Script to initialize Demo Users & Organization
  * Run once via: npx tsx scripts/create-demo-users.ts
  * Requires NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY
  */
@@ -18,13 +18,13 @@ const admin = createClient(supabaseUrl, serviceRoleKey, {
 });
 
 const DEMO_ORG_NAME = 'Kopi Senja';
-const OWNER_EMAIL = process.env.NEXT_PUBLIC_DEMO_OWNER_EMAIL || 'owner.demo@bizpulse.id';
+const OWNER_EMAIL = process.env.NEXT_PUBLIC_DEMO_OWNER_EMAIL || 'owner.demo@alur.id';
 const OWNER_PASSWORD = process.env.NEXT_PUBLIC_DEMO_OWNER_PASSWORD || 'Demo2026!';
-const CASHIER_EMAIL = process.env.NEXT_PUBLIC_DEMO_CASHIER_EMAIL || 'kasir.demo@bizpulse.id';
+const CASHIER_EMAIL = process.env.NEXT_PUBLIC_DEMO_CASHIER_EMAIL || 'kasir.demo@alur.id';
 const CASHIER_PASSWORD = process.env.NEXT_PUBLIC_DEMO_CASHIER_PASSWORD || 'Demo2026!';
 
 async function main() {
-  console.log('🚀 Setting up Demo Organization and Users for BizPulse...');
+  console.log('🚀 Setting up Demo Organization and Users for Alur...');
 
   // 1. Create or get Demo Organization
   let { data: org } = await admin

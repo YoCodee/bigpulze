@@ -33,7 +33,7 @@ export default function AuthLayout({
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
               </svg>
             </div>
-            <span className="text-xl font-black text-slate-900 tracking-tight">BizPulse</span>
+            <span className="text-xl font-black text-slate-900 tracking-tight">Alur</span>
           </Link>
 
           <Link
@@ -52,7 +52,7 @@ export default function AuthLayout({
 
         {/* Footer Kolom Kiri (ala Cloudflare) */}
         <div className="w-full max-w-md mx-auto pt-6 text-[11px] text-slate-500 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100">
-          <span>&copy; 2026 BizPulse, Inc. All rights reserved.</span>
+          <span>&copy; 2026 Alur, Inc. All rights reserved.</span>
           <div className="flex items-center gap-3">
             <Link href="/" className="hover:text-slate-900 transition-colors">
               Cookie Preferences
@@ -104,7 +104,7 @@ export default function AuthLayout({
         {/* Middle Hero Content */}
         <div className="relative z-10 my-auto max-w-xl space-y-6">
           <p className="text-xs font-mono font-bold tracking-widest text-white/90 uppercase">
-            BizPulse Connect 2026
+            Alur Connect 2026
           </p>
 
           <h2 className="text-4xl xl:text-5xl font-black tracking-tight leading-[1.12] text-white">
@@ -128,7 +128,7 @@ export default function AuthLayout({
 
         {/* Bottom Banner Note */}
         <div className="relative z-10 text-xs text-white/80 flex items-center justify-between border-t border-white/20 pt-4">
-          <span>Grand Final GTNIC 2026 &bull; Tim BigPulze</span>
+          <span>Grand Final GTNIC 2026 &bull; Tim Alur</span>
           <span>5 Cabang Terintegrasi &bull; Offline-Ready POS</span>
         </div>
       </div>

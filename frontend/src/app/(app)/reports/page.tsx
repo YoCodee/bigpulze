@@ -120,7 +120,7 @@ export default function ReportsPage() {
       selectedBranchId === 'ALL'
         ? 'Konsolidasi Seluruh Cabang'
         : branches.find((b) => b.id === selectedBranchId)?.name || 'Cabang';
-    downloadFinancialReportCsv(report, `BizPulse - ${currentBranchName}`);
+    downloadFinancialReportCsv(report, `Alur - ${currentBranchName}`);
   };
 
   const handleExportPdf = () => {
@@ -132,7 +132,7 @@ export default function ReportsPage() {
       selectedBranchId === 'ALL'
         ? 'Konsolidasi Seluruh Cabang'
         : branches.find((b) => b.id === selectedBranchId)?.name || 'Cabang';
-    openPrintableReportPdf(report, 'BizPulse UMKM', currentBranchName);
+    openPrintableReportPdf(report, 'Alur UMKM', currentBranchName);
   };
 
   const branchDisplay =

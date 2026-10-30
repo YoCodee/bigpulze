@@ -27,7 +27,7 @@ export default function ImportPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'sample_penjualan_bizpulse.csv');
+    link.setAttribute('download', 'sample_penjualan_alur.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -42,7 +42,7 @@ export default function ImportPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'sample_produk_bizpulse.csv');
+    link.setAttribute('download', 'sample_produk_alur.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -173,7 +173,7 @@ export default function ImportPage() {
                 onClick={() => {
                   alert(
                     `Pilih file ${
-                      selectedType === 'SALES' ? 'sample_penjualan_bizpulse.csv' : 'sample_produk_bizpulse.csv'
+                      selectedType === 'SALES' ? 'sample_penjualan_alur.csv' : 'sample_produk_alur.csv'
                     } untuk memulai impor.`
                   );
                 }}
