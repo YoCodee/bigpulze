@@ -270,11 +270,14 @@ export function AIFloatingChat() {
     messagesLoading,
     sending,
     pageError,
+    chatError,
     maxMessageLength,
     selectSession,
     startNewChat,
     deleteSession,
     sendMessage,
+    retryLast,
+    dismissChatError,
   } = useAssistantChat();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -473,11 +476,36 @@ export function AIFloatingChat() {
           )}
         </div>
 
-        {/* ── Error bar ── */}
+        {/* ── Error bar (load failure) ── */}
         {pageError && (
           <div className="mx-3 mb-2 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700 shrink-0">
-            <AlertTriangle className="h-4 w-4 shrink-0" />
+            <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden="true" />
             {pageError}
+          </div>
+        )}
+
+        {/* ── Error bar (send/stream failure — with retry) ── */}
+        {chatError && (
+          <div className="mx-3 mb-2 flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700 shrink-0">
+            <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span className="flex-1">{chatError}</span>
+            {!sending && (
+              <button
+                type="button"
+                onClick={retryLast}
+                className="shrink-0 rounded-md border border-rose-300 bg-white px-2 py-0.5 text-[11px] font-semibold text-rose-700 transition-colors hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
+              >
+                Coba lagi
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={dismissChatError}
+              className="shrink-0 rounded-md text-rose-400 hover:text-rose-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
+              aria-label="Tutup pesan galat"
+            >
+              <X className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
           </div>
         )}
 

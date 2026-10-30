@@ -44,8 +44,11 @@ export function useAssistantChat() {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [pageError, setPageError] = useState<string | null>(null);
+  /** Send/stream failure of the LAST question; shown with a retry action. */
+  const [chatError, setChatError] = useState<string | null>(null);
 
   const activeRequestRef = useRef(false);
+  const lastSentRef = useRef<string | null>(null);
 
   const refreshSessions = useCallback(async () => {
     try {
@@ -114,6 +117,9 @@ export function useAssistantChat() {
       const userMessageId = `local-user-${Date.now()}`;
       const assistantMessageId = `local-assistant-${Date.now()}`;
       const requestedSessionId = activeSessionId;
+      lastSentRef.current = message;
+
+      setChatError(null);
 
       setMessages((prev) => [
         ...prev,
@@ -199,13 +205,19 @@ export function useAssistantChat() {
               );
             }
             if (eventType === 'error') {
-              setMessages((prev) =>
-                prev.map((msg) =>
-                  msg.id === assistantMessageId
-                    ? { ...msg, content: event.message as string, streaming: false }
-                    : msg
-                )
-              );
+              // Never write the error into the assistant bubble: it must not
+              // impersonate the assistant or erase a partially streamed answer.
+              setChatError((event.message as string) || 'Terjadi kesalahan. Silakan coba lagi.');
+              setMessages((prev) => {
+                const assistant = prev.find((msg) => msg.id === assistantMessageId);
+                let next = prev.map((msg) =>
+                  msg.id === assistantMessageId ? { ...msg, streaming: false } : msg
+                );
+                if (assistant && assistant.content.trim().length === 0) {
+                  next = next.filter((msg) => msg.id !== assistantMessageId);
+                }
+                return next;
+              });
             }
             if (eventType === 'done') {
               setMessages((prev) => {
@@ -234,20 +246,22 @@ export function useAssistantChat() {
         }
         void refreshSessions();
       } catch (error) {
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === assistantMessageId
-              ? {
-                  ...msg,
-                  streaming: false,
-                  content:
-                    error instanceof Error
-                      ? error.message
-                      : 'Terjadi kesalahan. Silakan coba lagi.',
-                }
-              : msg
-          )
+        // Keep any partially streamed content; surface a retryable error bar.
+        setChatError(
+          error instanceof Error
+            ? error.message
+            : 'Terjadi kesalahan. Silakan coba lagi.'
         );
+        setMessages((prev) => {
+          const assistant = prev.find((msg) => msg.id === assistantMessageId);
+          let next = prev.map((msg) =>
+            msg.id === assistantMessageId ? { ...msg, streaming: false } : msg
+          );
+          if (assistant && assistant.content.trim().length === 0) {
+            next = next.filter((msg) => msg.id !== assistantMessageId);
+          }
+          return next;
+        });
         setPageError(null);
       } finally {
         setSending(false);
@@ -257,6 +271,13 @@ export function useAssistantChat() {
     [activeSessionId, refreshSessions]
   );
 
+  const dismissChatError = useCallback(() => setChatError(null), []);
+
+  const retryLast = useCallback(() => {
+    const last = lastSentRef.current;
+    if (last && !activeRequestRef.current) void sendMessage(last);
+  }, [sendMessage]);
+
   return {
     sessions,
     sessionsLoading,
@@ -265,10 +286,13 @@ export function useAssistantChat() {
     messagesLoading,
     sending,
     pageError,
+    chatError,
     maxMessageLength: MAX_MESSAGE_LENGTH,
     selectSession,
     startNewChat,
     deleteSession,
     sendMessage,
+    retryLast,
+    dismissChatError,
   };
 }
