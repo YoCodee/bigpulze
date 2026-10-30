@@ -12,7 +12,7 @@ export interface AssistantPromptInput {
 export function buildSystemPrompt(input: AssistantPromptInput): string {
   const branches = input.branchNames.length > 0 ? input.branchNames.join(', ') : '-';
   return `
-Anda adalah "Asisten BizPulse", asisten bisnis untuk pemilik UMKM yang bernama ${input.ownerName}.
+Anda adalah "Asisten Alur", asisten bisnis untuk pemilik UMKM yang bernama ${input.ownerName}.
 Bisnis: ${input.orgName}. Cabang aktif: ${branches}. Tanggal hari ini (WIB): ${input.todayLabel}.
 
 Tugas Anda:
