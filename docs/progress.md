@@ -2121,3 +2121,21 @@
 **Belum teruji:** render nyata di browser/HP (tanpa browser automation di sesi ini) — mohon cek manual di 360px/768px/1280px.
 
 ---
+
+## Perbaikan Tab Rekomendasi Stok: Decision-First (30 Okt)
+
+**Permintaan:** informasi terlalu kompleks; owner harus tahu "harus apa" dan "kenapa direkomendasikan segitu".
+
+**Perubahan (commit `feat: decision-first restock recommendations with why explanations`):**
+- Tabel 10 kolom → **5 kolom keputusan**: Produk (nama + SKU + cabang) · Kondisi Stok (badge + frasa "habis ±2,1 hari" / "belum ada penjualan") · Butuh vs Ada (`target / stok`) · Beli (+qty) · Aksi.
+- Baris diurutkan paling genting dulu: CRITICAL → WARNING → INFO, lalu days_of_cover terkecil, lalu qty usulan terbesar (`sortRecommendations`).
+- Modal detail kini dibuka **banner keputusan**: "Beli N unit · ±Rp X" + tombol Catat Restock, frasa cakupan, dan **kartu "Kenapa disarankan segitu?"** yang memecah rumus PRD §10.3 dalam bahasa awam: butuh = perkiraan terjual + cadangan minimum; beli = butuh − stok. Status SURPLUS menasihatkan transfer/promo, bukan beli.
+- Kapten grafik baru: "Stok diperkirakan habis dalam ±X hari (sekitar <tanggal WIB>)" — jawaban langsung pertanyaan utama owner.
+- Bahasa analis dikeluarkan dari level atas: badge model ML di header dihapus, kartu WAPE dipindah ke modal detail; angka memakai format id-ID (1.234, koma desimal).
+- Modul murni baru: `src/lib/stock/recommendation-explainer.ts` + 11 test.
+
+**Verifikasi:** typecheck ✅ lint ✅ test 153/153 ✅ build ✅ detektor Impeccable 0 temuan.
+
+**Belum teruji:** render nyata — cek manual tabel di 360px (kolom Butuh vs Ada) dan modal detail.
+
+---
