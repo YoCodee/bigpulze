@@ -17,6 +17,7 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { useAssistantChat } from '@/hooks/use-assistant-chat';
+import { MessageContent } from './message-content';
 import { cn } from '@/lib/utils';
 
 const SUGGESTIONS = [
@@ -96,7 +97,7 @@ function MessageBubble({
               : 'bg-white border border-slate-200 text-slate-900 rounded-bl-sm'
           )}
         >
-          {message.content}
+          <MessageContent content={message.content} />
           {message.streaming && message.content.length === 0 && (
             <span className="inline-flex gap-1 items-center pl-1 pt-1" aria-label="Mengetik">
               <Dot delay="0s" />
