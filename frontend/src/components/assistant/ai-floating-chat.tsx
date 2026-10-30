@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import {
   Sparkles,
   X,
@@ -589,24 +588,18 @@ export function AIFloatingChat() {
         </div>
       </div>
 
-      {/* ── Floating Action Button (hidden on mobile while the sheet is open,
-           so it never covers the composer's send button) ── */}
-      <button
-        ref={fabRef}
-        type="button"
-        onClick={() => setIsOpen((p) => !p)}
-        className={cn(
-          'fixed bottom-6 right-6 z-[60] h-14 w-14 rounded-full shadow-lg items-center justify-center transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:scale-100',
-          isOpen
-            ? 'hidden md:flex bg-slate-700 hover:bg-slate-800 rotate-[20deg]'
-            : 'flex bg-brand-600 hover:bg-brand-700 md:hover:scale-110'
-        )}
-        aria-label={isOpen ? 'Tutup Asisten AI' : 'Buka Asisten AI'}
-        aria-expanded={isOpen}
-        title={isOpen ? 'Tutup Asisten AI' : 'Buka Asisten AI'}
-      >
-        <Sparkles className="h-6 w-6 text-white" />
-      </button>
+      {/* ── Floating Button: labeled so the feature is self-explanatory ── */}
+      {!isOpen && (
+        <button
+          ref={fabRef}
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="fixed bottom-6 right-6 z-[60] h-11 pl-3.5 pr-4 rounded-full bg-brand-600 text-white flex items-center gap-2 shadow-lg transition-colors hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+        >
+          <Sparkles className="h-4 w-4" aria-hidden="true" />
+          <span className="text-xs font-semibold">Asisten AI</span>
+        </button>
+      )}
     </>
   );
 }
