@@ -33,7 +33,6 @@ import { MetricStrip } from '@/components/ui/metric-strip';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { SubNavTabs } from '@/components/ui/sub-nav-tabs';
 
 interface Branch {
   id: string;
@@ -512,15 +511,7 @@ export default function StockPage() {
   return (
     <RoleGuard allowedRoles={['OWNER']}>
       <div className="space-y-6">
-        {/* Sub Nav Tabs Konsolidasi Inventaris & Stok */}
-        <SubNavTabs
-          tabs={[
-            { name: 'Katalog Produk', href: '/products', icon: Boxes },
-            { name: 'Mutasi & Transfer Stok', href: '/stock', icon: ArrowLeftRight },
-          ]}
-        />
-
-        {/* Top Header */}
+                {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
