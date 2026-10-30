@@ -15,14 +15,11 @@ import {
   CheckCircle2,
   X,
   Building2,
-  Users,
-  Upload,
 } from 'lucide-react';
 import { MetricStrip } from '@/components/ui/metric-strip';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { SubNavTabs } from '@/components/ui/sub-nav-tabs';
 
 interface Branch {
   id: string;
@@ -181,16 +178,7 @@ export default function BranchesPage() {
   return (
     <RoleGuard allowedRoles={['OWNER']}>
       <div className="space-y-6">
-        {/* Sub Nav Tabs Konsolidasi Manajemen Organisasi */}
-        <SubNavTabs
-          tabs={[
-            { name: 'Daftar Cabang', href: '/branches', icon: Building2 },
-            { name: 'Staf & Kasir', href: '/staff', icon: Users },
-            { name: 'Impor Data CSV', href: '/import', icon: Upload },
-          ]}
-        />
-
-        {/* Top Header */}
+                {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5">

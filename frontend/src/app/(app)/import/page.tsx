@@ -10,14 +10,10 @@ import {
   ShoppingCart,
   FileCheck,
   ShieldCheck,
-  Building2,
-  Users,
-  Upload,
 } from 'lucide-react';
 import { MetricStrip } from '@/components/ui/metric-strip';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { SubNavTabs } from '@/components/ui/sub-nav-tabs';
 
 export default function ImportPage() {
   const [selectedType, setSelectedType] = useState<'SALES' | 'PRODUCTS'>('SALES');
@@ -39,10 +35,10 @@ export default function ImportPage() {
 
   const downloadSampleProductsCsv = () => {
     const csvContent =
-      'data:text/csv;charset=utf-8,sku,name,category,cost_price,selling_price,min_stock_alert,aliases\n' +
-      'KP-001,Es Kopi Susu Aren,Minuman,7000,18000,10,kopsu;kopi susu\n' +
-      'MN-002,Red Velvet Latte,Minuman,9000,22000,10,red velvet\n' +
-      'SN-001,Butter Croissant,Makanan,5000,15000,5,croissant;roti\n';
+      'data:text/csv;charset=utf-8,sku,name,category,cost_price,selling_price,min_stock_alert\n' +
+      'KP-001,Es Kopi Susu Aren,Minuman,7000,18000,10\n' +
+      'MN-002,Red Velvet Latte,Minuman,9000,22000,10\n' +
+      'SN-001,Butter Croissant,Makanan,5000,15000,5\n';
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
@@ -55,16 +51,7 @@ export default function ImportPage() {
   return (
     <RoleGuard allowedRoles={['OWNER']}>
       <div className="space-y-6 pb-12">
-        {/* Sub Nav Tabs Konsolidasi Manajemen Organisasi */}
-        <SubNavTabs
-          tabs={[
-            { name: 'Daftar Cabang', href: '/branches', icon: Building2 },
-            { name: 'Staf & Kasir', href: '/staff', icon: Users },
-            { name: 'Impor Data CSV', href: '/import', icon: Upload },
-          ]}
-        />
-
-        {/* Top Header */}
+                {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5">
@@ -97,14 +84,14 @@ export default function ImportPage() {
           title="Ketentuan Batch Migration Data (PRD §12.3)"
           action={
             <span className="text-xs text-slate-500 font-medium">
-              Standar Integritas: <strong className="text-slate-700">Atomik PostgreSQL RPC</strong>
+              Standar Integritas: <strong className="text-slate-700">Aman &amp; Terverifikasi</strong>
             </span>
           }
           metrics={[
             {
-              label: 'Validasi Skema Klien',
-              value: 'Strict Zod',
-              subtext: 'Pencegahan data rusak & format korup',
+              label: 'Pengecekan Otomatis',
+              value: 'Standar Ketat',
+              subtext: 'Mencegah format berkas salah atau rusak',
               badge: <Badge variant="enterprise">Validasi</Badge>,
             },
             {
@@ -120,7 +107,7 @@ export default function ImportPage() {
             {
               label: 'Format File Didukung',
               value: 'CSV & Excel',
-              subtext: '.csv, .xlsx, .xls berbasis PapaParse',
+              subtext: 'Mendukung format berkas .csv dan .xlsx',
               badge: <Badge variant="neutral">Universal</Badge>,
             },
             {
@@ -245,7 +232,6 @@ export default function ImportPage() {
                   <li>• cost_price (HPP Modal Satuan)</li>
                   <li>• selling_price (Harga Jual)</li>
                   <li>• min_stock_alert (Batas Peringatan)</li>
-                  <li>• aliases (Alias Suara Pisah Titik Koma)</li>
                 </ul>
                 <div className="pt-2">
                   <Button
@@ -263,7 +249,7 @@ export default function ImportPage() {
             <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-900 text-xs flex items-start gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <span>
-                Seluruh batch diproses dalam transaksi atomik database untuk mencegah duplikasi data parsial.
+                Seluruh data diproses secara menyeluruh untuk memastikan tidak ada pencatatan ganda.
               </span>
             </div>
           </div>

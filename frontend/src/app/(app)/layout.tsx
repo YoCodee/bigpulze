@@ -17,8 +17,8 @@ import {
   ChevronsUpDown,
   Search,
   ChevronRight,
-  Building2,
   Boxes,
+  LayoutGrid,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AIFloatingChat } from '@/components/assistant/ai-floating-chat';
@@ -61,11 +61,11 @@ const navGroups: NavGroup[] = [
     groupName: 'Finansial & Inventaris',
     items: [
       {
-        name: 'Inventaris & Stok',
-        href: '/products',
+        name: 'Inventaris',
+        href: '/inventory',
         icon: Boxes,
         ownerOnly: false,
-        matchPrefixes: ['/products', '/stock'],
+        matchPrefixes: ['/inventory', '/products', '/stock'],
       },
       { name: 'Pengeluaran', href: '/expenses', icon: ArrowDownCircle, ownerOnly: false },
       { name: 'Laporan Keuangan', href: '/reports', icon: FileSpreadsheet, ownerOnly: true },
@@ -75,11 +75,11 @@ const navGroups: NavGroup[] = [
     groupName: 'Manajemen Bisnis',
     items: [
       {
-        name: 'Manajemen Organisasi',
-        href: '/branches',
-        icon: Building2,
+        name: 'Manajemen',
+        href: '/management',
+        icon: LayoutGrid,
         ownerOnly: true,
-        matchPrefixes: ['/branches', '/staff', '/import'],
+        matchPrefixes: ['/management', '/branches', '/staff', '/import'],
       },
     ],
   },

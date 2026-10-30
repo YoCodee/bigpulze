@@ -151,10 +151,10 @@ export default function ReportsPage() {
                 Laporan Laba Rugi &amp; Auto-Ledger
               </h1>
               <Badge variant="enterprise">Auto-Ledger</Badge>
-              <Badge variant="brand">Bank Ready</Badge>
+              <Badge variant="brand">Standar Akuntansi</Badge>
             </div>
             <p className="text-sm text-slate-500 mt-0.5">
-              Pembukuan otomatis multi-cabang: Omzet, HPP modal, Beban operasional, dan Laba bersih siap audit perbankan KUR
+              Pembukuan otomatis multi-cabang: Omzet, HPP modal, Beban operasional, dan Laba bersih tersusun rapi
             </p>
           </div>
 
@@ -168,7 +168,7 @@ export default function ReportsPage() {
               className="flex items-center gap-1.5 shadow-2xs"
             >
               <FileText className="w-4 h-4 text-rose-600" />
-              <span>Ekspor PDF Bank</span>
+              <span>Ekspor Dokumen PDF</span>
             </Button>
             <Button
               variant="secondary"
@@ -206,14 +206,11 @@ export default function ReportsPage() {
             </div>
 
             {/* Period Pills */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl gap-1 overflow-x-auto text-xs">
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl gap-1 text-xs">
               {[
-                { id: 'today', label: 'Hari Ini' },
                 { id: 'yesterday', label: 'Kemarin' },
-                { id: 'this_week', label: '7 Hari' },
-                { id: 'this_month', label: '30 Hari' },
-                { id: 'last_month', label: 'Bulan Lalu' },
-                { id: 'custom', label: 'Kustom' },
+                { id: 'this_month', label: '30 Hari Terakhir' },
+                { id: 'custom', label: 'Rentang Kustom' },
               ].map((p) => (
                 <button
                   key={p.id}

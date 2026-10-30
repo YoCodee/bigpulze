@@ -82,7 +82,6 @@ describe('Product Validators', () => {
       cost_price: 7000,
       selling_price: 18000,
       min_stock_alert: 10,
-      aliases: ['kopsu', 'kopi susu'],
     };
     const res = createProductSchema.safeParse(valid);
     expect(res.success).toBe(true);

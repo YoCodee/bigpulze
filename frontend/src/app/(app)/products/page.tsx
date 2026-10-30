@@ -13,18 +13,13 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle2,
-  Tag,
-  Mic,
   TrendingUp,
   X,
-  Boxes,
-  ArrowLeftRight,
 } from 'lucide-react';
 import { MetricStrip } from '@/components/ui/metric-strip';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { SubNavTabs } from '@/components/ui/sub-nav-tabs';
 
 interface Branch {
   id: string;
@@ -43,7 +38,6 @@ interface Product {
   selling_price: number;
   stock: number;
   min_stock_alert: number;
-  aliases: string[];
   is_active: boolean;
 }
 
@@ -74,8 +68,6 @@ export default function ProductsPage() {
   const [costPrice, setCostPrice] = useState('0');
   const [sellingPrice, setSellingPrice] = useState('0');
   const [minStockAlert, setMinStockAlert] = useState('10');
-  const [aliasInput, setAliasInput] = useState('');
-  const [aliases, setAliases] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
   // Modal delete state
@@ -184,8 +176,7 @@ export default function ProductsPage() {
       const matchesSearch =
         !q ||
         p.name.toLowerCase().includes(q) ||
-        p.sku.toLowerCase().includes(q) ||
-        p.aliases?.some((a) => a.toLowerCase().includes(q));
+        p.sku.toLowerCase().includes(q);
       return matchesCategory && matchesSearch;
     });
   }, [products, selectedCategory, searchQuery]);
@@ -198,8 +189,6 @@ export default function ProductsPage() {
     setCostPrice('0');
     setSellingPrice('0');
     setMinStockAlert('10');
-    setAliases([]);
-    setAliasInput('');
     setErrorMsg(null);
     setSuccessMsg(null);
     setIsModalOpen(true);
@@ -213,23 +202,9 @@ export default function ProductsPage() {
     setCostPrice(prod.cost_price.toString());
     setSellingPrice(prod.selling_price.toString());
     setMinStockAlert(prod.min_stock_alert.toString());
-    setAliases(prod.aliases || []);
-    setAliasInput('');
     setErrorMsg(null);
     setSuccessMsg(null);
     setIsModalOpen(true);
-  }
-
-  function addAlias() {
-    const val = aliasInput.trim();
-    if (val && !aliases.includes(val)) {
-      setAliases([...aliases, val]);
-      setAliasInput('');
-    }
-  }
-
-  function removeAlias(aliasToRemove: string) {
-    setAliases(aliases.filter((a) => a !== aliasToRemove));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -254,7 +229,6 @@ export default function ProductsPage() {
             cost_price: costNum,
             selling_price: sellNum,
             min_stock_alert: minStockNum,
-            aliases,
           }),
         });
         const json = await res.json();
@@ -275,7 +249,6 @@ export default function ProductsPage() {
             cost_price: costNum,
             selling_price: sellNum,
             min_stock_alert: minStockNum,
-            aliases,
           }),
         });
         const json = await res.json();
@@ -333,15 +306,7 @@ export default function ProductsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Sub Nav Tabs Konsolidasi Inventaris & Stok */}
-      <SubNavTabs
-        tabs={[
-          { name: 'Katalog Produk', href: '/products', icon: Boxes },
-          { name: 'Mutasi & Transfer Stok', href: '/stock', icon: ArrowLeftRight },
-        ]}
-      />
-
-      {/* Top Header */}
+            {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -351,7 +316,7 @@ export default function ProductsPage() {
             <Badge variant="enterprise">Multi-Cabang</Badge>
           </div>
           <p className="text-sm text-slate-500 mt-0.5">
-            Daftar master SKU, HPP modal, harga jual, margin kotor, dan alias perintah suara Smart Voice POS
+            Daftar master SKU, HPP modal, harga jual, dan margin kotor per cabang
           </p>
         </div>
 
@@ -459,7 +424,7 @@ export default function ProductsPage() {
           {/* Search Box */}
           <div className="w-full flex-1">
             <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-              Cari Produk / SKU / Alias Suara
+              Cari Produk / SKU
             </label>
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -467,7 +432,7 @@ export default function ProductsPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Ketik nama produk, kode SKU, atau nama panggilan suara (cth: kopsu)..."
+                placeholder="Ketik nama produk atau kode SKU..."
                 className="w-full h-10 pl-9 pr-8 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-enterprise-500 focus:ring-2 focus:ring-enterprise-500/20 transition-colors"
               />
               {searchQuery && (
@@ -579,7 +544,6 @@ export default function ProductsPage() {
                   <th className="py-3 px-4 text-right">HPP (Modal)</th>
                   <th className="py-3 px-4 text-right">Harga Jual &amp; Margin</th>
                   <th className="py-3 px-4 text-center">Stok</th>
-                  <th className="py-3 px-4">Alias Suara</th>
                   {isOwner && <th className="py-3 px-4 text-center">Aksi</th>}
                 </tr>
               </thead>
@@ -634,23 +598,6 @@ export default function ProductsPage() {
                             <Badge variant="danger" dot className="text-[10px] py-0 px-1.5">
                               Min {p.min_stock_alert}
                             </Badge>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex flex-wrap gap-1 max-w-xs">
-                          {p.aliases && p.aliases.length > 0 ? (
-                            p.aliases.map((a, idx) => (
-                              <span
-                                key={idx}
-                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200"
-                              >
-                                <Mic className="w-2.5 h-2.5 text-slate-500" />
-                                {a}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="text-xs text-slate-400 font-mono">-</span>
                           )}
                         </div>
                       </td>
@@ -822,60 +769,6 @@ export default function ProductsPage() {
                     placeholder="Default: 10"
                     className="w-full h-10 px-3 border border-slate-300 rounded-xl text-xs font-mono text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
                   />
-                </div>
-
-                {/* Aliases Input */}
-                <div>
-                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                    Alias Suara (Nama Panggilan Perintah Suara)
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      aria-label="Alias suara produk"
-                      type="text"
-                      value={aliasInput}
-                      onChange={(e) => setAliasInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          addAlias();
-                        }
-                      }}
-                      placeholder="Contoh: kopsu, kopi susu aren..."
-                      className="flex-1 h-10 px-3 border border-slate-300 rounded-xl text-xs text-slate-900 focus:ring-2 focus:ring-enterprise-500/20 focus:border-enterprise-600 transition-colors"
-                    />
-                    <Button
-                      variant="secondary"
-                      size="md"
-                      onClick={addAlias}
-                      className="h-10 text-xs px-3"
-                    >
-                      Tambah Alias
-                    </Button>
-                  </div>
-                  {aliases.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-2.5">
-                      {aliases.map((a, idx) => (
-                        <span
-                          key={idx}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs bg-slate-100 text-slate-700 border border-slate-200"
-                        >
-                          <Tag className="w-3 h-3 text-slate-500" />
-                          {a}
-                          <button
-                            type="button"
-                            onClick={() => removeAlias(a)}
-                            className="ml-1 text-slate-400 hover:text-slate-700 font-bold"
-                          >
-                            &times;
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  <p className="text-[11px] text-slate-400 mt-1.5">
-                    Digunakan oleh Smart Voice POS untuk mengenali ucapan kasir secara instan (PRD §9.2)
-                  </p>
                 </div>
 
                 <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">

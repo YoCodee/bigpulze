@@ -20,8 +20,6 @@ import { EmptyState } from '@/components/ui/empty-state';
 import {
   CheckCircle2,
   ArrowRightLeft,
-  TrendingDown,
-  TrendingUp,
   Sparkles,
   ShieldAlert,
   Loader2,
@@ -31,7 +29,6 @@ import {
   Check,
   Building2,
   ArrowRight,
-  Mic,
   FileText,
   Calendar,
   BarChart3,
@@ -424,66 +421,7 @@ export default function DashboardPage() {
           />
         )}
 
-        {/* ======================================================== */}
-        {/* 2. 3 QUICK ACTION SHORTCUT CARDS (refrence1 (2).png) */}
-        {/* ======================================================== */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Link
-            href="/pos"
-            className="group rounded-xl border border-slate-200 bg-white p-4 sm:p-5 hover:border-enterprise-300 hover:shadow-sm transition-all flex items-center justify-between"
-          >
-            <div className="flex items-center space-x-3.5">
-              <div className="h-10 w-10 rounded-lg bg-blue-50 text-enterprise-600 border border-blue-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <Mic className="h-5 w-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-slate-900 group-hover:text-enterprise-600 transition-colors">
-                  Kasir Voice POS
-                </h4>
-                <p className="text-xs text-slate-500">Transaksi cepat lewat suara</p>
-              </div>
-            </div>
-            <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-enterprise-600 group-hover:translate-x-0.5 transition-all" />
-          </Link>
-
-          <Link
-            href="/expenses"
-            className="group rounded-xl border border-slate-200 bg-white p-4 sm:p-5 hover:border-amber-300 hover:shadow-sm transition-all flex items-center justify-between"
-          >
-            <div className="flex items-center space-x-3.5">
-              <div className="h-10 w-10 rounded-lg bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <TrendingDown className="h-5 w-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
-                  Catat Pengeluaran
-                </h4>
-                <p className="text-xs text-slate-500">Catat biaya operasional harian</p>
-              </div>
-            </div>
-            <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-amber-600 group-hover:translate-x-0.5 transition-all" />
-          </Link>
-
-          <Link
-            href="/reports"
-            className="group rounded-xl border border-slate-200 bg-white p-4 sm:p-5 hover:border-emerald-300 hover:shadow-sm transition-all flex items-center justify-between"
-          >
-            <div className="flex items-center space-x-3.5">
-              <div className="h-10 w-10 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <TrendingUp className="h-5 w-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
-                  Laporan Laba Rugi
-                </h4>
-                <p className="text-xs text-slate-500">Lihat keuntungan & ekspor PDF</p>
-              </div>
-            </div>
-            <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
-          </Link>
-        </div>
-
-        {/* ======================================================== */}
+                {/* ======================================================== */}
         {/* 3. SEGMENTED TABS SWITCHER (refrence1 (4).png) */}
         {/* ======================================================== */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
@@ -1046,7 +984,7 @@ export default function DashboardPage() {
 
               <CardContent className="p-5 space-y-3 text-xs text-slate-300">
                 <p className="leading-relaxed text-[11px] text-slate-300">
-                  Coba skenario interaktif untuk menguji input suara kasir, pencatatan pengeluaran, dan mutasi stok.
+                  Coba skenario interaktif untuk menguji transaksi kasir, pencatatan pengeluaran, dan mutasi stok.
                 </p>
 
                 <div className="space-y-1.5 pt-1">

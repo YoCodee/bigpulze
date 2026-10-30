@@ -28,7 +28,6 @@ export const createExpenseSchema = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'Format tanggal pengeluaran harus YYYY-MM-DD')
     .optional(),
   input_method: z.enum(['MANUAL', 'VOICE', 'IMPORT', 'DEMO']).default('MANUAL'),
-  voice_transcript: z.string().trim().max(1000).optional().nullable(),
 });
 
 export const updateExpenseSchema = z.object({

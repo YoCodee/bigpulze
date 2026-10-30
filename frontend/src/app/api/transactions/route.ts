@@ -27,7 +27,6 @@ export async function POST(request: NextRequest) {
       items,
       payment_method,
       input_method,
-      voice_transcript,
       client_tx_id,
       cash_tendered,
     } = parsed.data;
@@ -38,7 +37,6 @@ export async function POST(request: NextRequest) {
       p_items: items,
       p_payment_method: payment_method,
       p_input_method: input_method,
-      p_voice_transcript: voice_transcript ?? null,
       p_client_tx_id: client_tx_id ?? null,
     });
 
@@ -63,7 +61,6 @@ export async function POST(request: NextRequest) {
         total_revenue,
         total_cogs,
         gross_profit,
-        voice_transcript,
         transaction_items (
           id,
           product_id,
@@ -129,7 +126,6 @@ export async function GET(request: NextRequest) {
         total_revenue,
         total_cogs,
         gross_profit,
-        voice_transcript,
         voided_at,
         void_reason,
         transaction_items (

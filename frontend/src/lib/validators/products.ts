@@ -32,9 +32,6 @@ export const createProductSchema = z.object({
     .int('Stok minimum harus berupa bilangan bulat')
     .nonnegative('Stok minimum tidak boleh negatif')
     .default(10),
-  aliases: z
-    .array(z.string().trim().min(1))
-    .default([]),
 });
 
 export const updateProductSchema = z.object({
@@ -44,7 +41,6 @@ export const updateProductSchema = z.object({
   cost_price: z.number().int().nonnegative().optional(),
   selling_price: z.number().int().nonnegative().optional(),
   min_stock_alert: z.number().int().nonnegative().optional(),
-  aliases: z.array(z.string().trim().min(1)).optional(),
   is_active: z.boolean().optional(),
 });
 
