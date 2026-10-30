@@ -50,30 +50,6 @@ export function sortRecommendations<T extends RecommendationExplainerInput>(item
 }
 
 /**
- * The "why this quantity" sentence: shows the math
- * need = forecast + buffer; buy = need − current stock.
- */
-export function buildWhySentence(
-  item: RecommendationExplainerInput,
-  periodLabel: string
-): string {
-  const need = formatUnitCount(item.target_stock);
-  const forecast = formatUnitCount(item.forecast_total);
-  const buffer = formatUnitCount(item.min_stock_alert);
-  const current = formatUnitCount(item.current_stock);
-
-  if (item.status === 'SURPLUS') {
-    const extra = formatUnitCount(item.surplus);
-    return `Stok ${current} unit sudah melebihi kebutuhan ${need} unit untuk ${periodLabel} (lebih ${extra} unit). Tidak perlu beli — pertimbangkan transfer ke cabang yang butuh atau promo bundling.`;
-  }
-  if (item.status === 'BALANCED') {
-    return `Stok ${current} unit cukup untuk ${periodLabel}: perkiraan terjual ${forecast} unit + cadangan ${buffer} unit. Tidak perlu restock.`;
-  }
-  const buy = formatUnitCount(item.suggested_qty);
-  return `Butuh ${need} unit untuk ${periodLabel}: perkiraan terjual ${forecast} unit + cadangan minimum ${buffer} unit. Stok sekarang ${current} unit, jadi beli ${buy} unit.`;
-}
-
-/**
  * When the stock runs out, from days_of_cover relative to today (WIB).
  * Returns null when there is no sales history.
  */

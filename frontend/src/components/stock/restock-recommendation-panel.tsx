@@ -15,7 +15,6 @@ import { formatRupiah } from '@/lib/format';
 import { formatDateId } from '@/lib/date';
 import {
   buildExpiryPhrase,
-  buildWhySentence,
   formatCoverPhrase,
   formatUnitCount,
   sortRecommendations,
@@ -167,7 +166,6 @@ export function RestockRecommendationPanel({
   }, [detailItem]);
 
   const summary = data?.summary;
-  const periodLabel = data?.period_label ?? '';
   const expiryPhrase = detailItem ? buildExpiryPhrase(detailItem.days_of_cover) : null;
   // no further model aggregation needed; per-item model shown in the detail modal
 
@@ -483,14 +481,6 @@ export function RestockRecommendationPanel({
                     <Check className="w-4 h-4" /> Catat Restock
                   </Button>
                 )}
-              </div>
-
-              {/* Why this quantity: the math, in plain language */}
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-xs text-slate-700 leading-relaxed">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
-                  Kenapa disarankan segitu?
-                </p>
-                {buildWhySentence(detailItem, periodLabel)}
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

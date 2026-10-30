@@ -1,6 +1,5 @@
 import {
   buildExpiryPhrase,
-  buildWhySentence,
   formatCoverPhrase,
   formatUnitCount,
   sortRecommendations,
@@ -35,33 +34,6 @@ describe('format helpers', () => {
     expect(formatCoverPhrase(null)).toBe('belum ada penjualan');
     expect(formatCoverPhrase(2.1)).toBe('habis ±3 hari');
     expect(formatCoverPhrase(3)).toBe('habis ±3 hari');
-  });
-});
-
-describe('buildWhySentence', () => {
-  it('explains the restock math: need = forecast + buffer; buy = need - stock', () => {
-    const sentence = buildWhySentence(base, '7 hari ke depan');
-    expect(sentence).toContain('Butuh 44 unit untuk 7 hari ke depan');
-    expect(sentence).toContain('perkiraan terjual 34 unit + cadangan minimum 10 unit');
-    expect(sentence).toContain('Stok sekarang 12 unit, jadi beli 32 unit');
-  });
-
-  it('tells the owner to do nothing when balanced', () => {
-    const sentence = buildWhySentence(
-      { ...base, status: 'BALANCED', suggested_qty: 0, current_stock: 50, days_of_cover: 5 },
-      '7 hari ke depan'
-    );
-    expect(sentence).toContain('cukup');
-    expect(sentence).toContain('Tidak perlu restock');
-  });
-
-  it('advises transfer/promo on surplus instead of buying', () => {
-    const sentence = buildWhySentence(
-      { ...base, status: 'SURPLUS', suggested_qty: 0, current_stock: 80, surplus: 36 },
-      '7 hari ke depan'
-    );
-    expect(sentence).toContain('Tidak perlu beli');
-    expect(sentence).toContain('transfer ke cabang yang butuh');
   });
 });
 
