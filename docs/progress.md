@@ -2104,3 +2104,20 @@
 **Belum teruji (di luar kendali):** skenario tool-call dua putaran vs API nyata — Google sedang overload/429 saat pengujian terakhir (beberapa probe saya memaksa jadwal kuota gratis terpakai); verifikasi via chat UI oleh pemilik setelah trensien.
 
 ---
+
+## Pola Desain: Impeccable Kritik & Perbaikan Floating Chat (30 Okt)
+
+**Kritik** (`/impeccable critique`, dual-agent): skor 18/40 (Poor). Kritik menyasar `ai-floating-chat.tsx` (permukaan hidup sejak commit `8883fc5` menggantikan halaman `/asisten`). Snapshot: `.impeccable/critique/2026-10-30T09-44-34Z__*.md` (folder di-gitignore-kan lokal, tidak di-commit).
+
+**Audit teknis** (`/impeccable audit`): 11/20 (Acceptable) — A11y 1, Perf 3, Theming 3, Responsive 2, Integrity 2.
+
+**Perbaikan yang dikerjakan (lingkup disetujui: 2×P0 + 2×P1 + karakter brand pada elemen yang disentuh):**
+- `fix: assistant floating chat contrast, a11y and mobile overlap` — bubble user & tombol kirim → `enterprise-600` (kontras ±8.6:1, AA lulus); permukaan ikon → `brand-600` (3.55:1, lolos non-teks); FAB disembunyikan di mobile saat panel terbuka (tak lagi menimpa tombol kirim); `role="dialog"` + `aria-modal` + focus trap Tab + fokus kembali ke FAB saat Esc/tutup; `role="log" aria-live="polite"` pada transkrip; tombol header 28→36px + focus ring; delete terlihat saat `group-focus-within` + `aria-label` spesifik; baris sesi jadi tombol asli (tanpa nested interactive); dots `animate-bounce` → `animate-pulse` + `motion-reduce` (detektor bersih); Sparkles → PulseMark (logo petir brand), `ShieldAlert` → `Database`, "Forecast" → "Proyeksi".
+- `fix: assistant errors no longer impersonate the bot, add retry` — error kirim/stream kini state `chatError` terpisah dengan tombol "Coba lagi"; tidak pernah ditulis ke bubble bot; jawaban parsial tidak ditimpa; bubble kosong dibersihkan.
+- Verifikasi: typecheck ✅, lint ✅, test 134/134 ✅, build produksi ✅, detektor 0 temuan.
+
+**Belum dikerjakan (di luar lingkup yang disetujui):** greeting data-aware "3 Pertanyaan Pagi", hapus 3 file komponen mati + duplikat inline, teks 14px, timestamps sesi, tombol stop generation, autoscroll pintar.
+
+**Belum teruji:** render nyata di browser/HP (tanpa browser automation di sesi ini) — mohon cek manual di 360px/768px/1280px.
+
+---
