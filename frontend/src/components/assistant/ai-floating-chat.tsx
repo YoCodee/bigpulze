@@ -8,6 +8,7 @@ import {
   Loader2,
   AlertTriangle,
   MessageSquarePlus,
+  MessageSquare,
   Pencil,
   Square,
   MessagesSquare,
@@ -596,7 +597,7 @@ export function AIFloatingChat() {
           onClick={() => setIsOpen(true)}
           className="fixed bottom-6 right-6 z-[60] h-11 pl-3.5 pr-4 rounded-full bg-brand-600 text-white flex items-center gap-2 shadow-lg transition-colors hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
         >
-          <Sparkles className="h-4 w-4" aria-hidden="true" />
+          <MessageSquare className="h-4 w-4" aria-hidden="true" />
           <span className="text-xs font-semibold">Asisten AI</span>
         </button>
       )}
