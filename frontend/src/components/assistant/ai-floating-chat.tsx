@@ -2,37 +2,22 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  Sparkles,
   X,
   SendHorizontal,
   Loader2,
   AlertTriangle,
   MessageSquarePlus,
+  ChevronDown,
+  ChevronUp,
   MessagesSquare,
   Trash2,
   Bot,
   User,
-  Database,
+  ShieldAlert,
 } from 'lucide-react';
 import { useAssistantChat } from '@/hooks/use-assistant-chat';
 import { cn } from '@/lib/utils';
-
-/** Brand mark: the BizPulse pulse polyline (same as the app sidebar logo). */
-function PulseMark({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-    >
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-    </svg>
-  );
-}
 
 const SUGGESTIONS = [
   'Bagaimana laba sehari terakhir?',
@@ -96,7 +81,7 @@ function MessageBubble({
                 className="inline-flex items-center gap-1 rounded-md border border-enterprise-200 bg-enterprise-50 px-1.5 py-0.5 text-[10px] font-medium text-enterprise-700"
                 title="Data ditarik langsung dari database bisnis (read-only)"
               >
-                <Database className="h-3 w-3" aria-hidden="true" />
+                <ShieldAlert className="h-3 w-3" aria-hidden="true" />
                 {toolLabel(tool)}
               </span>
             ))}
@@ -148,7 +133,7 @@ function Greeting({
   return (
     <div className="flex flex-col items-center text-center py-6 px-4">
       <div className="h-10 w-10 rounded-2xl bg-brand-600 text-white flex items-center justify-center shadow-sm mb-3">
-        <PulseMark className="h-5 w-5" />
+        <Sparkles className="h-5 w-5" />
       </div>
       <h2 className="text-sm font-bold text-slate-900">Ada yang bisa dibantu?</h2>
       <p className="mt-1 text-[11px] text-slate-500 max-w-[260px]">
@@ -402,7 +387,7 @@ export function AIFloatingChat() {
         <div className="shrink-0 border-b border-slate-200 bg-white px-3 py-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <div className="h-8 w-8 rounded-lg bg-brand-600 text-white flex items-center justify-center shadow-xs shrink-0">
-              <PulseMark className="h-4 w-4" />
+              <Sparkles className="h-4 w-4" />
             </div>
             <div className="min-w-0">
               <p className="text-xs font-bold text-slate-900 leading-tight">Asisten AI</p>
@@ -426,7 +411,11 @@ export function AIFloatingChat() {
               aria-label="Riwayat percakapan"
               aria-expanded={showSessions}
             >
-              <MessagesSquare className="h-4 w-4" aria-hidden="true" />
+              {showSessions ? (
+                <ChevronUp className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <ChevronDown className="h-4 w-4" aria-hidden="true" />
+              )}
             </button>
 
             {/* New chat */}
@@ -563,7 +552,7 @@ export function AIFloatingChat() {
         aria-expanded={isOpen}
         title={isOpen ? 'Tutup Asisten AI' : 'Buka Asisten AI'}
       >
-        <PulseMark className="h-6 w-6 text-white" />
+        <Sparkles className="h-6 w-6 text-white" />
       </button>
     </>
   );
