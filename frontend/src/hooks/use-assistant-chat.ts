@@ -49,6 +49,7 @@ export function useAssistantChat() {
 
   const activeRequestRef = useRef(false);
   const lastSentRef = useRef<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const refreshSessions = useCallback(async () => {
     try {
@@ -158,6 +159,8 @@ export function useAssistantChat() {
       setPageError(null);
 
       try {
+        const controller = new AbortController();
+        abortRef.current = controller;
         const res = await fetch('/api/assistant/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -165,6 +168,7 @@ export function useAssistantChat() {
             message,
             ...(requestedSessionId ? { session_id: requestedSessionId } : {}),
           }),
+          signal: controller.signal,
         });
 
         if (!res.ok || !res.body) {
@@ -268,6 +272,23 @@ export function useAssistantChat() {
         }
         void refreshSessions();
       } catch (error) {
+        // User pressed stop: keep the partial answer, show no error bar.
+        const aborted =
+          (error instanceof DOMException && error.name === 'AbortError') ||
+          (error instanceof Error && error.name === 'AbortError');
+        if (aborted) {
+          setMessages((prev) => {
+            const assistant = prev.find((msg) => msg.id === assistantMessageId);
+            let next = prev.map((msg) =>
+              msg.id === assistantMessageId ? { ...msg, streaming: false } : msg
+            );
+            if (assistant && assistant.content.trim().length === 0) {
+              next = next.filter((msg) => msg.id !== assistantMessageId);
+            }
+            return next;
+          });
+          return;
+        }
         // Keep any partially streamed content; surface a retryable error bar.
         setChatError(
           error instanceof Error
@@ -288,12 +309,18 @@ export function useAssistantChat() {
       } finally {
         setSending(false);
         activeRequestRef.current = false;
+        abortRef.current = null;
       }
     },
     [activeSessionId, refreshSessions]
   );
 
   const dismissChatError = useCallback(() => setChatError(null), []);
+
+  /** Stops the in-flight generation; the partial answer stays in the panel. */
+  const stopGeneration = useCallback(() => {
+    abortRef.current?.abort();
+  }, []);
 
   const retryLast = useCallback(() => {
     const last = lastSentRef.current;
@@ -317,5 +344,6 @@ export function useAssistantChat() {
     sendMessage,
     retryLast,
     dismissChatError,
+    stopGeneration,
   };
 }

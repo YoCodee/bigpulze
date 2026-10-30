@@ -25,6 +25,8 @@ export interface AssistantTurnInput {
   history: ChatHistoryMessage[];
   tools: ToolDefinition[];
   toolContext: ToolContext;
+  /** Client stop button: aborting cancels the Gemini request mid-flight. */
+  signal?: AbortSignal;
   emit: (event: AssistantEvent) => void;
 }
 
@@ -46,7 +48,7 @@ export async function runAssistantTurn(input: AssistantTurnInput): Promise<Assis
   let streamedText = '';
 
   for (let round = 0; round < MAX_TOOL_ROUNDS; round += 1) {
-    const { text, functionCalls, modelParts } = await streamModelRound(input, config, contents);
+    const { text, functionCalls, modelParts } = await streamModelRound(input, config, contents, input.signal);
 
     if (functionCalls.length === 0) {
       return { replyText: text || 'Maaf, saya tidak dapat menjawab saat ini.', toolTrace };
@@ -77,7 +79,8 @@ export async function runAssistantTurn(input: AssistantTurnInput): Promise<Assis
 async function streamModelRound(
   input: AssistantTurnInput,
   config: { apiKey: string; model: string },
-  contents: GeminiContent[]
+  contents: GeminiContent[],
+  signal?: AbortSignal
 ): Promise<{ text: string; functionCalls: GeminiFunctionCall[]; modelParts: GeminiPart[] }> {
   const requestBody: GeminiRequestBody = {
     contents,
@@ -94,7 +97,7 @@ async function streamModelRound(
     };
   }
 
-  const response = await streamGemini(config, requestBody);
+  const response = await streamGemini(config, requestBody, signal);
   if (!response.ok || !response.body) {
     const detail = await response.text().catch(() => '');
     console.error(`Gemini HTTP ${response.status}: ${detail.slice(0, 500)}`);

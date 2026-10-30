@@ -123,7 +123,11 @@ export async function POST(request: NextRequest) {
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
         const emit = (event: unknown) => {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+          try {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+          } catch {
+            // Client disconnected (stop/refresh): the stream is gone.
+          }
         };
 
         emit({ type: 'start', session_id: insertedSessionId });
@@ -137,8 +141,14 @@ export async function POST(request: NextRequest) {
               supabase: context.supabase,
               orgId: context.orgId,
             },
+            signal: request.signal,
             emit,
           });
+
+          // A stopped request is not saved: stopping discards the partial answer.
+          if (request.signal.aborted) {
+            return;
+          }
 
           if (result.replyText.trim().length > 0) {
             const { error: assistantInsertError } = await context.supabase
@@ -157,10 +167,18 @@ export async function POST(request: NextRequest) {
 
           emit({ type: 'done', session_id: insertedSessionId, tool_trace: result.toolTrace });
         } catch (error) {
+          if (error instanceof Error && (error.name === 'AbortError' || request.signal.aborted)) {
+            // Client pressed stop: nothing to report, nothing to save.
+            return;
+          }
           console.error('Assistant turn failed:', error);
           emit({ type: 'error', message: mapAssistantError(error) });
         } finally {
-          controller.close();
+          try {
+            controller.close();
+          } catch {
+            // Stream already errored/closed by the client disconnect.
+          }
         }
       },
     });

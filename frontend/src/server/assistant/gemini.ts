@@ -81,13 +81,16 @@ function delay(ms: number): Promise<void> {
  * Starts a streaming Gemini generateContent request.
  * - Retries transient failures (429/500/503) with short backoff.
  * - Aborts and retries when headers never arrive (GEMINI_CONNECT_TIMEOUT).
+ * - Honors `signal`: client-initiated aborts (stop button) cancel the request
+ *   and are NOT retried.
  * The connect timer is cleared as soon as headers arrive, so the streaming
  * body itself is never aborted by it; mid-stream stalls are handled by
  * parseGeminiSseStream's idle timeout instead.
  */
 export async function streamGemini(
   config: GeminiConfig,
-  body: GeminiRequestBody
+  body: GeminiRequestBody,
+  signal?: AbortSignal
 ): Promise<Response> {
   const url = `${GEMINI_API_BASE}/${config.model}:streamGenerateContent?alt=sse`;
   const bodyJson = JSON.stringify(body);
@@ -95,12 +98,21 @@ export async function streamGemini(
   let lastError: unknown = new Error('GEMINI_CONNECT_TIMEOUT');
 
   for (let attempt = 0; attempt < RETRY_ATTEMPTS; attempt += 1) {
+    if (signal?.aborted) {
+      throw new DOMException('Aborted', 'AbortError');
+    }
     if (attempt > 0) {
       await delay(RETRY_BASE_DELAY_MS * attempt);
+      if (signal?.aborted) {
+        throw new DOMException('Aborted', 'AbortError');
+      }
     }
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), CONNECT_TIMEOUT_MS);
+    // Combine the caller's signal with the connect timeout.
+    const onOuterAbort = () => controller.abort();
+    signal?.addEventListener('abort', onOuterAbort, { once: true });
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -118,11 +130,15 @@ export async function streamGemini(
       lastStatusResponse = response;
       lastError = null;
     } catch (error) {
+      if (signal?.aborted) {
+        throw new DOMException('Aborted', 'AbortError');
+      }
       lastError =
         error instanceof Error && error.name === 'AbortError'
           ? new Error('GEMINI_CONNECT_TIMEOUT')
           : error;
     } finally {
+      signal?.removeEventListener('abort', onOuterAbort);
       clearTimeout(timer);
     }
   }

@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   MessageSquarePlus,
   Pencil,
+  Square,
   ChevronDown,
   ChevronUp,
   MessagesSquare,
@@ -311,6 +312,7 @@ export function AIFloatingChat() {
     sendMessage,
     retryLast,
     dismissChatError,
+    stopGeneration,
   } = useAssistantChat();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -567,15 +569,19 @@ export function AIFloatingChat() {
             />
             <button
               type="button"
-              disabled={!canSend}
-              onClick={() => handleSend()}
-              className="h-9 w-9 shrink-0 rounded-xl bg-enterprise-600 text-white flex items-center justify-center transition-colors hover:bg-enterprise-700 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-enterprise-500"
-              aria-label="Kirim pertanyaan"
+              disabled={!canSend && !sending}
+              onClick={() => (sending ? stopGeneration() : handleSend())}
+              className={cn(
+                'h-9 w-9 shrink-0 rounded-xl text-white flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 disabled:opacity-40 disabled:cursor-not-allowed',
+                sending ? 'bg-slate-700 hover:bg-slate-800' : 'bg-enterprise-600 hover:bg-enterprise-700'
+              )}
+              aria-label={sending ? 'Hentikan jawaban' : 'Kirim pertanyaan'}
+              title={sending ? 'Hentikan jawaban' : 'Kirim pertanyaan'}
             >
               {sending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Square className="h-3.5 w-3.5" aria-hidden="true" />
               ) : (
-                <SendHorizontal className="h-4 w-4" />
+                <SendHorizontal className="h-4 w-4" aria-hidden="true" />
               )}
             </button>
           </div>
