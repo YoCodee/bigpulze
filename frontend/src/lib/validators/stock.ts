@@ -1,7 +1,8 @@
 import { z } from 'zod';
+import { pgUuid } from './pg-uuid';
 
 export const restockProductSchema = z.object({
-  product_id: z.string().uuid('Format ID produk tidak valid'),
+  product_id: pgUuid('Format ID produk tidak valid'),
   quantity: z
     .number()
     .int('Jumlah restock harus bilangan bulat')
@@ -22,7 +23,7 @@ export const restockProductSchema = z.object({
 });
 
 export const adjustStockSchema = z.object({
-  product_id: z.string().uuid('Format ID produk tidak valid'),
+  product_id: pgUuid('Format ID produk tidak valid'),
   new_stock: z
     .number()
     .int('Stok baru harus berupa bilangan bulat')
@@ -37,14 +38,14 @@ export const adjustStockSchema = z.object({
 
 export const transferStockSchema = z
   .object({
-    from_product_id: z.string().uuid('Format ID produk asal tidak valid'),
-    to_product_id: z.string().uuid('Format ID produk tujuan tidak valid'),
+    from_product_id: pgUuid('Format ID produk asal tidak valid'),
+    to_product_id: pgUuid('Format ID produk tujuan tidak valid'),
     quantity: z
       .number()
       .int('Jumlah transfer harus berupa bilangan bulat')
       .positive('Jumlah transfer minimal 1')
       .max(1000000, 'Jumlah transfer melebihi batas'),
-    recommendation_id: z.string().uuid('Format ID rekomendasi tidak valid').optional().nullable(),
+    recommendation_id: pgUuid('Format ID rekomendasi tidak valid').optional().nullable(),
   })
   .refine((data) => data.from_product_id !== data.to_product_id, {
     message: 'Produk asal dan produk tujuan transfer tidak boleh sama',
@@ -59,9 +60,7 @@ export const restockRecommendationPeriodSchema = z.enum([
 
 export const restockRecommendationQuerySchema = z.object({
   period: restockRecommendationPeriodSchema.default('7d'),
-  branch_id: z
-    .string()
-    .uuid('Format ID cabang tidak valid')
+  branch_id: pgUuid('Format ID cabang tidak valid')
     .optional()
     .nullable(),
 });

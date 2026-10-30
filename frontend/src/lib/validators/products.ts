@@ -1,9 +1,8 @@
 import { z } from 'zod';
+import { pgUuid } from './pg-uuid';
 
 export const createProductSchema = z.object({
-  branch_id: z
-    .string()
-    .uuid('Format ID cabang tidak valid'),
+  branch_id: pgUuid('Format ID cabang tidak valid'),
   sku: z
     .string()
     .min(1, 'SKU tidak boleh kosong')

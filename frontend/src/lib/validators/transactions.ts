@@ -1,7 +1,8 @@
 import { z } from 'zod';
+import { pgUuid } from './pg-uuid';
 
 export const transactionItemSchema = z.object({
-  product_id: z.string().uuid('Format ID produk tidak valid'),
+  product_id: pgUuid('Format ID produk tidak valid'),
   quantity: z
     .number()
     .int('Jumlah produk harus berupa bilangan bulat')
@@ -10,13 +11,13 @@ export const transactionItemSchema = z.object({
 });
 
 export const createSaleSchema = z.object({
-  branch_id: z.string().uuid('Format ID cabang tidak valid'),
+  branch_id: pgUuid('Format ID cabang tidak valid'),
   items: z
     .array(transactionItemSchema)
     .min(1, 'Keranjang transaksi tidak boleh kosong'),
   payment_method: z.enum(['CASH', 'QRIS_SIM']).default('CASH'),
   input_method: z.enum(['MANUAL', 'VOICE', 'IMPORT', 'DEMO']).default('MANUAL'),
-  client_tx_id: z.string().uuid('Format client_tx_id harus UUIDv4 valid').optional().nullable(),
+  client_tx_id: pgUuid('Format client_tx_id tidak valid').optional().nullable(),
   cash_tendered: z
     .number()
     .int('Nominal uang bayar harus berupa bilangan bulat')

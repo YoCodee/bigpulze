@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { pgUuid } from './pg-uuid';
 
 export const EXPENSE_CATEGORIES = [
   'Utilitas',
@@ -12,7 +13,7 @@ export const EXPENSE_CATEGORIES = [
 ] as const;
 
 export const createExpenseSchema = z.object({
-  branch_id: z.string().uuid('Format ID cabang tidak valid'),
+  branch_id: pgUuid('Format ID cabang tidak valid'),
   category: z.enum(EXPENSE_CATEGORIES),
   description: z
     .string()

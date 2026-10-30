@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { pgUuid } from './pg-uuid';
 
 export const createCashierSchema = z.object({
   full_name: z
@@ -14,9 +15,7 @@ export const createCashierSchema = z.object({
   password: z
     .string()
     .min(6, 'Kata sandi minimal 6 karakter'),
-  branch_id: z
-    .string()
-    .uuid('ID cabang tidak valid'),
+  branch_id: pgUuid('ID cabang tidak valid'),
 });
 
 export const updateCashierSchema = z.object({
@@ -26,9 +25,7 @@ export const updateCashierSchema = z.object({
     .max(100, 'Nama kasir maksimal 100 karakter')
     .trim()
     .optional(),
-  branch_id: z
-    .string()
-    .uuid('ID cabang tidak valid')
+  branch_id: pgUuid('ID cabang tidak valid')
     .optional(),
   is_active: z
     .boolean()
