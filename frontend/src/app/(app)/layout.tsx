@@ -21,6 +21,7 @@ import {
   Boxes,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AIFloatingChat } from '@/components/assistant/ai-floating-chat';
 
 interface UserProfile {
   user_id: string;
@@ -73,12 +74,6 @@ const navGroups: NavGroup[] = [
   {
     groupName: 'Manajemen Bisnis',
     items: [
-      {
-        name: 'Asisten AI',
-        href: '/asisten',
-        icon: Sparkles,
-        ownerOnly: true,
-      },
       {
         name: 'Manajemen Organisasi',
         href: '/branches',
@@ -504,6 +499,9 @@ export default function AppLayout({
           <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-[1440px] w-full mx-auto">
             {children}
           </main>
+
+          {/* Floating AI Assistant (Hanya untuk Owner) */}
+          {!isCashier && <AIFloatingChat />}
         </div>
       </div>
     </div>
