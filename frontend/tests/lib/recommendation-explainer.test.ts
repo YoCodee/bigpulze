@@ -2,7 +2,6 @@ import {
   buildExpiryPhrase,
   buildWhySentence,
   formatCoverPhrase,
-  formatDays,
   formatUnitCount,
   sortRecommendations,
   type RecommendationExplainerInput,
@@ -32,13 +31,10 @@ describe('format helpers', () => {
     expect(formatUnitCount(12)).toBe('12');
   });
 
-  it('formats days with decimal comma', () => {
-    expect(formatDays(2.1)).toBe('2,1');
-  });
-
-  it('covers the null-sales case', () => {
+  it('rounds the cover phrase up to whole days', () => {
     expect(formatCoverPhrase(null)).toBe('belum ada penjualan');
-    expect(formatCoverPhrase(2.1)).toBe('habis ±2,1 hari');
+    expect(formatCoverPhrase(2.1)).toBe('habis ±3 hari');
+    expect(formatCoverPhrase(3)).toBe('habis ±3 hari');
   });
 });
 
@@ -76,12 +72,13 @@ describe('buildExpiryPhrase', () => {
 
   it('names the expected stock-out date and urgency', () => {
     const phrase = buildExpiryPhrase(1.2);
-    expect(phrase).toContain('habis dalam ±1,2 hari');
+    expect(phrase).toContain('habis dalam ±2 hari');
     expect(phrase).toContain('segera restock');
   });
 
   it('stays calm above the urgency line', () => {
-    const phrase = buildExpiryPhrase(4.0);
+    const phrase = buildExpiryPhrase(4);
+    expect(phrase).toContain('habis dalam ±4 hari');
     expect(phrase).not.toContain('segera restock');
   });
 });

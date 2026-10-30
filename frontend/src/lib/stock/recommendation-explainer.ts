@@ -25,15 +25,10 @@ export function formatUnitCount(value: number): string {
   return Math.round(value).toLocaleString('id-ID');
 }
 
-/** 2.1 -> "2,1" (id-ID decimal comma). */
-export function formatDays(days: number): string {
-  return days.toFixed(1).replace('.', ',');
-}
-
 /** Human phrase for days_of_cover; null = no sales history at all. */
 export function formatCoverPhrase(days: number | null): string {
   if (days === null) return 'belum ada penjualan';
-  return `habis ±${formatDays(days)} hari`;
+  return `habis ±${formatUnitCount(Math.ceil(days))} hari`;
 }
 
 function urgencyRank(item: RecommendationExplainerInput): number {
@@ -84,8 +79,8 @@ export function buildWhySentence(
  */
 export function buildExpiryPhrase(days: number | null): string | null {
   if (days === null) return null;
-  const daysAhead = Math.ceil(days);
-  const date = formatDateId(getRelativeBusinessDate(daysAhead));
+  const wholeDays = Math.ceil(days);
+  const date = formatDateId(getRelativeBusinessDate(wholeDays));
   const urgent = days < 1.5 ? ' — segera restock.' : '.';
-  return `Stok diperkirakan habis dalam ±${formatDays(days)} hari (sekitar ${date})${urgent}`;
+  return `Stok diperkirakan habis dalam ±${formatUnitCount(wholeDays)} hari (sekitar ${date})${urgent}`;
 }

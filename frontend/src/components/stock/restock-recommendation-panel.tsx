@@ -501,7 +501,7 @@ export function RestockRecommendationPanel({
                   value={
                     detailItem.days_of_cover === null
                       ? 'Tidak ada penjualan'
-                      : `±${detailItem.days_of_cover.toFixed(1).replace('.', ',')} hari`
+                      : `±${formatUnitCount(Math.ceil(detailItem.days_of_cover))} hari`
                   }
                 />
               </div>
