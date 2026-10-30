@@ -10,8 +10,6 @@ import {
   MessageSquarePlus,
   Pencil,
   Square,
-  ChevronDown,
-  ChevronUp,
   MessagesSquare,
   Trash2,
   Bot,
@@ -462,11 +460,7 @@ export function AIFloatingChat() {
               aria-label="Riwayat percakapan"
               aria-expanded={showSessions}
             >
-              {showSessions ? (
-                <ChevronUp className="h-4 w-4" aria-hidden="true" />
-              ) : (
-                <ChevronDown className="h-4 w-4" aria-hidden="true" />
-              )}
+              <MessagesSquare className="h-4 w-4" aria-hidden="true" />
             </button>
 
             {/* New chat */}
