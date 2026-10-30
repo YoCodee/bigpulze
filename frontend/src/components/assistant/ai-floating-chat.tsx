@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import {
   Sparkles,
   X,
@@ -579,8 +580,15 @@ export function AIFloatingChat() {
               )}
             </button>
           </div>
-          <p className="mt-1.5 text-[10px] text-slate-400">
-            Periksa kembali angka penting sebelum mengambil keputusan.
+          <p className="mt-1.5 text-[10px] text-slate-400 leading-relaxed">
+            Ringkasan cepat dari data POS — AI bisa keliru. Cek{' '}
+            <Link
+              href="/reports"
+              className="font-medium text-enterprise-600 hover:underline"
+            >
+              Laporan
+            </Link>{' '}
+            untuk angka resmi sebelum memutuskan.
           </p>
         </div>
       </div>
