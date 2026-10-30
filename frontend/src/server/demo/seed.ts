@@ -95,12 +95,21 @@ export function mulberry32(seed: number): () => number {
 }
 
 /** UUID deterministik yang dibangkitkan dari PRNG (untuk client_tx_id). */
-function makeUuid(rng: () => number): string {
+/**
+ * Generates a seeded, deterministic RFC 9562-canonical UUID (version 4).
+ * Matching the canonical format matters: the app validates ids with
+ * `z.string().uuid()`, which rejects random version/variant nibbles.
+ */
+export function makeUuid(rng: () => number): string {
   const hex = '0123456789abcdef';
   let out = '';
   for (let i = 0; i < 36; i++) {
     if (i === 8 || i === 13 || i === 18 || i === 23) {
       out += '-';
+    } else if (i === 14) {
+      out += '4'; // RFC 9562 version nibble — Zod uuid() requires a canonical v4
+    } else if (i === 19) {
+      out += hex[8 + Math.floor(rng() * 4)]; // variant nibble must be 8/9/a/b
     } else {
       out += hex[Math.floor(rng() * 16)];
     }
