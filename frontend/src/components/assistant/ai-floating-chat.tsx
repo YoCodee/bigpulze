@@ -8,6 +8,7 @@ import {
   Loader2,
   AlertTriangle,
   MessageSquarePlus,
+  Pencil,
   ChevronDown,
   ChevronUp,
   MessagesSquare,
@@ -165,6 +166,7 @@ function SessionPanel({
   onNewChat,
   onSelect,
   onDelete,
+  onRename,
   onClose,
 }: {
   sessions: { id: string; title: string }[];
@@ -173,8 +175,26 @@ function SessionPanel({
   onNewChat: () => void;
   onSelect: (id: string) => void;
   onDelete: (id: string) => void;
+  onRename: (id: string, title: string) => void;
   onClose: () => void;
 }) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draftTitle, setDraftTitle] = useState('');
+
+  function beginRename(session: { id: string; title: string }) {
+    setEditingId(session.id);
+    setDraftTitle(session.title);
+  }
+
+  function commitRename() {
+    if (!editingId) return;
+    const trimmed = draftTitle.trim();
+    if (trimmed.length > 0 && trimmed.length <= 150) {
+      onRename(editingId, trimmed);
+    }
+    setEditingId(null);
+  }
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-2 border-b border-slate-200 shrink-0 flex items-center gap-2">
@@ -218,27 +238,53 @@ function SessionPanel({
               session.id === activeSessionId ? 'bg-slate-100/90' : 'hover:bg-slate-50'
             )}
           >
-            <button
-              type="button"
-              onClick={() => onSelect(session.id)}
-              className={cn(
-                'flex-1 min-w-0 text-left px-1.5 py-1 rounded-md text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-enterprise-500',
-                session.id === activeSessionId ? 'font-semibold text-slate-900' : 'text-slate-600'
-              )}
-            >
-              {session.title}
-            </button>
-            <button
-              type="button"
-              className="w-9 shrink-0 inline-flex items-center justify-center rounded-md text-slate-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 transition-opacity"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(session.id);
-              }}
-              aria-label={`Hapus percakapan: ${session.title}`}
-            >
-              <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-            </button>
+            {editingId === session.id ? (
+              <input
+                autoFocus
+                value={draftTitle}
+                maxLength={150}
+                onChange={(e) => setDraftTitle(e.target.value)}
+                onBlur={commitRename}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') commitRename();
+                  if (e.key === 'Escape') setEditingId(null);
+                }}
+                aria-label="Judul percakapan"
+                className="flex-1 min-w-0 self-center rounded-md border border-enterprise-300 bg-white px-1.5 py-1 text-xs text-slate-900 focus:border-enterprise-600 focus:outline-none focus:ring-1 focus:ring-enterprise-500/20"
+              />
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onSelect(session.id)}
+                  className={cn(
+                    'flex-1 min-w-0 text-left px-1.5 py-1 rounded-md text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-enterprise-500',
+                    session.id === activeSessionId ? 'font-semibold text-slate-900' : 'text-slate-600'
+                  )}
+                >
+                  {session.title}
+                </button>
+                <button
+                  type="button"
+                  className="w-9 shrink-0 inline-flex items-center justify-center rounded-md text-slate-400 hover:text-enterprise-600 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-enterprise-500 transition-opacity"
+                  onClick={() => beginRename(session)}
+                  aria-label={`Ubah judul percakapan: ${session.title}`}
+                >
+                  <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  className="w-9 shrink-0 inline-flex items-center justify-center rounded-md text-slate-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(session.id);
+                  }}
+                  aria-label={`Hapus percakapan: ${session.title}`}
+                >
+                  <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              </>
+            )}
           </div>
         ))}
       </div>
@@ -261,6 +307,7 @@ export function AIFloatingChat() {
     selectSession,
     startNewChat,
     deleteSession,
+    renameSession,
     sendMessage,
     retryLast,
     dismissChatError,
@@ -379,6 +426,7 @@ export function AIFloatingChat() {
                 setShowSessions(false);
               }}
               onDelete={(id) => void deleteSession(id)}
+              onRename={(id, title) => void renameSession(id, title)}
               onClose={() => setShowSessions(false)}
             />
           </div>

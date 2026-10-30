@@ -107,6 +107,28 @@ export function useAssistantChat() {
     [activeSessionId, startNewChat]
   );
 
+  const renameSession = useCallback(
+    async (sessionId: string, rawTitle: string) => {
+      const title = rawTitle.trim();
+      if (!title || title.length > 150) return;
+      // Optimistic: show the new title immediately; roll back on failure.
+      const previous = sessions;
+      setSessions((prev) =>
+        prev.map((session) => (session.id === sessionId ? { ...session, title } : session))
+      );
+      const res = await fetch(`/api/assistant/sessions/${sessionId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title }),
+      });
+      if (!res.ok) {
+        setSessions(previous);
+        setPageError('Gagal mengubah judul percakapan. Silakan coba lagi.');
+      }
+    },
+    [sessions]
+  );
+
   const sendMessage = useCallback(
     async (rawMessage: string) => {
       const message = rawMessage.trim();
@@ -291,6 +313,7 @@ export function useAssistantChat() {
     selectSession,
     startNewChat,
     deleteSession,
+    renameSession,
     sendMessage,
     retryLast,
     dismissChatError,
