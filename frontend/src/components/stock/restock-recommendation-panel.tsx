@@ -13,6 +13,13 @@ import {
 } from 'lucide-react';
 import { formatRupiah } from '@/lib/format';
 import { formatDateId } from '@/lib/date';
+import {
+  buildExpiryPhrase,
+  buildWhySentence,
+  formatCoverPhrase,
+  formatUnitCount,
+  sortRecommendations,
+} from '@/lib/stock/recommendation-explainer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -134,7 +141,8 @@ export function RestockRecommendationPanel({
 
   const rows = useMemo(() => {
     const items = data?.recommendations ?? [];
-    return onlyRestock ? items.filter((item) => item.status === 'RESTOCK') : items;
+    const filtered = onlyRestock ? items.filter((item) => item.status === 'RESTOCK') : items;
+    return sortRecommendations(filtered);
   }, [data, onlyRestock]);
 
   const chartData: StockChartPoint[] = useMemo(() => {
@@ -159,15 +167,9 @@ export function RestockRecommendationPanel({
   }, [detailItem]);
 
   const summary = data?.summary;
-
-  // Label model pada header mencerminkan model yang benar-benar dipakai per item.
-  const modelLabel = useMemo(() => {
-    const items = data?.recommendations ?? [];
-    if (items.length === 0) return MODEL_LABEL.holt_winters_7;
-    const used = Array.from(new Set(items.map((item) => item.model)));
-    if (used.length === 1) return MODEL_LABEL[used[0]] ?? MODEL_LABEL.holt_winters_7;
-    return 'Holt-Winters + fallback';
-  }, [data]);
+  const periodLabel = data?.period_label ?? '';
+  const expiryPhrase = detailItem ? buildExpiryPhrase(detailItem.days_of_cover) : null;
+  // no further model aggregation needed; per-item model shown in the detail modal
 
   return (
     <div className="space-y-4">
@@ -179,19 +181,14 @@ export function RestockRecommendationPanel({
               <TrendingUp className="w-4 h-4" />
             </div>
             <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-sm font-bold text-slate-900">
-                  Rekomendasi Stok Berbasis Tren Penjualan
-                </h2>
-                <Badge variant="brand" className="text-[10px]">
-                  {modelLabel}
-                </Badge>
-              </div>
+              <h2 className="text-sm font-bold text-slate-900">
+                Rekomendasi Stok Berbasis Tren Penjualan
+              </h2>
               <p className="text-xs text-slate-500 mt-0.5">
                 {data
                   ? `Estimasi kebutuhan stok ${data.period_label} (${formatDateId(
                       data.start_date
-                    )} s.d. ${formatDateId(data.end_date)}).`
+                    )} s.d. ${formatDateId(data.end_date)}). Item paling genting ditampilkan di atas.`
                   : 'Menghitung estimasi kebutuhan stok dari riwayat penjualan harian.'}
               </p>
             </div>
@@ -301,7 +298,7 @@ export function RestockRecommendationPanel({
             {
               label: 'Item Kritis',
               value: summary.critical_count,
-              subtext: 'Cakupan stok di bawah 1,5 hari',
+              subtext: 'Stok cukup di bawah 1,5 hari',
               badge:
                 summary.critical_count > 0 ? (
                   <Badge variant="danger">Kritis</Badge>
@@ -314,18 +311,6 @@ export function RestockRecommendationPanel({
               value: formatRupiah(summary.estimated_capital),
               subtext: 'Usulan qty × harga modal (HPP)',
               badge: <Badge variant="neutral">HPP</Badge>,
-            },
-            {
-              label: 'Tingkat Akurasi Prediksi',
-              value:
-                summary.avg_wape_pct === null ? '-' : `${summary.avg_wape_pct}%`,
-              subtext: 'Tingkat kepercayaan perkiraan penjualan',
-              badge:
-                summary.avg_wape_pct !== null && summary.avg_wape_pct < 25 ? (
-                  <Badge variant="success">Akurat</Badge>
-                ) : (
-                  <Badge variant="warning">Cukup</Badge>
-                ),
             },
           ]}
         />
@@ -360,96 +345,76 @@ export function RestockRecommendationPanel({
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
                   <th className="py-3 px-4">Produk</th>
-                  <th className="py-3 px-4">Cabang</th>
-                  <th className="py-3 px-4 text-center">Stok Saat Ini</th>
-                  <th className="py-3 px-4 text-center">Rata-rata/Hari</th>
-                  <th className="py-3 px-4 text-center">Prediksi Periode</th>
-                  <th className="py-3 px-4 text-center">Target Stok</th>
-                  <th className="py-3 px-4 text-center">Usulan Restock</th>
-                  <th className="py-3 px-4 text-center">Hari Cakupan</th>
-                  <th className="py-3 px-4 text-center">Status</th>
+                  <th className="py-3 px-4">Kondisi Stok</th>
+                  <th className="py-3 px-4 text-center">Butuh vs Ada</th>
+                  <th className="py-3 px-4 text-center">Beli</th>
                   <th className="py-3 px-4 text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {rows.map((item) => (
-                  <tr key={item.product_id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3.5 px-4">
-                      <span className="font-semibold text-slate-900 text-xs block">
-                        {item.name}
-                      </span>
-                      <span className="font-mono text-[10px] text-slate-400">{item.sku}</span>
-                    </td>
-                    <td className="py-3.5 px-4 font-medium text-slate-800 whitespace-nowrap">
-                      {item.branch_name}
-                    </td>
-                    <td className="py-3.5 px-4 text-center font-mono font-bold text-slate-900 whitespace-nowrap">
-                      {item.current_stock}
-                    </td>
-                    <td className="py-3.5 px-4 text-center font-mono text-slate-600 whitespace-nowrap">
-                      {item.average_daily.toFixed(1)}
-                    </td>
-                    <td className="py-3.5 px-4 text-center font-mono text-slate-600 whitespace-nowrap">
-                      {Math.round(item.forecast_total)}
-                    </td>
-                    <td className="py-3.5 px-4 text-center font-mono font-semibold text-slate-700 whitespace-nowrap">
-                      {item.target_stock}
-                    </td>
-                    <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                      {item.suggested_qty > 0 ? (
-                        <span className="font-mono font-bold text-brand-600 text-sm">
-                          +{item.suggested_qty}
+                {rows.map((item) => {
+                  return (
+                    <tr key={item.product_id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="py-3.5 px-4">
+                        <span className="font-semibold text-slate-900 text-xs block">
+                          {item.name}
                         </span>
-                      ) : (
-                        <span className="font-mono text-slate-400">0</span>
-                      )}
-                    </td>
-                    <td className="py-3.5 px-4 text-center font-mono whitespace-nowrap">
-                      {item.days_of_cover === null ? (
-                        <span className="text-slate-400">-</span>
-                      ) : (
-                        <span
-                          className={
-                            item.days_of_cover < 1.5
-                              ? 'text-rose-600 font-bold'
-                              : item.days_of_cover < 3
-                              ? 'text-amber-600 font-bold'
-                              : 'text-slate-600'
-                          }
-                        >
-                          {item.days_of_cover.toFixed(1)}
+                        <span className="font-mono text-[10px] text-slate-400">
+                          {item.sku} &middot; {item.branch_name}
                         </span>
-                      )}
-                    </td>
-                    <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                      <StatusBadge item={item} />
-                    </td>
-                    <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                      <div className="flex items-center justify-center gap-1.5">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => setDetailItem(item)}
-                          className="h-7 text-[11px] text-slate-600"
-                          title="Lihat detail tren penjualan"
-                        >
-                          Detail
-                        </Button>
-                        {item.suggested_qty > 0 && (
-                          <Button
-                            variant="primary"
-                            size="sm"
-                            onClick={() => onRequestRestock(item)}
-                            className="h-7 text-[11px] flex items-center gap-1"
-                            title="Catat restock dengan qty usulan"
-                          >
-                            <Check className="w-3 h-3" /> Catat Restock
-                          </Button>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <StatusBadge item={item} />
+                        <span className="block text-[10px] text-slate-500 mt-0.5">
+                          {formatCoverPhrase(item.days_of_cover)}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                        <span className="font-mono font-bold text-slate-900">
+                          {formatUnitCount(item.target_stock)}
+                        </span>
+                        <span className="text-slate-300 mx-1">/</span>
+                        <span className="font-mono text-slate-600">
+                          {formatUnitCount(item.current_stock)}
+                        </span>
+                        <span className="block text-[10px] text-slate-400">butuh / ada</span>
+                      </td>
+                      <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                        {item.suggested_qty > 0 ? (
+                          <span className="font-mono font-bold text-brand-600 text-sm">
+                            +{formatUnitCount(item.suggested_qty)}
+                          </span>
+                        ) : (
+                          <span className="font-mono text-slate-400">0</span>
                         )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                        <div className="flex items-center justify-center gap-1.5">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => setDetailItem(item)}
+                            className="h-7 text-[11px] text-slate-600"
+                            title="Lihat alasan & tren penjualan"
+                          >
+                            Detail
+                          </Button>
+                          {item.suggested_qty > 0 && (
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={() => onRequestRestock(item)}
+                              className="h-7 text-[11px] flex items-center gap-1"
+                              title="Catat restock dengan qty usulan"
+                            >
+                              <Check className="w-3 h-3" /> Catat Restock
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -482,23 +447,61 @@ export function RestockRecommendationPanel({
             </div>
 
             <div className="p-6 space-y-4 overflow-y-auto">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <DetailStat label="Stok Saat Ini" value={`${detailItem.current_stock} unit`} />
-                <DetailStat
-                  label="Target Stok"
-                  value={`${detailItem.target_stock} unit`}
-                />
-                <DetailStat
-                  label="Usulan Restock"
-                  value={`${detailItem.suggested_qty} unit`}
-                  accent
-                />
+              {/* Decision banner: what to do, at a glance */}
+              <div className="rounded-xl border border-brand-200 bg-brand-50 p-4 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-700">
+                    Yang perlu Anda lakukan
+                  </p>
+                  <p className="text-sm font-bold text-slate-900 mt-0.5">
+                    {detailItem.suggested_qty > 0
+                      ? `Beli ${formatUnitCount(detailItem.suggested_qty)} unit`
+                      : detailItem.status === 'SURPLUS'
+                      ? 'Tidak perlu beli — stok lebih'
+                      : 'Tidak perlu restock'}
+                    {detailItem.suggested_qty > 0 && (
+                      <span className="font-semibold text-slate-600">
+                        {' '}
+                        &middot; ±{formatRupiah(detailItem.suggested_qty * detailItem.cost_price)}
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-[11px] text-slate-600 mt-0.5">
+                    {formatCoverPhrase(detailItem.days_of_cover)}
+                  </p>
+                </div>
+                {detailItem.suggested_qty > 0 && (
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={() => {
+                      onRequestRestock(detailItem);
+                      setDetailItem(null);
+                    }}
+                    className="flex items-center gap-1.5 shrink-0"
+                  >
+                    <Check className="w-4 h-4" /> Catat Restock
+                  </Button>
+                )}
+              </div>
+
+              {/* Why this quantity: the math, in plain language */}
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-xs text-slate-700 leading-relaxed">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                  Kenapa disarankan segitu?
+                </p>
+                {buildWhySentence(detailItem, periodLabel)}
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <DetailStat label="Stok Sekarang" value={`${formatUnitCount(detailItem.current_stock)} unit`} />
+                <DetailStat label="Target Stok" value={`${formatUnitCount(detailItem.target_stock)} unit`} />
                 <DetailStat
                   label="Cakupan Stok"
                   value={
                     detailItem.days_of_cover === null
                       ? 'Tidak ada penjualan'
-                      : `${detailItem.days_of_cover.toFixed(1)} hari`
+                      : `±${detailItem.days_of_cover.toFixed(1).replace('.', ',')} hari`
                   }
                 />
               </div>
@@ -509,7 +512,7 @@ export function RestockRecommendationPanel({
                     Tren Penjualan Harian & Prediksi
                   </h4>
                   <span className="text-[10px] text-slate-400">
-                    Model: {detailItem.model} &middot; WAPE:{' '}
+                    Model: {MODEL_LABEL[detailItem.model] ?? detailItem.model} &middot; Akurasi (WAPE):{' '}
                     {detailItem.wape_pct === null ? '-' : `${detailItem.wape_pct}%`}
                   </span>
                 </div>
@@ -517,6 +520,9 @@ export function RestockRecommendationPanel({
                   data={chartData}
                   forecastStartDate={detailItem.forecast[0]?.date}
                 />
+                {expiryPhrase && (
+                  <p className="mt-2 text-[11px] text-slate-600">{expiryPhrase}</p>
+                )}
               </div>
 
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-xs text-slate-600 leading-relaxed">
