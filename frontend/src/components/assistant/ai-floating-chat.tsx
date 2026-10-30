@@ -580,15 +580,15 @@ export function AIFloatingChat() {
               )}
             </button>
           </div>
-          <p className="mt-1.5 text-[10px] text-slate-400 leading-relaxed">
-            Ringkasan cepat dari data POS — AI bisa keliru. Cek{' '}
-            <Link
-              href="/reports"
-              className="font-medium text-enterprise-600 hover:underline"
-            >
-              Laporan
-            </Link>{' '}
-            untuk angka resmi sebelum memutuskan.
+          <p className="mt-1.5 flex items-start gap-1.5 rounded-lg border border-amber-200/70 bg-amber-50 px-2 py-1.5 text-[10px] font-medium text-amber-800 leading-relaxed">
+            <AlertTriangle className="h-3 w-3 shrink-0 mt-0.5 text-amber-600" aria-hidden="true" />
+            <span>
+              Jawaban AI Asisten mungkin keliru.{' '}
+              <Link href="/reports" className="underline hover:text-amber-900">
+                Cek data
+              </Link>{' '}
+              untuk verifikasi.
+            </span>
           </p>
         </div>
       </div>
