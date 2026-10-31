@@ -2196,3 +2196,21 @@
 **Verifikasi:** typecheck ✅ lint ✅ test 153/153 ✅ build ✅; `/api/briefing/morning` mengembalikan script multi-section. **Belum teruji:** dengarkan transisi antar-section di browser (perceptual — tak bisa diuji via curl).
 
 ---
+
+## Fitur Migrasi Bisnis (Wizard /import) (31 Okt)
+
+**Permintaan:** owner dengan bisnis yang sudah berjalan dapat memasukkan datanya sekali unggah (katalog + stok awal, riwayat penjualan, pengeluaran) lalu melanjutkan operasional.
+
+**Perubahan (commit `feat: add business migration wizard ...`):**
+- `src/lib/import/templates.ts` — 3 template (PRODUCTS/SALES/EXPENSES) + auto-map header Indonesia (mis. "Harga Jual" → selling_price).
+- `src/lib/import/csv-parser.ts` — parser CSV (Papa Parse) & Excel (ExcelJS), deteksi delimiter, uang gaya owner ("Rp 12.500", "12,500"), tanggal ISO/DD-MM-YYYY/serial Excel, validasi zod per baris (coerce), chunking 500, error CSV.
+- `src/app/api/import/[type]/route.ts` — PRODUCTS → RPC `import_products_batch` (produk baru dapat stok awal + mutasi IMPORT; produk lama stok tak diubah per D6); SALES → RPC `import_sales_batch` dengan `p_deduct_stock=false` (riwayat tidak memotong stok — stok awal sudah mewakilinya); EXPENSES → multi-row insert. Semua: owner-only, cek cabang, catat `import_jobs`.
+- `components/import/migration-wizard.tsx` — stepper 3 langkah (pilih+template → unggah+pratinjau dengan penanda error per baris & unduh baris gagal → progres batch + ringkasan + CTA "Mulai Pakai POS"); pengelompokan baris penjualan per tanggal+metode, mapping SKU→product_id dari katalog.
+- `/import/page.tsx` di-rewrite (wizard menggantikan mockup); dashboard menampilkan banner migrasi bila katalog masih kosong.
+- Test: 12 test parser/mapping/chunking/error-CSV (total 165 lulus).
+
+**Verifikasi hidup (dev server, akun demo):** PRODUCTS inserted=1 (stok 7 ✓), SALES created=1 (omzet 24.000 ✓, stok tak berubah ✓), EXPENSES created=1 ✓; artefak uji dibersihkan (produk terhapus, transaksi di-void, pengeluaran terhapus). typecheck/lint/build ✅.
+
+**Catatan:** wizard menggunakan RPC & import_jobs yang sudah ada — tanpa perubahan skema DB.
+
+---
