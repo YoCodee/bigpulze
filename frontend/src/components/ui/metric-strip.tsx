@@ -29,45 +29,39 @@ export function MetricStrip({
   return (
     <div
       className={cn(
-        'rounded-xl border border-slate-200 bg-white shadow-card overflow-hidden',
+        'overflow-hidden rounded-xl border border-stone-200/80 bg-white shadow-card',
         className
       )}
     >
       {(title || action) && (
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 bg-slate-50/50">
+        <div className="flex items-center justify-between gap-4 border-b border-stone-100 px-5 py-3.5">
           {title && (
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-              {title}
-            </h4>
+            <h4 className="text-sm font-semibold text-stone-800">{title}</h4>
           )}
-          {action && <div className="text-xs text-slate-500">{action}</div>}
+          {action && <div className="text-xs text-stone-500">{action}</div>}
         </div>
       )}
       <div
         className={cn(
-          'grid divide-y sm:divide-y-0 sm:divide-x divide-slate-200',
+          'grid divide-y divide-stone-100 sm:divide-x sm:divide-y-0',
           metrics.length === 1 && 'grid-cols-1',
           metrics.length === 2 && 'grid-cols-1 sm:grid-cols-2',
           metrics.length === 3 && 'grid-cols-1 sm:grid-cols-3',
           metrics.length >= 4 && 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
-          // Ditempatkan setelah aturan >=4; tailwind-merge mempertahankan
-          // aturan terakhir sehingga 5 metrik tampil penuh dalam satu baris.
           metrics.length === 5 && 'lg:grid-cols-5'
         )}
       >
         {metrics.map((m, idx) => (
-          <div key={idx} className="p-5 flex flex-col justify-between">
-            <div className="flex items-center justify-between gap-2 mb-1.5">
-              <span className="text-xs font-medium text-slate-500 truncate">
-                {m.label}
-              </span>
+          <div key={idx} className="flex flex-col justify-between p-5">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span className="truncate text-sm text-stone-600">{m.label}</span>
               {m.badge}
             </div>
-            <div className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 tabular-nums">
+            <div className="text-2xl font-semibold tracking-[-0.02em] text-stone-900 tabular-nums sm:text-[28px]">
               {m.value}
             </div>
             {m.subtext && (
-              <div className="mt-1 text-xs text-slate-500 leading-normal">
+              <div className="mt-1.5 text-xs leading-relaxed text-stone-500">
                 {m.subtext}
               </div>
             )}
@@ -75,9 +69,9 @@ export function MetricStrip({
               <div className="mt-1.5 flex items-center text-xs">
                 <span
                   className={cn(
-                    'font-semibold',
+                    'font-medium',
                     m.change.isNeutral
-                      ? 'text-slate-500'
+                      ? 'text-stone-500'
                       : m.change.isPositive
                       ? 'text-emerald-600'
                       : 'text-rose-600'

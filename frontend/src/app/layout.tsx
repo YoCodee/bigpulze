@@ -1,21 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import "@fontsource/plus-jakarta-sans/400.css";
+import "@fontsource/plus-jakarta-sans/500.css";
+import "@fontsource/plus-jakarta-sans/600.css";
+import "@fontsource/plus-jakarta-sans/700.css";
+import "@fontsource/plus-jakarta-sans/800.css";
 import "./globals.css";
-
-const instrumentSans = localFont({
-  src: [
-    {
-      path: "./fonts/InstrumentSans-VariableFont_wdth,wght.ttf",
-      style: "normal",
-    },
-    {
-      path: "./fonts/InstrumentSans-Italic-VariableFont_wdth,wght.ttf",
-      style: "italic",
-    },
-  ],
-  variable: "--font-instrument-sans",
-  display: "swap",
-});
 
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
@@ -42,9 +32,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body
-        className={`${instrumentSans.variable} ${geistMono.variable} font-sans antialiased`}
-      >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className={`${geistMono.variable} font-sans antialiased`}>
         {children}
       </body>
     </html>

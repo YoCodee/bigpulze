@@ -7,6 +7,8 @@ export * from './table';
 export * from './tabs';
 export * from './empty-state';
 export * from './metric-strip';
+export * from './stat-card';
+export * from './section-header';
 export * from './dialog';
 export * from './dropdown-filter';
 export * from './blueprint-grid';

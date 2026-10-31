@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
 
 const config: Config = {
   content: [
@@ -14,6 +15,10 @@ const config: Config = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        /* Kanvas hangat 60% — lihat globals.css */
+        canvas: "hsl(var(--canvas))",
+        surface: "hsl(var(--surface))",
+        "surface-muted": "hsl(var(--surface-muted))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -70,6 +75,20 @@ const config: Config = {
           900: "#7C2D12",
           DEFAULT: "#F6821F",
         },
+        // Sage emerald lembut untuk fitur cerdas/analitik (bukan status sukses)
+        sage: {
+          50: "#F1F6F1",
+          100: "#E3EDE4",
+          200: "#C9DCCB",
+          300: "#A8C4AD",
+          400: "#83A88D",
+          500: "#668D72",
+          600: "#4E7A60",
+          700: "#3F624D",
+          800: "#344F3F",
+          900: "#2A4033",
+          DEFAULT: "#4E7A60",
+        },
         // Tokens Tema Gelap (Untuk Landing Page & Hero)
         dark: {
           canvas: "#0A0A0C",
@@ -81,13 +100,13 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
-          "var(--font-instrument-sans)",
-          "Inter",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "Roboto",
-          "sans-serif",
+          '"Plus Jakarta Sans"',
+          'Inter',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
+          'Roboto',
+          'sans-serif',
         ],
         mono: [
           "var(--font-geist-mono)",
@@ -104,12 +123,27 @@ const config: Config = {
         "3xl": "1.5rem",
       },
       boxShadow: {
-        crisp: "0 1px 2px 0 rgba(0, 0, 0, 0.04)",
-        card: "0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04)",
-        "glow-orange": "0 0 35px -5px rgba(246, 130, 31, 0.35)",
+        crisp: "0 1px 2px 0 rgba(28, 25, 23, 0.04)",
+        card: "0 1px 2px 0 rgba(28, 25, 23, 0.04), 0 1px 3px -1px rgba(28, 25, 23, 0.03)",
+        soft: "0 1px 2px rgba(28, 25, 23, 0.04), 0 8px 24px -12px rgba(28, 25, 23, 0.12)",
+        "glow-orange": "0 0 35px -5px rgba(246, 130, 31, 0.28)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },
-  plugins: [],
+  plugins: [animate],
 };
 export default config;

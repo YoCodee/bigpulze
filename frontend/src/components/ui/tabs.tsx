@@ -1,4 +1,7 @@
+'use client';
+
 import * as React from 'react';
+import * as TabsPrimitive from '@radix-ui/react-tabs';
 import { cn } from '@/lib/utils';
 
 export interface TabItem {
@@ -16,6 +19,10 @@ export interface TabsProps {
   variant?: 'pill' | 'underline';
 }
 
+/**
+ * Tabs berbasis Radix: mendukung navigasi panah kiri/kanan, Home/End,
+ * roving tabindex, dan atribut ARIA yang benar. API lama dipertahankan.
+ */
 export function Tabs({
   items,
   activeId,
@@ -23,84 +30,75 @@ export function Tabs({
   className,
   variant = 'pill',
 }: TabsProps) {
-  if (variant === 'underline') {
-    return (
-      <div className={cn('flex items-center space-x-6 border-b border-slate-200', className)}>
+  const isUnderline = variant === 'underline';
+
+  return (
+    <TabsPrimitive.Root
+      value={activeId}
+      onValueChange={onChange}
+      activationMode="automatic"
+      className={cn(isUnderline && 'w-full', className)}
+    >
+      <TabsPrimitive.List
+        aria-label="Navigasi tab"
+        className={cn(
+          isUnderline
+            ? 'flex items-center gap-4 overflow-x-auto border-b border-stone-200/80 sm:gap-6'
+            : 'inline-flex select-none items-center gap-1 rounded-xl border border-stone-200/70 bg-stone-100/70 p-1'
+        )}
+      >
         {items.map((tab) => {
           const isActive = tab.id === activeId;
           const Icon = tab.icon;
+
           return (
-            <button
+            <TabsPrimitive.Trigger
               key={tab.id}
-              type="button"
-              onClick={() => onChange(tab.id)}
+              value={tab.id}
               className={cn(
-                'group inline-flex items-center gap-2 pb-3 pt-1 text-sm font-medium border-b-2 transition-colors cursor-pointer select-none',
-                isActive
-                  ? 'border-enterprise-600 text-enterprise-600 font-semibold'
-                  : 'border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300'
+                'group inline-flex cursor-pointer select-none items-center whitespace-nowrap transition-colors',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas',
+                isUnderline
+                  ? 'gap-1.5 border-x-0 border-t-0 border-b-2 pb-2.5 pt-1 text-[13px] sm:gap-2 sm:pb-3 sm:text-sm'
+                  : 'gap-2 rounded-lg px-3.5 py-1.5 text-sm',
+                isUnderline
+                  ? isActive
+                    ? '-mb-px border-b-orange-500 border-x-transparent border-t-transparent font-medium text-stone-900'
+                    : '-mb-px border-b-transparent border-x-transparent border-t-transparent font-normal text-stone-500 hover:border-b-stone-300 hover:text-stone-800'
+                  : isActive
+                  ? 'bg-white font-medium text-stone-900 shadow-sm'
+                  : 'font-normal text-stone-500 hover:bg-white/60 hover:text-stone-800'
               )}
             >
-              {Icon && <Icon className={cn('h-4 w-4', isActive ? 'text-enterprise-600' : 'text-slate-400 group-hover:text-slate-600')} />}
+              {Icon && (
+                <Icon
+                  className={cn(
+                    isUnderline
+                      ? 'hidden h-3.5 w-3.5 sm:block sm:h-4 sm:w-4'
+                      : 'h-3.5 w-3.5',
+                    isActive
+                      ? 'text-orange-600'
+                      : 'text-stone-400 group-hover:text-stone-600'
+                  )}
+                />
+              )}
               <span>{tab.label}</span>
-              {typeof tab.count === 'number' && (
+              {typeof tab.count === 'number' && tab.count > 0 && (
                 <span
                   className={cn(
-                    'rounded-full px-2 py-0.5 text-xs font-semibold',
-                    isActive ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-600'
+                    'rounded-full px-1.5 py-0.5 text-[11px] font-medium tabular-nums',
+                    isActive
+                      ? 'bg-orange-50 text-orange-700'
+                      : 'bg-stone-100 text-stone-500'
                   )}
                 >
                   {tab.count}
                 </span>
               )}
-            </button>
+            </TabsPrimitive.Trigger>
           );
         })}
-      </div>
-    );
-  }
-
-  // Default: Segmented Capsule Pill Tabs (refrence1 (4).png)
-  return (
-    <div
-      className={cn(
-        'inline-flex items-center gap-1 p-1 bg-slate-100 border border-slate-200/80 rounded-lg select-none',
-        className
-      )}
-      role="tablist"
-    >
-      {items.map((tab) => {
-        const isActive = tab.id === activeId;
-        const Icon = tab.icon;
-        return (
-          <button
-            key={tab.id}
-            type="button"
-            role="tab"
-            aria-selected={isActive}
-            onClick={() => onChange(tab.id)}
-            className={cn(
-              'inline-flex items-center gap-2 px-3.5 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all cursor-pointer',
-              isActive
-                ? 'bg-white text-slate-900 font-semibold shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-            )}
-          >
-            {Icon && <Icon className={cn('h-3.5 w-3.5', isActive ? 'text-enterprise-600' : 'text-slate-400')} />}
-            <span>{tab.label}</span>
-            {typeof tab.count === 'number' && (
-              <span
-                className={cn(
-                  'rounded-full px-1.5 py-0.2 text-[11px] font-semibold',
-                  isActive ? 'bg-slate-100 text-slate-800' : 'bg-slate-200 text-slate-600'
-                )}
-              >
-                {tab.count}
-              </span>
-            )}
-          </button>
-        );
-      })}
-    </div>
+      </TabsPrimitive.List>
+    </TabsPrimitive.Root>
   );
 }
