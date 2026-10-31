@@ -5,7 +5,7 @@ export const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto rounded-lg border border-slate-200 bg-white">
+  <div className="relative w-full overflow-auto rounded-xl border border-stone-200/80 bg-white">
     <table
       ref={ref}
       className={cn('w-full caption-bottom text-sm', className)}
@@ -21,7 +21,7 @@ export const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    className={cn('[&_tr]:border-b [&_tr]:border-slate-200 bg-slate-50/75', className)}
+    className={cn('[&_tr]:border-b [&_tr]:border-stone-100 bg-stone-50/60', className)}
     {...props}
   />
 ));
@@ -46,7 +46,7 @@ export const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      'border-b border-slate-200 transition-colors hover:bg-slate-50/80 data-[state=selected]:bg-slate-100',
+      'border-b border-stone-100 transition-colors hover:bg-stone-50/70 data-[state=selected]:bg-stone-100',
       className
     )}
     {...props}
@@ -61,7 +61,7 @@ export const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      'h-10 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wider text-slate-500 whitespace-nowrap',
+      'h-10 whitespace-nowrap px-4 text-left align-middle text-xs font-medium text-stone-500',
       className
     )}
     {...props}
@@ -75,7 +75,7 @@ export const TableCell = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <td
     ref={ref}
-    className={cn('py-3 px-4 align-middle text-slate-800 text-sm', className)}
+    className={cn('px-4 py-3 align-middle text-sm text-stone-800', className)}
     {...props}
   />
 ));
@@ -87,7 +87,7 @@ export const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn('mt-4 text-xs text-slate-500', className)}
+    className={cn('mt-4 text-xs text-stone-500', className)}
     {...props}
   />
 ));

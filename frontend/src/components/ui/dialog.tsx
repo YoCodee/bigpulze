@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './button';
@@ -16,6 +17,18 @@ export interface DialogProps {
   className?: string;
 }
 
+const maxWidthClasses = {
+  sm: 'sm:max-w-sm',
+  md: 'sm:max-w-md',
+  lg: 'sm:max-w-lg',
+  xl: 'sm:max-w-xl',
+  '2xl': 'sm:max-w-2xl',
+};
+
+/**
+ * Dialog berbasis Radix: focus trap, Escape, scroll lock, dan
+ * pengembalian fokus ditangani otomatis. API lama tetap dipertahankan.
+ */
 export function Dialog({
   open,
   onClose,
@@ -26,87 +39,67 @@ export function Dialog({
   maxWidth = 'lg',
   className,
 }: DialogProps) {
-  React.useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape' && open) {
-        onClose();
-      }
-    }
-    if (open) {
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
-    }
-    return () => {
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [open, onClose]);
-
-  if (!open) return null;
-
-  const maxWidthClasses = {
-    sm: 'max-w-sm',
-    md: 'max-w-md',
-    lg: 'max-w-lg',
-    xl: 'max-w-xl',
-    '2xl': 'max-w-2xl',
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity"
-        onClick={onClose}
-        aria-hidden="true"
-      />
+    <DialogPrimitive.Root
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
+    >
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay
+          className="fixed inset-0 z-50 bg-stone-950/40 backdrop-blur-[2px] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0"
+        />
 
-      {/* Dialog Surface */}
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="dialog-title"
-        className={cn(
-          'relative w-full rounded-xl border border-slate-200 bg-white shadow-2xl transition-all z-10 overflow-hidden flex flex-col max-h-[90vh]',
-          maxWidthClasses[maxWidth],
-          className
-        )}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-          <div>
-            <h3 id="dialog-title" className="text-base sm:text-lg font-bold text-slate-900">
-              {title}
-            </h3>
-            {description && (
-              <p className="mt-0.5 text-xs text-slate-500 leading-normal">
-                {description}
-              </p>
-            )}
+        <DialogPrimitive.Content
+          className={cn(
+            'fixed left-1/2 top-1/2 z-50 flex max-h-[90vh] w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden',
+            'rounded-2xl border border-stone-200 bg-white shadow-soft',
+            'duration-200 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
+            'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+            maxWidthClasses[maxWidth],
+            className
+          )}
+        >
+          <div className="flex items-start justify-between gap-4 border-b border-stone-100 px-5 py-4 sm:px-6">
+            <div className="min-w-0 space-y-1">
+              <DialogPrimitive.Title className="text-base font-semibold tracking-[-0.01em] text-stone-900">
+                {title}
+              </DialogPrimitive.Title>
+              {description ? (
+                <DialogPrimitive.Description className="text-sm leading-relaxed text-stone-500">
+                  {description}
+                </DialogPrimitive.Description>
+              ) : (
+                <DialogPrimitive.Description className="sr-only">
+                  Detail dialog
+                </DialogPrimitive.Description>
+              )}
+            </div>
+
+            <DialogPrimitive.Close asChild>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="-mr-1 -mt-1 shrink-0 text-stone-400 hover:text-stone-700"
+                aria-label="Tutup dialog"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogPrimitive.Close>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            aria-label="Tutup modal"
-            className="text-slate-400 hover:text-slate-700"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-5 text-sm text-slate-700">
-          {children}
-        </div>
-
-        {/* Footer */}
-        {footer && (
-          <div className="flex items-center justify-end gap-2.5 border-t border-slate-200 bg-slate-50/50 px-6 py-3.5">
-            {footer}
+          <div className="flex-1 overflow-y-auto px-5 py-5 text-sm text-stone-700 sm:px-6">
+            {children}
           </div>
-        )}
-      </div>
-    </div>
+
+          {footer && (
+            <div className="flex items-center justify-end gap-2.5 border-t border-stone-100 bg-stone-50/70 px-5 py-3.5 sm:px-6">
+              {footer}
+            </div>
+          )}
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }

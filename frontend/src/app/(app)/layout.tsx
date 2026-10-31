@@ -9,7 +9,6 @@ import {
   Receipt,
   ArrowDownCircle,
   FileSpreadsheet,
-  HelpCircle,
   Menu,
   X,
   LogOut,
@@ -24,6 +23,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { AIFloatingChat } from '@/components/assistant/ai-floating-chat';
 import { useDashboardTour } from '@/hooks/use-dashboard-tour';
+import { Toaster } from 'sonner';
 interface UserProfile {
   user_id: string;
   email: string;
@@ -182,6 +182,11 @@ export default function AppLayout({
 
   const isCashier = profile?.role === 'CASHIER';
 
+  // Nama profil demo sering menyertakan keterangan dalam tanda kurung
+  // (mis. "Budi Santoso (Owner)"). Tampilkan nama intinya saja.
+  const displayName =
+    profile?.full_name?.replace(/\s*\(.*\)\s*$/, '').trim() || 'Pengguna';
+
   // Filter kelompok navigasi berdasarkan role dan pencarian cepat
   const filteredGroups = navGroups
     .map((group) => {
@@ -214,20 +219,20 @@ export default function AppLayout({
     );
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
-      <div className="flex-1 flex">
+    <div className="flex min-h-screen flex-col bg-canvas text-stone-900">
+      <div className="flex flex-1">
         {/* ======================================================== */}
         {/* SIDEBAR DESKTOP (256px - Mengacu ke redesign/dashboard/sidebar (1).png) */}
         {/* ======================================================== */}
-        <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-white border-r border-slate-200 z-30">
-          {/* Header Sidebar: Workspace / Akun Selector (Tinggi 52px) */}
+        <aside className="hidden md:fixed md:inset-y-0 md:z-30 md:flex md:w-64 md:flex-col border-r border-stone-200/80 bg-white">
+          {/* Header Sidebar: Workspace / Akun Selector (Tinggi 56px) */}
           <div
             id="tour-sidebar-logo"
-            className="h-[52px] border-b border-slate-200 px-4 flex items-center justify-between shrink-0 bg-white"
+            className="flex h-14 shrink-0 items-center justify-between border-b border-stone-100 bg-white px-4"
           >
-            <div className="flex items-center space-x-2.5 min-w-0">
+            <div className="flex min-w-0 items-center space-x-2.5">
               {/* Logo Alur Icon */}
-              <div className="h-7 w-7 rounded-lg bg-brand-500 text-white flex items-center justify-center shadow-xs shrink-0">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-500 text-white shadow-xs">
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -235,46 +240,46 @@ export default function AppLayout({
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="w-4 h-4"
+                  className="h-4 w-4"
                 >
                   <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                 </svg>
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-bold text-slate-900 truncate">
+                <p className="truncate text-sm font-semibold text-stone-900">
                   {profile?.org_name || 'Alur POS'}
                 </p>
-                <p className="text-[10px] text-slate-500 truncate">
+                <p className="truncate text-xs text-stone-500">
                   {profile?.role === 'CASHIER' ? 'Kasir Cabang' : 'Owner Pusat'}
                 </p>
               </div>
             </div>
-            <ChevronsUpDown className="w-4 h-4 text-slate-400 shrink-0" />
+            <ChevronsUpDown className="h-4 w-4 shrink-0 text-stone-400" />
           </div>
 
           {/* Quick Search Bar (Ctrl+K) */}
-          <div id="tour-sidebar-search" className="px-3 pt-3 pb-2 shrink-0">
-            <div className="relative flex items-center w-full">
-              <Search className="absolute left-2.5 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
+          <div id="tour-sidebar-search" className="shrink-0 px-3 pb-2 pt-3">
+            <div className="relative flex w-full items-center">
+              <Search className="pointer-events-none absolute left-2.5 h-3.5 w-3.5 text-stone-400" />
               <input
                 ref={searchInputRef}
                 type="text"
                 value={searchNav}
                 onChange={(e) => setSearchNav(e.target.value)}
-                placeholder="Pencarian cepat..."
-                className="h-8 w-full rounded-md border border-slate-200 bg-slate-50/75 pl-8 pr-12 text-xs text-slate-900 transition-colors placeholder:text-slate-400 focus:bg-white focus:border-enterprise-600 focus:outline-none focus:ring-1 focus:ring-enterprise-500/20"
+                placeholder="Cari menu..."
+                className="h-9 w-full rounded-lg border border-stone-200 bg-stone-50/70 pl-8 pr-12 text-sm text-stone-900 transition-colors placeholder:text-stone-400 focus:border-orange-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/15"
               />
-              <kbd className="absolute right-2 inline-flex items-center rounded border border-slate-200 bg-white px-1 py-0.5 text-[9px] font-semibold text-slate-400 font-mono shadow-2xs pointer-events-none">
+              <kbd className="pointer-events-none absolute right-2 inline-flex items-center rounded border border-stone-200 bg-white px-1 py-0.5 font-mono text-[9px] font-medium text-stone-400 shadow-2xs">
                 Ctrl K
               </kbd>
             </div>
           </div>
 
           {/* Navigasi Grouped */}
-          <div className="flex-1 overflow-y-auto px-3 py-2 space-y-4">
+          <div className="flex-1 space-y-5 overflow-y-auto px-3 py-2">
             {filteredGroups.map((group) => (
               <div key={group.groupName} className="space-y-1">
-                <p className="px-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                <p className="px-2.5 text-[11px] font-medium tracking-wide text-stone-400">
                   {group.groupName}
                 </p>
                 <div className="space-y-0.5">
@@ -286,33 +291,40 @@ export default function AppLayout({
                         key={item.name}
                         id={item.tourId}
                         href={item.href}
-                        className={`group flex items-center justify-between px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors select-none ${
+                        aria-current={isActive ? 'page' : undefined}
+                        className={`group relative flex select-none items-center justify-between rounded-lg px-2.5 py-2 text-[13px] transition-colors ${
                           isActive
-                            ? 'bg-slate-100/90 text-slate-900 font-semibold'
-                            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                            ? 'bg-orange-50/80 font-medium text-orange-900'
+                            : 'font-normal text-stone-600 hover:bg-stone-100/70 hover:text-stone-900'
                         }`}
                       >
-                        <div className="flex items-center min-w-0">
+                        {isActive && (
+                          <span
+                            aria-hidden="true"
+                            className="absolute bottom-1.5 left-0 top-1.5 w-0.5 rounded-full bg-orange-500"
+                          />
+                        )}
+                        <div className="flex min-w-0 items-center">
                           <Icon
                             className={`mr-2.5 h-4 w-4 shrink-0 transition-colors ${
                               isActive
-                                ? 'text-enterprise-600'
-                                : 'text-slate-400 group-hover:text-slate-600'
+                                ? 'text-orange-600'
+                                : 'text-stone-400 group-hover:text-stone-600'
                             }`}
                           />
                           <span className="truncate">{item.name}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
+                        <div className="flex shrink-0 items-center gap-1.5">
                           {item.badge && (
-                            <span className="rounded-md bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-700 border border-brand-200/60">
+                            <span className="rounded-md border border-stone-200/70 bg-stone-50 px-1.5 py-0.5 text-[10px] font-medium text-stone-600">
                               {item.badge}
                             </span>
                           )}
                           <ChevronRight
                             className={`h-3 w-3 transition-opacity ${
                               isActive
-                                ? 'text-slate-400 opacity-80'
-                                : 'text-slate-300 opacity-0 group-hover:opacity-100'
+                                ? 'text-orange-400 opacity-80'
+                                : 'text-stone-300 opacity-0 group-hover:opacity-100'
                             }`}
                           />
                         </div>
@@ -325,66 +337,60 @@ export default function AppLayout({
           </div>
 
           {/* Panduan Demo Link di Sidebar Footer */}
-          <div id="tour-sidebar-demo" className="shrink-0 px-3 py-2 border-t border-slate-100 bg-white">
+          <div id="tour-sidebar-demo" className="shrink-0 border-t border-stone-100 bg-white px-3 py-2">
             <Link
               href="/demo-guide"
-              className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              className={`flex items-center justify-between rounded-lg px-2.5 py-2 text-[13px] transition-colors ${
                 pathname === '/demo-guide'
-                  ? 'bg-slate-100/90 text-slate-900 font-semibold'
-                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-orange-50/80 font-medium text-orange-900'
+                  : 'font-normal text-stone-500 hover:bg-stone-100/70 hover:text-stone-900'
               }`}
             >
-              <div className="flex items-center min-w-0">
-                <HelpCircle className="mr-2.5 h-4 w-4 shrink-0 text-slate-400" />
+              <div className="flex min-w-0 items-center">
+                <Sparkles className="mr-2.5 h-4 w-4 shrink-0 text-orange-500" />
                 <span className="truncate">Panduan Demo</span>
               </div>
-              <span className="rounded-md bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-700 border border-brand-200/60">
-                Juri
-              </span>
             </Link>
           </div>
 
           {/* Tombol Panduan Tur Fitur Aplikasi (Driver.js) */}
-          <div className="shrink-0 px-3 py-1.5 border-t border-slate-100 bg-white">
+          <div className="shrink-0 border-t border-stone-100 bg-white px-3 py-1.5">
             <button
               id="tour-trigger-btn"
               type="button"
               onClick={startTour}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold text-enterprise-700 bg-enterprise-50 hover:bg-enterprise-100 border border-enterprise-200 transition-colors group cursor-pointer"
+              className="group flex w-full items-center justify-between rounded-lg border border-stone-200 bg-white px-2.5 py-2 text-[13px] font-medium text-stone-600 transition-colors hover:border-stone-300 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/25"
               title="Mulai tur pemandu interaktif"
             >
-              <div className="flex items-center min-w-0">
-                <Compass className="mr-2.5 h-4 w-4 text-enterprise-600 shrink-0 group-hover:rotate-45 transition-transform" />
+              <div className="flex min-w-0 items-center">
+                <Compass className="mr-2.5 h-4 w-4 shrink-0 text-orange-500 transition-transform group-hover:rotate-45" />
                 <span className="truncate">Panduan Tur Fitur</span>
               </div>
-              <span className="rounded bg-enterprise-200/60 px-1.5 py-0.5 text-[9px] font-mono font-bold text-enterprise-800">
-                Mulai
-              </span>
             </button>
           </div>
 
           {/* Footer Sidebar: Profil Pengguna & Keluar */}
-          <div id="tour-sidebar-user" className="shrink-0 border-t border-slate-200 p-3 bg-white">
+          <div id="tour-sidebar-user" className="shrink-0 border-t border-stone-100 bg-white p-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center min-w-0 space-x-2">
-                <div className="h-7 w-7 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs uppercase shrink-0">
-                  {profile?.full_name ? profile.full_name.charAt(0) : 'U'}
+              <div className="flex min-w-0 items-center space-x-2">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-stone-100 text-xs font-semibold uppercase text-stone-600 ring-1 ring-stone-200/70">
+                  {displayName.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-slate-900 truncate leading-tight">
-                    {profile?.full_name || 'Pengguna'}
+                  <p className="truncate text-[13px] font-medium leading-tight text-stone-900">
+                    {displayName || 'Pengguna'}
                   </p>
-                  <p className="text-[10px] text-slate-400 truncate leading-tight">
+                  <p className="truncate text-[11px] leading-tight text-stone-400">
                     {profile?.email || ''}
                   </p>
                 </div>
               </div>
               <Button
                 variant="ghost"
-                size="icon"
+                size="icon-sm"
                 onClick={handleLogout}
                 title="Keluar dari akun"
-                className="h-7 w-7 text-slate-400 hover:text-rose-600 hover:bg-rose-50"
+                className="text-stone-400 hover:bg-rose-50 hover:text-rose-600"
               >
                 <LogOut className="h-3.5 w-3.5" />
               </Button>
@@ -399,68 +405,33 @@ export default function AppLayout({
           {/* ======================================================== */}
           {/* TOPBAR DESKTOP (Tinggi 52px - Mengacu ke redesign/dashboard/topbar.png) */}
           {/* ======================================================== */}
-          <header className="hidden md:flex h-[52px] sticky top-0 z-20 bg-white border-b border-slate-200 items-center justify-between px-6 shrink-0">
+          <header className="sticky top-0 z-20 hidden h-14 shrink-0 items-center justify-between border-b border-stone-200/70 bg-canvas/85 px-6 backdrop-blur-sm md:flex">
             {/* Breadcrumb / Halaman Aktif */}
-            <div className="flex items-center space-x-2">
-              <span className="text-xs font-medium text-slate-400">Alur</span>
-              <span className="text-slate-300">/</span>
-              <span className="text-xs font-semibold text-slate-800">
+            <div className="flex items-center space-x-2 text-sm">
+              <span className="text-stone-400">Alur</span>
+              <span className="text-stone-300">/</span>
+              <span className="font-medium text-stone-800">
                 {currentItem?.name || 'Area Kerja'}
               </span>
             </div>
 
-            {/* Aksi Kanan Topbar */}
-            <div className="flex items-center space-x-3">
-              <Link
-                href="/demo-guide"
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-md transition"
-              >
-                <Sparkles className="h-3.5 w-3.5 text-brand-500" />
-                <span>Panduan Demo</span>
-              </Link>
-
-              <div className="h-4 w-px bg-slate-200" />
-
-              <div className="flex items-center space-x-2 text-xs text-slate-600">
-                <div className="h-6 w-6 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 font-bold text-[10px] uppercase shrink-0">
-                  {profile?.full_name ? profile.full_name.charAt(0) : 'U'}
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="font-semibold text-slate-900 truncate max-w-[140px] leading-tight">
-                    {profile?.full_name || 'Akun'}
-                  </span>
-                  <span className="text-[10px] text-slate-400 leading-tight">
-                    {profile?.role === 'CASHIER' ? 'Kasir' : 'Owner'}
-                  </span>
-                </div>
-              </div>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLogout}
-                className="text-xs text-slate-500 hover:text-rose-600"
-              >
-                Keluar
-              </Button>
-            </div>
           </header>
 
           {/* ======================================================== */}
-          {/* TOPBAR MOBILE (Tinggi 52px) */}
+          {/* TOPBAR MOBILE (Tinggi 56px) */}
           {/* ======================================================== */}
-          <header className="md:hidden sticky top-0 z-30 bg-white border-b border-slate-200 flex items-center justify-between px-4 h-[52px]">
+          <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-stone-200/70 bg-canvas/90 px-4 backdrop-blur-sm md:hidden">
             <div className="flex items-center space-x-3">
               <button
                 type="button"
-                className="p-1.5 rounded-md text-slate-600 hover:bg-slate-100 focus:outline-none"
+                className="rounded-lg p-1.5 text-stone-600 hover:bg-stone-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/30"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label="Buka menu navigasi"
               >
                 {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
               <div className="flex items-center space-x-1.5">
-                <div className="h-6 w-6 rounded bg-brand-500 text-white flex items-center justify-center">
+                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-orange-500 text-white">
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -468,37 +439,28 @@ export default function AppLayout({
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="w-3.5 h-3.5"
+                    className="h-3.5 w-3.5"
                   >
                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                   </svg>
                 </div>
-                <span className="text-sm font-bold text-slate-900">Alur</span>
+                <span className="text-sm font-semibold text-stone-900">Alur</span>
               </div>
             </div>
 
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-medium text-slate-500">
+              <span className="text-xs font-medium text-stone-500">
                 {profile?.role === 'CASHIER' ? 'Kasir' : 'Owner'}
               </span>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleLogout}
-                title="Keluar"
-                className="h-8 w-8 text-slate-500 hover:text-rose-600"
-              >
-                <LogOut className="h-4 w-4" />
-              </Button>
             </div>
           </header>
 
           {/* Drawer Navigasi Mobile */}
           {mobileMenuOpen && (
-            <div className="md:hidden bg-white border-b border-slate-200 px-4 py-3 space-y-4 shadow-lg z-20">
+            <div className="z-20 space-y-4 border-b border-stone-200/70 bg-white px-4 py-4 shadow-lg md:hidden">
               {filteredGroups.map((group) => (
                 <div key={group.groupName} className="space-y-1">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  <p className="text-[11px] font-medium tracking-wide text-stone-400">
                     {group.groupName}
                   </p>
                   <div className="space-y-0.5">
@@ -510,22 +472,22 @@ export default function AppLayout({
                           key={item.name}
                           href={item.href}
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium ${
+                          className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm ${
                             isActive
-                              ? 'bg-slate-100 text-slate-900 font-semibold'
-                              : 'text-slate-600 hover:bg-slate-50'
+                              ? 'bg-orange-50/80 font-medium text-orange-900'
+                              : 'font-normal text-stone-600 hover:bg-stone-100/70'
                           }`}
                         >
                           <div className="flex items-center">
                             <Icon
                               className={`mr-3 h-4 w-4 ${
-                                isActive ? 'text-enterprise-600' : 'text-slate-400'
+                                isActive ? 'text-orange-600' : 'text-stone-400'
                               }`}
                             />
                             <span>{item.name}</span>
                           </div>
                           {item.badge && (
-                            <span className="rounded-md bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-700">
+                            <span className="rounded-md bg-stone-50 px-1.5 py-0.5 text-[10px] font-medium text-stone-600 ring-1 ring-stone-200/70">
                               {item.badge}
                             </span>
                           )}
@@ -537,50 +499,56 @@ export default function AppLayout({
               ))}
 
               {/* Panduan Demo di Mobile Drawer */}
-              <div className="pt-2 border-t border-slate-100">
+              <div className="border-t border-stone-100 pt-3">
                 <Link
                   href="/demo-guide"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium ${
+                  className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm ${
                     pathname === '/demo-guide'
-                      ? 'bg-slate-100 text-slate-900 font-semibold'
-                      : 'text-slate-600 hover:bg-slate-50'
+                      ? 'bg-orange-50/80 font-medium text-orange-900'
+                      : 'font-normal text-stone-600 hover:bg-stone-100/70'
                   }`}
                 >
                   <div className="flex items-center">
-                    <HelpCircle className="mr-3 h-4 w-4 text-slate-400" />
+                    <Sparkles className="mr-3 h-4 w-4 text-orange-500" />
                     <span>Panduan Demo</span>
                   </div>
-                  <span className="rounded-md bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-700">
-                    Juri
-                  </span>
                 </Link>
               </div>
 
               {/* Panduan Tur di Mobile Drawer */}
-              <div className="pt-2 border-t border-slate-100">
+              <div className="border-t border-stone-100 pt-3">
                 <button
                   type="button"
                   onClick={() => {
                     setMobileMenuOpen(false);
                     startTour();
                   }}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-semibold text-enterprise-700 bg-enterprise-50 hover:bg-enterprise-100 border border-enterprise-200"
+                  className="flex w-full items-center justify-between rounded-lg border border-stone-200 px-3 py-2.5 text-sm font-medium text-stone-700 hover:bg-stone-50"
                 >
                   <div className="flex items-center">
-                    <Compass className="mr-3 h-4 w-4 text-enterprise-600" />
+                    <Compass className="mr-3 h-4 w-4 text-orange-500" />
                     <span>Panduan Tur Fitur</span>
                   </div>
-                  <span className="rounded bg-enterprise-200/60 px-1.5 py-0.5 text-[10px] font-mono font-bold text-enterprise-800">
-                    Mulai
-                  </span>
+                </button>
+              </div>
+
+              {/* Aksi keluar di bagian bawah menu mobile */}
+              <div className="border-t border-stone-100 pt-3">
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-stone-600 transition-colors hover:bg-rose-50 hover:text-rose-700"
+                >
+                  <LogOut className="h-4 w-4 text-stone-400" aria-hidden="true" />
+                  <span>Keluar</span>
                 </button>
               </div>
             </div>
           )}
 
           {/* Area Konten Halaman */}
-          <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-[1440px] w-full mx-auto">
+          <main className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-6 sm:px-6 md:px-8 md:py-8">
             {children}
           </main>
 
@@ -588,6 +556,15 @@ export default function AppLayout({
           {!isCashier && <AIFloatingChat />}
         </div>
       </div>
+
+      <Toaster
+        position="top-center"
+        richColors
+        closeButton
+        toastOptions={{
+          className: 'font-sans text-sm',
+        }}
+      />
     </div>
   );
 }

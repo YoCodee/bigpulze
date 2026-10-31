@@ -2,69 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   SISTEM WARNA 60-30-10
+   60% — kanvas hangat (warm sand) + kartu putih
+   30% — oranye sebagai aksi utama & state aktif
+   10% — sage emerald lembut untuk inteligensi/analitik
+   ============================================================ */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* 60% — Kanvas & permukaan */
+    --canvas: 45 20% 96%; /* #F7F6F3 hangat, tidak menyilaukan */
+    --surface: 0 0% 100%; /* #FFFFFF */
+    --surface-muted: 43 14% 95%;
+    --background: 45 20% 96%;
+    --foreground: 24 10% 10%; /* #1C1917 */
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 24 10% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 24 10% 10%;
 
-    /* Enterprise Blue (#0051C7) */
-    --primary: 215 100% 39%;
-    --primary-foreground: 210 40% 98%;
+    /* 30% — Oranye hangat (aksi utama) */
+    --primary: 28 92% 54%; /* #F6821F */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 40 16% 94%;
+    --secondary-foreground: 24 10% 16%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 43 14% 95%;
+    --muted-foreground: 30 6% 42%;
 
-    /* Brand Orange (#F6821F) */
-    --accent: 27 92% 54%;
+    /* 10% — Sage emerald (inteligensi, analitik), dibedakan dari sukses */
+    --accent: 145 22% 39%; /* #4E7A60 */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 215 100% 39%;
+    --border: 43 9% 89%; /* #E7E5E0 */
+    --input: 40 9% 86%;
+    --ring: 28 92% 54%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   }
 
   .dark {
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
+    --canvas: 30 6% 7%;
+    --surface: 24 6% 10%;
+    --surface-muted: 24 5% 13%;
+    --background: 30 6% 7%;
+    --foreground: 40 20% 96%;
 
-    --card: 240 10% 7%;
-    --card-foreground: 0 0% 98%;
+    --card: 24 6% 10%;
+    --card-foreground: 40 20% 96%;
 
-    --popover: 240 10% 7%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 24 6% 10%;
+    --popover-foreground: 40 20% 96%;
 
-    --primary: 215 100% 39%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 28 92% 54%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 24 5% 16%;
+    --secondary-foreground: 40 20% 96%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 24 5% 16%;
+    --muted-foreground: 30 5% 64%;
 
-    --accent: 27 92% 54%;
+    --accent: 145 22% 39%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 45%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 215 100% 39%;
+    --border: 30 7% 18%;
+    --input: 30 7% 22%;
+    --ring: 28 92% 54%;
   }
 
   * {
@@ -72,10 +85,19 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-family: var(--font-instrument-sans), Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    @apply bg-canvas text-foreground;
+    font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: #ffedd5;
+    color: #7c2d12;
+  }
+
+  :focus-visible {
+    outline-color: #f6821f;
   }
 }
 
@@ -257,20 +279,20 @@
 }
 
 .alur-tour-popover .driver-popover-next-btn {
-  background-color: #0051c7 !important;
+  background-color: #f6821f !important;
   color: #ffffff !important;
-  border: 1px solid #0051c7 !important;
+  border: 1px solid #f6821f !important;
   border-radius: 8px !important;
   padding: 5px 14px !important;
   font-size: 12px !important;
   font-weight: 600 !important;
-  box-shadow: 0 1px 2px rgba(0, 81, 199, 0.2) !important;
+  box-shadow: 0 1px 2px rgba(246, 130, 31, 0.25) !important;
   transition: all 0.15s ease !important;
 }
 
 .alur-tour-popover .driver-popover-next-btn:hover {
-  background-color: #0043a4 !important;
-  border-color: #0043a4 !important;
+  background-color: #ea580c !important;
+  border-color: #ea580c !important;
 }
 
 .alur-tour-popover .driver-popover-close-btn {
@@ -290,4 +312,18 @@
 .alur-tour-popover .driver-popover-close-btn:hover {
   background-color: #f1f5f9 !important;
   color: #334155 !important;
+}
+
+
+*, html, body, .font-sans {
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+html, body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

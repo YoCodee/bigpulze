@@ -2,21 +2,29 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import type { LucideIcon } from 'lucide-react';
+import { toast } from 'sonner';
+import {
+  ResponsiveContainer,
+  ComposedChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Bar,
+  Line,
+} from 'recharts';
 import { RoleGuard } from '@/components/role-guard';
 import { formatRupiah } from '@/lib/format';
 import { formatDateId } from '@/lib/date';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
-import { MetricStrip, MetricItem } from '@/components/ui/metric-strip';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs } from '@/components/ui/tabs';
 import { EmptyState } from '@/components/ui/empty-state';
+import { SectionHeader } from '@/components/ui/section-header';
+import { StatCard, type StatTone } from '@/components/ui/stat-card';
+import { Dialog } from '@/components/ui/dialog';
 import {
   CheckCircle2,
   ArrowRightLeft,
@@ -24,21 +32,22 @@ import {
   ShieldAlert,
   Loader2,
   RefreshCw,
-  X,
   PackageCheck,
   Check,
   Building2,
   ArrowRight,
-  FileText,
   Calendar,
   BarChart3,
   Lock,
-  Boxes,
   Volume2,
+  TrendingUp,
+  Wallet,
+  Target,
+  ShieldCheck,
+  FileText,
 } from 'lucide-react';
 import { useMorningBriefing } from '@/hooks/use-morning-briefing';
 import { MorningBriefingPlayer } from '@/components/dashboard/morning-briefing-player';
-
 
 interface AnomalyItem {
   id: string;
@@ -89,8 +98,11 @@ const sevenDaysTrend = [
   { date: '18 Okt', omzet: 4800000, beban: 1050000, laba: 2330000, ratio: 94 },
   { date: '19 Okt', omzet: 5100000, beban: 1120000, laba: 2470000, ratio: 100 },
   { date: '20 Okt', omzet: 3850000, beban: 890000, laba: 1840000, ratio: 76 },
-  { date: 'Hari Ini', omzet: 3920000, beban: 910000, laba: 1870000, ratio: 77 },
-];
+  { date: 'Hari ini', omzet: 3920000, beban: 910000, laba: 1870000, ratio: 77 },
+].map((day) => ({
+  ...day,
+  target: Math.round(day.omzet / (day.ratio / 100)),
+}));
 
 const branchList = [
   {
@@ -114,7 +126,7 @@ const branchList = [
     progress: 88,
     activeStaff: 2,
     anomalyCount: 1,
-    stockStatus: 'Perlu Mutasi (Sirup)',
+    stockStatus: 'Perlu mutasi (sirup)',
     isHeadquarters: false,
   },
   {
@@ -130,6 +142,61 @@ const branchList = [
     isHeadquarters: false,
   },
 ];
+
+type SummaryCard = {
+  label: string;
+  value: string;
+  hint: string;
+  trend?: { text: string; className: string };
+  icon: LucideIcon;
+  tone: StatTone;
+};
+
+const severityMeta = {
+  CRITICAL: { label: 'Mendesak', badge: 'danger' as const, dot: 'bg-rose-500' },
+  HIGH: { label: 'Penting', badge: 'warning' as const, dot: 'bg-amber-500' },
+  MEDIUM: { label: 'Perlu dicek', badge: 'neutral' as const, dot: 'bg-stone-400' },
+  LOW: { label: 'Catatan', badge: 'neutral' as const, dot: 'bg-stone-300' },
+};
+
+function cleanAnomalyDescription(description: string): string {
+  // Skor statistik tetap ada di data, tetapi tidak perlu memenuhi ringkasan untuk pengguna.
+  return description.replace(/\s*\(z:\s*[-+]?\d+(?:\.\d+)?\)/gi, '').trim();
+}
+
+function TrendTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  label?: string | number;
+  payload?: Array<{ name?: string; value?: number | string; color?: string }>;
+}) {
+  if (!active || !payload || payload.length === 0) return null;
+
+  return (
+    <div className="rounded-lg border border-stone-200 bg-white px-3 py-2 shadow-soft">
+      <p className="text-xs font-medium text-stone-500">{label}</p>
+      <div className="mt-1.5 space-y-1">
+        {payload.map((item, i) => (
+          <div key={i} className="flex items-center justify-between gap-4 text-xs">
+            <span className="flex items-center gap-1.5 text-stone-500">
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: item.color }}
+              />
+              {item.name}
+            </span>
+            <span className="font-medium tabular-nums text-stone-900">
+              {formatRupiah(Number(item.value ?? 0))}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'branches' | 'anomalies'>('overview');
@@ -159,7 +226,6 @@ export default function DashboardPage() {
 
   // Executing Transfer State
   const [executingId, setExecutingId] = useState<string | null>(null);
-  const [successToast, setSuccessToast] = useState<string | null>(null);
 
   // AI Voice Morning Briefing State
   const [showBriefingPlayer, setShowBriefingPlayer] = useState(false);
@@ -167,6 +233,14 @@ export default function DashboardPage() {
 
   // Migration onboarding: org with an empty catalog is likely pre-migration.
   const [isEmptyOrg, setIsEmptyOrg] = useState(false);
+  const [greeting, setGreeting] = useState('Selamat pagi');
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    setGreeting(
+      hour < 11 ? 'Selamat pagi' : hour < 15 ? 'Selamat siang' : hour < 19 ? 'Selamat sore' : 'Selamat malam'
+    );
+  }, []);
 
   // Fetch Dashboard Intelligence
   const fetchDashboardData = useCallback(async () => {
@@ -179,9 +253,14 @@ export default function DashboardPage() {
       setIsEmptyOrg(prodRes.ok && Array.isArray(prodJson.data) && prodJson.data.length === 0);
 
 
-      // Fetch Anomalies
-      const anomRes = await fetch('/api/anomalies?status=OPEN');
-      const anomJson = await anomRes.json();
+      // Fetch anomali & rekomendasi secara paralel agar tidak ada
+      // jeda di mana satu kartu sudah terisi dan kartu lain masih kosong.
+      const [anomRes, recRes] = await Promise.all([
+        fetch('/api/anomalies?status=OPEN'),
+        fetch('/api/stock/recommendations'),
+      ]);
+      const [anomJson, recJson] = await Promise.all([anomRes.json(), recRes.json()]);
+
       if (anomRes.ok && anomJson.data) {
         setAnomalies(anomJson.data.anomalies || []);
         if (anomJson.data.summary) {
@@ -189,9 +268,6 @@ export default function DashboardPage() {
         }
       }
 
-      // Fetch Recommendations
-      const recRes = await fetch('/api/stock/recommendations');
-      const recJson = await recRes.json();
       if (recRes.ok && recJson.data) {
         setRecommendations(recJson.data.recommendations || []);
         if (recJson.data.summary) {
@@ -230,13 +306,14 @@ export default function DashboardPage() {
         throw new Error(json.error?.message || 'Gagal menyelesaikan anomali');
       }
 
-      setSuccessToast(`Anomali "${selectedAnomaly.title}" berhasil diselesaikan.`);
-      setTimeout(() => setSuccessToast(null), 4000);
+      toast.success('Catatan tersimpan', {
+        description: `"${selectedAnomaly.title}" sudah ditandai selesai.`,
+      });
       setSelectedAnomaly(null);
       setResolutionNote('');
       fetchDashboardData();
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : 'Terjadi kesalahan');
+      toast.error(err instanceof Error ? err.message : 'Terjadi kesalahan');
     } finally {
       setResolving(false);
     }
@@ -261,115 +338,87 @@ export default function DashboardPage() {
         throw new Error(json.error?.message || 'Gagal mengeksekusi mutasi stok');
       }
 
-      setSuccessToast(
-        `Sukses! ${rec.transfer_qty} unit ${rec.product_name} berhasil dimutasi dari ${rec.from_branch_name} ke ${rec.to_branch_name}.`
-      );
-      setTimeout(() => setSuccessToast(null), 4000);
+      toast.success('Stok berhasil dipindahkan', {
+        description: `${rec.transfer_qty} unit ${rec.product_name} dari ${rec.from_branch_name} ke ${rec.to_branch_name}.`,
+      });
       fetchDashboardData();
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : 'Terjadi kesalahan saat mutasi');
+      toast.error(err instanceof Error ? err.message : 'Terjadi kesalahan saat mutasi');
     } finally {
       setExecutingId(null);
     }
   };
 
-  // Metrics for MetricStrip component
-  const morningMetrics: MetricItem[] = [
+  const summaryCards: SummaryCard[] = [
     {
-      label: 'Kemarin Untung / Rugi?',
+      label: 'Laba kemarin',
       value: '+Rp 2.730.000',
-      subtext: 'Omzet Rp 3.850.000 • Modal Rp 1.120.000',
-      badge: (
-        <Badge variant="success" dot>
-          Untung ✅
-        </Badge>
-      ),
-      change: {
-        value: '+12.4% vs target',
-        isPositive: true,
-      },
+      hint: 'Omzet Rp 3.850.000 · modal Rp 1.120.000',
+      trend: { text: '+12,4% dari target harian', className: 'text-emerald-600' },
+      icon: TrendingUp,
+      tone: 'success',
     },
     {
-      label: 'Uang Kas di Kasir',
+      label: 'Uang kas di kasir',
       value: 'Rp 2.140.000',
-      subtext: 'Selisih Rp 0 • Semua transaksi klop',
-      badge: (
-        <Badge variant="neutral" dot>
-          Klop Sempurna
-        </Badge>
-      ),
-      change: {
-        value: 'Klop 100%',
-        isNeutral: true,
-      },
+      hint: 'Tidak ada selisih pencatatan',
+      trend: { text: 'Klop 100%', className: 'text-stone-500' },
+      icon: Wallet,
+      tone: 'neutral',
     },
     {
-      label: 'Perlu Diperhatikan',
-      value: `${anomalySummary.total_open} Pengeluaran`,
-      subtext: `${anomalySummary.critical_count} transaksi mendesak dicek`,
-      badge: (
-        <Badge variant={anomalySummary.total_open > 0 ? 'warning' : 'success'} dot>
-          {anomalySummary.total_open > 0 ? 'Perlu Tinjauan' : 'Normal'}
-        </Badge>
-      ),
+      label: 'Perlu diperhatikan',
+      value: loading ? '—' : `${anomalySummary.total_open} pengeluaran`,
+      hint: loading
+        ? 'Memeriksa transaksi seluruh gerai...'
+        : `${anomalySummary.critical_count} transaksi mendesak untuk dicek`,
+      trend: loading
+        ? undefined
+        : anomalySummary.total_open > 0
+        ? { text: 'Tinjau sebelum tutup buku', className: 'text-amber-700' }
+        : { text: 'Semua transaksi wajar', className: 'text-emerald-600' },
+      icon: ShieldAlert,
+      tone: anomalySummary.total_open > 0 ? 'warning' : 'success',
     },
     {
-      label: 'Saran Mutasi Stok',
-      value: `${recommendations.length} Rekomendasi`,
-      subtext: `Potensi hemat +${formatRupiah(recommendationSummary.total_potential_net_benefit)}`,
-      badge: (
-        <Badge variant="brand" dot>
-          Hemat Biaya
-        </Badge>
-      ),
+      label: 'Saran mutasi stok',
+      value: loading ? '—' : `${recommendations.length} rekomendasi`,
+      hint: loading
+        ? 'Menghitung saran antarcabang...'
+        : `Potensi hemat ${formatRupiah(recommendationSummary.total_potential_net_benefit)}`,
+      trend: loading
+        ? undefined
+        : { text: 'Mencegah kehabisan stok', className: 'text-sage-700' },
+      icon: ArrowRightLeft,
+      tone: 'info',
     },
   ];
 
   return (
     <RoleGuard allowedRoles={['OWNER']}>
-      <div className="space-y-6 max-w-[1440px] mx-auto pb-16">
-        {/* Toast Alert */}
-        {successToast && (
-          <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-emerald-800 text-xs font-semibold shadow-xs animate-in fade-in duration-200">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>{successToast}</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setSuccessToast(null)}
-              className="text-emerald-600 hover:text-emerald-800 p-1 rounded-md"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-
+      <div className="mx-auto max-w-[1400px] space-y-7 pb-16">
         {/* ======================================================== */}
-        {/* 1. GREETING BANNER (redesign/dashboard/refrence1 (2).png) */}
+        {/* HEADER */}
         {/* ======================================================== */}
-        <div id="tour-dashboard-greeting" className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div className="space-y-1.5">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="brand" dot>
-                Ikhtisar Usaha
-              </Badge>
-              <span className="text-xs text-slate-500 flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                {formatDateId(new Date(), 'EEEE, d MMMM yyyy')}
-              </span>
-            </div>
-
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Selamat Pagi, Budi Santoso
+        <header
+          id="tour-dashboard-greeting"
+          className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between"
+        >
+          <div className="space-y-2">
+            <p className="flex items-center gap-1.5 text-sm text-stone-500">
+              <Calendar className="h-3.5 w-3.5 text-stone-400" aria-hidden="true" />
+              {formatDateId(new Date(), 'EEEE, d MMMM yyyy')}
+            </p>
+            <h1 className="text-2xl font-semibold tracking-[-0.02em] text-stone-900 sm:text-[28px]">
+              {greeting}
             </h1>
-
-            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
-              Ikhtisar kondisi 3 gerai Kopi Senja hingga pagi ini.
+            <p className="max-w-xl text-sm leading-relaxed text-stone-600">
+              Ini ringkasan 3 gerai Anda — apa yang terjadi kemarin, apa yang perlu
+              diperhatikan, dan apa yang bisa dilakukan sekarang.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 md:shrink-0">
             <Button
               id="tour-briefing-button"
               variant="secondary"
@@ -381,21 +430,17 @@ export default function DashboardPage() {
                   morningBriefing.play();
                 }
               }}
-              className={`gap-1.5 border-enterprise-200 text-enterprise-700 hover:bg-enterprise-50 transition-all ${
+              className={
                 showBriefingPlayer
-                  ? 'bg-enterprise-50 border-enterprise-400 ring-2 ring-enterprise-200 text-enterprise-900 font-semibold'
-                  : ''
-              }`}
+                  ? 'border-sage-200 bg-sage-50 text-sage-800 hover:bg-sage-100'
+                  : 'border-stone-200 text-stone-700'
+              }
             >
-              <Volume2
-                className={`w-3.5 h-3.5 text-enterprise-600 ${
-                  morningBriefing.status === 'speaking' ? 'animate-bounce text-enterprise-700' : ''
-                }`}
-              />
+              <Volume2 className="h-3.5 w-3.5 text-sage-600" aria-hidden="true" />
               <span>
                 {morningBriefing.status === 'speaking'
-                  ? 'Sedang Membacakan...'
-                  : 'Dengarkan Briefing Pagi'}
+                  ? 'Sedang membacakan...'
+                  : 'Dengarkan briefing'}
               </span>
             </Button>
 
@@ -404,20 +449,16 @@ export default function DashboardPage() {
               size="sm"
               onClick={fetchDashboardData}
               disabled={refreshing}
-              className="gap-1.5"
+              className="border-stone-200 text-stone-700"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-enterprise-600' : ''}`} />
-              <span>Segarkan</span>
+              <RefreshCw
+                className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin text-orange-500' : ''}`}
+                aria-hidden="true"
+              />
+              <span>{refreshing && !loading ? 'Menyegarkan...' : 'Segarkan'}</span>
             </Button>
-
-            <Link href="/demo-guide">
-              <Button variant="primary" size="sm" className="gap-1.5 bg-enterprise-600 hover:bg-enterprise-700">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Panduan Demo</span>
-              </Button>
-            </Link>
           </div>
-        </div>
+        </header>
 
         {/* AI Voice Morning Briefing Player Panel */}
         {showBriefingPlayer && (
@@ -449,471 +490,409 @@ export default function DashboardPage() {
 
                 {/* ======================================================== */}
         {/* 3. SEGMENTED TABS SWITCHER (refrence1 (4).png) */}
+
         {/* ======================================================== */}
-        <div id="tour-dashboard-tabs" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+        {/* TABS */}
+        {/* ======================================================== */}
+        <div id="tour-dashboard-tabs">
           <Tabs
-            variant="pill"
+            variant="underline"
+            className="w-full"
             activeId={activeTab}
             onChange={(id) => setActiveTab(id as 'overview' | 'branches' | 'anomalies')}
             items={[
-              {
-                id: 'overview',
-                label: '3 Pertanyaan Pagi',
-                icon: Sparkles,
-              },
-              {
-                id: 'branches',
-                label: 'Performa Cabang',
-                icon: Building2,
-                count: 3,
-              },
-              {
-                id: 'anomalies',
-                label: 'Perlu Dicek',
-                icon: ShieldAlert,
-                count: anomalySummary.total_open,
-              },
+              { id: 'overview', label: '3 pertanyaan pagi', icon: Sparkles },
+              { id: 'branches', label: 'Performa cabang', icon: Building2, count: 3 },
+              { id: 'anomalies', label: 'Perlu dicek', icon: ShieldAlert, count: anomalySummary.total_open },
             ]}
           />
-
-          <div className="text-xs text-slate-500 flex items-center gap-1.5 self-end sm:self-auto">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Data Terproteksi</span>
-          </div>
         </div>
 
         {/* ======================================================== */}
-        {/* 4. SEGMENTED 4-KPI METRIC STRIP (refrence1 (4).png) */}
+        {/* RINGKASAN ANGKA */}
         {/* ======================================================== */}
-        <div id="tour-metric-strip">
-        <MetricStrip
-          title="Ringkasan 3 Pertanyaan Pagi"
-          action={
-            <Link href="/reports" className="text-enterprise-600 hover:text-enterprise-700 font-bold flex items-center gap-1">
-              <span>Buka Laporan</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          }
-          metrics={morningMetrics}
-        />
+        <div id="tour-metric-strip" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {summaryCards.map((card) => (
+            <StatCard
+              key={card.label}
+              label={card.label}
+              value={card.value}
+              hint={card.hint}
+              icon={card.icon}
+              tone={card.tone}
+              trend={
+                card.trend ? (
+                  <span className={card.trend.className}>{card.trend.text}</span>
+                ) : undefined
+              }
+            />
+          ))}
         </div>
 
         {/* ======================================================== */}
-        {/* 5. TWO-COLUMN LAYOUT (Main Rail 8-Col + Right Rail 4-Col) */}
+        {/* KONTEN UTAMA */}
         {/* ======================================================== */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* ========================================================================= */}
-          {/* MAIN RAIL (8 COLUMNS) */}
-          {/* ========================================================================= */}
-          <div className="lg:col-span-8 space-y-6">
-            {/* TAB: OVERVIEW & ANOMALIES */}
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+          <div className="space-y-6 lg:col-span-8">
             {activeTab !== 'branches' && (
               <>
-                {/* 5.1. PILAR 2: APA YANG HARUS DIPERHATIKAN? (DETEKSI ANOMALI) */}
-                <Card id="tour-anomaly-card">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-slate-100 pb-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="p-1.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-200">
-                          <ShieldAlert className="w-4 h-4" />
-                        </span>
-                        <CardTitle>Apa yang Harus Diperhatikan?</CardTitle>
-                      </div>
-                      <CardDescription className="mt-1">
-                        Daftar pengeluaran dan transaksi tidak biasa yang perlu diperiksa.
-                      </CardDescription>
-                    </div>
+                {/* APA YANG PERLU DIPERHATIKAN */}
+                <Card id="tour-anomaly-card" className="overflow-hidden">
+                  <SectionHeader
+                    icon={ShieldAlert}
+                    tone="warning"
+                    title="Apa yang perlu diperhatikan?"
+                    description="Pengeluaran dan transaksi yang tidak biasa, diurutkan dari yang paling mendesak."
+                    actions={
+                      <Badge variant={anomalySummary.total_open > 0 ? 'warning' : 'success'}>
+                        {anomalySummary.total_open > 0
+                          ? `${anomalySummary.total_open} perlu dicek`
+                          : 'Semua normal'}
+                      </Badge>
+                    }
+                  />
 
-                    <Badge
-                      variant={anomalySummary.critical_count > 0 ? 'danger' : 'warning'}
-                      dot
-                      className="shrink-0"
-                    >
-                      {anomalySummary.total_open} Perlu Dicek
-                    </Badge>
-                  </CardHeader>
-
-                  <CardContent className="p-5 space-y-3">
-                    {loading ? (
-                      <div className="p-8 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin text-enterprise-600" />
-                        <span>Memeriksa transaksi seluruh gerai...</span>
-                      </div>
-                    ) : anomalies.length === 0 ? (
-                      <EmptyState
-                        icon={CheckCircle2}
-                        title="Seluruh Cabang Beroperasi Normal"
-                        description="Tidak ditemukan lonjakan biaya, selisih register kasir, atau transaksi mencurigakan. Usaha Anda dalam kondisi baik."
-                      />
-                    ) : (
-                      <div className="space-y-3">
-                        {anomalies.map((anom) => (
-                          <div
-                            key={anom.id}
-                            className={`p-4 rounded-xl border text-xs space-y-2.5 transition-all ${
-                              anom.severity === 'CRITICAL'
-                                ? 'bg-rose-50/50 border-rose-200'
-                                : anom.severity === 'HIGH'
-                                ? 'bg-amber-50/50 border-amber-200'
-                                : 'bg-slate-50/80 border-slate-200'
-                            }`}
-                          >
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                  <Badge
-                                    variant={
-                                      anom.severity === 'CRITICAL'
-                                        ? 'danger'
-                                        : anom.severity === 'HIGH'
-                                        ? 'warning'
-                                        : 'neutral'
-                                    }
-                                  >
-                                    {anom.severity === 'CRITICAL'
-                                      ? 'Mendesak'
-                                      : anom.severity === 'HIGH'
-                                      ? 'Penting'
-                                      : 'Perlu Dicek'}
-                                  </Badge>
-                                  <h4 className="text-sm font-bold text-slate-900 leading-snug">
-                                    {anom.title}
-                                  </h4>
-                                </div>
-                                <p className="text-xs text-slate-600 leading-relaxed pt-0.5">
-                                  {anom.description}
-                                </p>
-                              </div>
-
-                              <Button
-                                variant="secondary"
-                                size="sm"
-                                onClick={() => setSelectedAnomaly(anom)}
-                                className="shrink-0 font-bold"
-                              >
-                                Tinjau
-                              </Button>
-                            </div>
-
-                            <div className="pt-2 border-t border-slate-200/60 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
-                              <span className="font-medium text-slate-700">
-                                Lokasi: {anom.branch_name || 'Seluruh Cabang'}
-                              </span>
-                              <span className="text-slate-400">
-                                Terdeteksi: {formatDateId(anom.detected_at, 'd MMM, HH:mm')}
-                              </span>
-                            </div>
-                          </div>
+                  <CardContent className="p-0">
+                    {loading && anomalies.length === 0 ? (
+                      <div className="space-y-3 p-5 sm:p-6">
+                        {[0, 1, 2].map((i) => (
+                          <div key={i} className="h-16 animate-pulse rounded-lg bg-stone-100" />
                         ))}
                       </div>
+                    ) : anomalies.length === 0 ? (
+                      <div className="p-5 sm:p-6">
+                        <EmptyState
+                          icon={CheckCircle2}
+                          title="Tidak ada yang mencurigakan"
+                          description="Tidak ditemukan lonjakan biaya, selisih kas, atau transaksi yang perlu ditinjau. Usaha Anda dalam kondisi baik."
+                        />
+                      </div>
+                    ) : (
+                      <ul className="divide-y divide-stone-100">
+                        {anomalies.map((anom) => {
+                          const meta = severityMeta[anom.severity] ?? severityMeta.MEDIUM;
+                          return (
+                            <li key={anom.id} className="px-5 py-4 sm:px-6">
+                              <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+                                <div className="flex min-w-0 gap-3">
+                                  <span
+                                    aria-hidden="true"
+                                    className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${meta.dot}`}
+                                  />
+                                  <div className="min-w-0">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <p className="text-sm font-medium leading-snug text-stone-900">
+                                        {anom.title}
+                                      </p>
+                                      <Badge variant={meta.badge}>{meta.label}</Badge>
+                                    </div>
+                                    <p className="mt-1 text-sm leading-relaxed text-stone-600">
+                                      {cleanAnomalyDescription(anom.description)}
+                                    </p>
+                                    <p className="mt-2 text-xs text-stone-400">
+                                      {anom.branch_name || 'Seluruh cabang'} ·{' '}
+                                      {formatDateId(anom.detected_at, 'd MMM, HH:mm')}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setSelectedAnomaly(anom)}
+                                  className="shrink-0 justify-self-end"
+                                >
+                                  Tinjau
+                                </Button>
+                              </div>
+                            </li>
+                          );
+                        })}
+                      </ul>
                     )}
                   </CardContent>
                 </Card>
 
-                {/* 5.2. PILAR 3: APA YANG HARUS DILAKUKAN? (MUTASI STOK 1-KLIK) */}
-                <Card id="tour-transfer-card">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-slate-100 pb-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="p-1.5 rounded-lg bg-blue-50 text-enterprise-600 border border-blue-200">
-                          <ArrowRightLeft className="w-4 h-4" />
-                        </span>
-                        <CardTitle>Apa yang Harus Dilakukan?</CardTitle>
-                      </div>
-                      <CardDescription className="mt-1">
-                        Saran mutasi persediaan antarcabang untuk mencegah kehabisan stok.
-                      </CardDescription>
-                    </div>
+                {/* APA YANG PERLU DILAKUKAN */}
+                <Card id="tour-transfer-card" className="overflow-hidden">
+                  <SectionHeader
+                    icon={ArrowRightLeft}
+                    tone="info"
+                    title="Apa yang perlu dilakukan?"
+                    description="Mutasi stok antarcabang untuk mencegah kehabisan di gerai yang ramai."
+                    actions={
+                      recommendations.length > 0 ? (
+                        <Badge variant="intelligence">
+                          {recommendations.length} saran
+                        </Badge>
+                      ) : undefined
+                    }
+                  />
 
-                    <Badge variant="brand" dot className="shrink-0">
-                      {recommendations.length} Rekomendasi Mutasi
-                    </Badge>
-                  </CardHeader>
-
-                  <CardContent className="p-5 space-y-3">
-                    {loading ? (
-                      <div className="p-8 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin text-enterprise-600" />
-                        <span>Menghitung saran mutasi stok antarcabang...</span>
+                  <CardContent className="space-y-3 p-5 sm:p-6">
+                    {loading && recommendations.length === 0 ? (
+                      <div className="space-y-3">
+                        {[0, 1].map((i) => (
+                          <div key={i} className="h-40 animate-pulse rounded-xl bg-stone-100" />
+                        ))}
                       </div>
-                    ) : anomalies.length === 0 && recommendations.length === 0 ? (
+                    ) : recommendations.length === 0 ? (
                       <EmptyState
                         icon={PackageCheck}
-                        title="Seluruh Operasional & Persediaan Prima"
-                        description="Stok seluruh gerai dalam batas aman. Belum diperlukan mutasi stok saat ini."
+                        title="Persediaan dalam kondisi prima"
+                        description="Stok seluruh gerai masih dalam batas aman. Belum ada mutasi yang perlu dilakukan hari ini."
                       />
                     ) : (
-                      <div className="space-y-4">
-                        {/* 1. ANOMALY AUDIT ACTION ITEMS */}
-                        {anomalies.map((anom) => (
-                          <div
-                            key={`action-anom-${anom.id}`}
-                            className="p-4 rounded-xl border border-amber-200 bg-amber-50/40 text-xs space-y-3 shadow-2xs hover:border-amber-300 transition-all"
-                          >
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-                                  <ShieldAlert className="w-4 h-4 text-amber-600" />
-                                  Perlu Dicek: {anom.title}
-                                </span>
-                                <span className="text-[10px] text-slate-500 font-mono">
-                                  ({anom.branch_name || 'Cabang'})
-                                </span>
-                              </div>
+                      <>
+                        {recommendations.slice(0, 2).map((rec) => (
+                        <div
+                          key={rec.id}
+                          className="rounded-xl border border-stone-200/80 bg-white p-4 sm:p-5"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-medium text-stone-900">
+                                {rec.product_name}
+                              </p>
+                              <p className="mt-0.5 font-mono text-xs text-stone-400">
+                                {rec.sku}
+                              </p>
+                            </div>
+                            <Badge
+                              variant={rec.urgency === 'CRITICAL' ? 'danger' : 'intelligence'}
+                            >
+                              {rec.urgency === 'CRITICAL' ? 'Mendesak' : 'Disarankan'}
+                            </Badge>
+                          </div>
 
-                              <Badge
-                                variant={anom.severity === 'CRITICAL' ? 'danger' : 'warning'}
-                              >
-                                {anom.severity === 'CRITICAL' ? 'Mendesak' : 'Perlu Tindakan'}
-                              </Badge>
+                          <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-lg bg-stone-50/80 px-3 py-3 ring-1 ring-inset ring-stone-200/60">
+                            <div className="min-w-0">
+                              <p className="text-[11px] text-stone-400">Dari</p>
+                              <p className="truncate text-sm font-medium text-stone-800">
+                                {rec.from_branch_name}
+                              </p>
+                              <p className="mt-0.5 text-xs tabular-nums text-stone-500">
+                                {rec.from_current_stock} → {rec.from_stock_after} unit
+                              </p>
                             </div>
 
-                            <p className="text-slate-600 leading-relaxed text-xs">
-                              {anom.suggested_action || 'Periksa nota fisik dan verifikasi persetujuan pengeluaran dengan staf cabang.'}
-                            </p>
-
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 border-t border-amber-100/80">
-                              <span className="text-slate-500 text-[11px]">
-                                Beban Terindikasi: <strong className="text-rose-700 font-mono font-bold">{formatRupiah(anom.metric_value)}</strong>
+                            <div className="flex flex-col items-center gap-1 text-sage-600">
+                              <span className="rounded-full bg-sage-50 px-2 py-0.5 text-xs font-medium tabular-nums">
+                                +{rec.transfer_qty}
                               </span>
+                              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                            </div>
 
-                              <Button
-                                variant="secondary"
-                                size="sm"
-                                onClick={() => setSelectedAnomaly(anom)}
-                                className="bg-white border-amber-300 text-amber-900 hover:bg-amber-100 font-semibold text-xs gap-1.5 shadow-2xs"
-                              >
-                                <span>Periksa Pengeluaran</span>
-                                <ArrowRight className="w-3.5 h-3.5 text-amber-600" />
-                              </Button>
+                            <div className="min-w-0 text-right">
+                              <p className="text-[11px] text-stone-400">Ke</p>
+                              <p className="truncate text-sm font-medium text-stone-800">
+                                {rec.to_branch_name}
+                              </p>
+                              <p className="mt-0.5 text-xs tabular-nums text-stone-500">
+                                {rec.to_current_stock} →{' '}
+                                <span className="font-medium text-emerald-700">
+                                  {rec.to_stock_after}
+                                </span>{' '}
+                                unit
+                              </p>
                             </div>
                           </div>
-                        ))}
 
-                        {/* 2. STOCK TRANSFER ACTION ITEMS */}
-                        {recommendations.map((rec) => (
-                          <div
-                            key={rec.id}
-                            className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 text-xs space-y-3 shadow-2xs hover:border-slate-300 transition-all"
-                          >
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-                                  <Boxes className="w-4 h-4 text-enterprise-600" />
-                                  {rec.product_name}
-                                </span>
-                              </div>
+                          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <p className="text-xs leading-relaxed text-stone-500">
+                              Potensi hemat{' '}
+                              <span className="font-medium text-emerald-700">
+                                {formatRupiah(rec.net_benefit)}
+                              </span>{' '}
+                              · cukup untuk ±{rec.to_days_of_supply_after} hari
+                            </p>
 
-                              <Badge
-                                variant={rec.urgency === 'CRITICAL' ? 'danger' : 'enterprise'}
-                              >
-                                {rec.urgency === 'CRITICAL' ? 'Mendesak' : 'Disarankan'}
-                              </Badge>
-                            </div>
-
-                            {/* Movement Route Flow Box */}
-                            <div className="p-3 bg-white rounded-lg border border-slate-200 flex items-center justify-between gap-2 text-xs">
-                              {/* Donor Branch */}
-                              <div className="space-y-0.5">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                                  Dari (Surplus)
-                                </span>
-                                <p className="font-bold text-slate-800">{rec.from_branch_name}</p>
-                                <p className="text-[11px] text-slate-500 font-mono">
-                                  {rec.from_current_stock} &rarr;{' '}
-                                  <strong className="text-slate-700">{rec.from_stock_after}</strong> unit
-                                </p>
-                              </div>
-
-                              {/* Center Arrow & Qty */}
-                              <div className="flex flex-col items-center px-2">
-                                <span className="px-2 py-0.5 rounded-md bg-blue-50 text-enterprise-700 font-medium text-[11px] border border-blue-200 font-mono">
-                                  +{rec.transfer_qty} unit
-                                </span>
-                                <span className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
-                                  Pindahkan <ArrowRight className="w-3 h-3" />
-                                </span>
-                              </div>
-
-                              {/* Receiver Branch */}
-                              <div className="space-y-0.5 text-right">
-                                <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider block">
-                                  Ke (Defisit)
-                                </span>
-                                <p className="font-bold text-rose-800">{rec.to_branch_name}</p>
-                                <p className="text-[11px] text-slate-500 font-mono">
-                                  {rec.to_current_stock} &rarr;{' '}
-                                  <strong className="text-emerald-700 font-bold">
-                                    {rec.to_stock_after}
-                                  </strong>{' '}
-                                  unit
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Economic Net Benefit */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs pt-1">
-                              <div>
-                                <span className="text-slate-600">
-                                  Potensi Hemat:{' '}
-                                  <strong className="text-emerald-700 font-bold font-mono text-sm">
-                                    +{formatRupiah(rec.net_benefit)}
-                                  </strong>
-                                </span>
-                              </div>
-
-                              <span className="text-[11px] text-slate-500">
-                                Stok cukup untuk ±{rec.to_days_of_supply_after} hari
-                              </span>
-                            </div>
-
-                            {/* 1-Click Action Button */}
                             <Button
                               variant="primary"
-                              size="md"
+                              size="sm"
                               disabled={executingId === rec.id}
                               onClick={() => handleExecuteTransfer(rec)}
-                              className="w-full bg-enterprise-600 hover:bg-enterprise-700 font-bold shadow-xs gap-2"
+                              className="w-full shrink-0 sm:w-auto"
                             >
                               {executingId === rec.id ? (
                                 <>
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                  <span>Memproses Pemindahan Stok...</span>
+                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  <span>Memproses...</span>
                                 </>
                               ) : (
                                 <>
-                                  <Check className="w-4 h-4" />
-                                  <span>Pindahkan Stok ({rec.transfer_qty} Unit)</span>
+                                  <Check className="h-3.5 w-3.5" />
+                                  <span>Pindahkan {rec.transfer_qty} unit</span>
                                 </>
                               )}
                             </Button>
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      ))}
+
+                        {recommendations.length > 2 && (
+                          <Button
+                            asChild
+                            variant="ghost"
+                            size="sm"
+                            className="w-full text-stone-600"
+                          >
+                            <Link href="/stock">
+                              <span>
+                                Lihat {recommendations.length - 2} saran lainnya
+                              </span>
+                              <ArrowRight className="h-3.5 w-3.5" />
+                            </Link>
+                          </Button>
+                        )}
+                      </>
                     )}
                   </CardContent>
                 </Card>
 
-                {/* 5.3. TREN FINANSIAL 7 HARI TERAKHIR (AUTO-LEDGER) */}
-                <Card id="tour-trend-chart">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-slate-100 pb-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          <BarChart3 className="w-4 h-4" />
-                        </span>
-                        <CardTitle>Tren Finansial 7 Hari Terakhir</CardTitle>
-                      </div>
-                      <CardDescription className="mt-1">
-                        Omzet harian dibanding target penjualan.
-                      </CardDescription>
-                    </div>
-
-                    <Link href="/reports">
-                      <Button variant="secondary" size="sm" className="gap-1 font-bold">
-                        <span>Laporan Laba Rugi</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
+                {/* TREN FINANSIAL */}
+                <Card id="tour-trend-chart" className="overflow-hidden">
+                  <SectionHeader
+                    icon={BarChart3}
+                    tone="success"
+                    title="Tren finansial 7 hari terakhir"
+                    description="Omzet harian dibanding target penjualan."
+                    actions={
+                      <Button asChild variant="outline" size="sm">
+                        <Link href="/reports">
+                          <FileText className="h-3.5 w-3.5" />
+                          <span>Laporan laba rugi</span>
+                        </Link>
                       </Button>
-                    </Link>
-                  </CardHeader>
+                    }
+                  />
 
-                  <CardContent className="p-5 space-y-4">
-                    <div className="grid grid-cols-7 gap-2 items-end pt-4 h-36 border-b border-slate-100 pb-2">
-                      {sevenDaysTrend.map((t, idx) => (
-                        <div key={idx} className="flex flex-col items-center h-full justify-end group">
-                          <div className="w-full max-w-[36px] bg-slate-100 rounded-t-md relative flex flex-col justify-end overflow-hidden h-28">
-                            <div
-                              style={{ height: `${t.ratio}%` }}
-                              className="w-full bg-enterprise-500 group-hover:bg-enterprise-600 transition-all rounded-t-sm"
-                            />
-                          </div>
-                          <span className="text-[10px] text-slate-500 font-medium mt-2 truncate w-full text-center">
-                            {t.date}
-                          </span>
-                        </div>
-                      ))}
+                  <CardContent className="p-5 sm:p-6">
+                    <div className="h-60 w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <ComposedChart
+                          data={sevenDaysTrend}
+                          margin={{ top: 8, right: 8, bottom: 0, left: -12 }}
+                        >
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            vertical={false}
+                            stroke="#EEECE7"
+                          />
+                          <XAxis
+                            dataKey="date"
+                            tickLine={false}
+                            axisLine={false}
+                            tick={{ fontSize: 12, fill: '#78716C' }}
+                            dy={8}
+                          />
+                          <YAxis
+                            tickLine={false}
+                            axisLine={false}
+                            width={52}
+                            tick={{ fontSize: 11, fill: '#A8A29E' }}
+                            tickFormatter={(value: number) =>
+                              `${Math.round(Number(value) / 1_000_000)} jt`
+                            }
+                          />
+                          <Tooltip
+                            content={<TrendTooltip />}
+                            cursor={{ fill: 'rgba(246, 130, 31, 0.06)' }}
+                          />
+                          <Bar
+                            dataKey="omzet"
+                            name="Omzet"
+                            fill="#F6821F"
+                            radius={[6, 6, 0, 0]}
+                            maxBarSize={40}
+                          />
+                          <Line
+                            dataKey="target"
+                            name="Target"
+                            type="monotone"
+                            stroke="#668D72"
+                            strokeWidth={2}
+                            strokeDasharray="4 4"
+                            dot={false}
+                          />
+                        </ComposedChart>
+                      </ResponsiveContainer>
                     </div>
 
-                    <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500 pt-1">
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1.5">
-                          <span className="h-2.5 w-2.5 rounded-xs bg-enterprise-500" />
-                          <span>Omzet Harian</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="h-2.5 w-2.5 rounded-xs bg-slate-200" />
-                          <span>Target</span>
-                        </div>
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-stone-100 pt-4">
+                      <div className="flex items-center gap-4 text-xs text-stone-500">
+                        <span className="flex items-center gap-1.5">
+                          <span className="h-2 w-2 rounded-full bg-orange-500" />
+                          Omzet
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <span className="h-2 w-2 rounded-full bg-sage-500" />
+                          Target
+                        </span>
                       </div>
-
-                      <span className="font-mono text-slate-700 font-medium">
-                        Rata-rata Margin: <strong className="text-emerald-700">74%</strong>
-                      </span>
+                      <p className="text-xs text-stone-500">
+                        Rata-rata margin{' '}
+                        <span className="font-medium text-emerald-700">74%</span>
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
               </>
             )}
 
-            {/* TAB: BRANCHES ONLY VIEW */}
+            {/* TAB: PERFORMA CABANG */}
             {activeTab === 'branches' && (
-              <Card>
-                <CardHeader className="border-b border-slate-100 pb-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle>Klasemen & Performa 3 Cabang Aktif</CardTitle>
-                      <CardDescription className="mt-1">
-                        Monitoring pencapaian target penjualan dan kesehatan operasional tiap gerai.
-                      </CardDescription>
-                    </div>
-                    <Link href="/branches">
-                      <Button variant="secondary" size="sm" className="font-bold">
-                        Kelola Cabang
-                      </Button>
-                    </Link>
-                  </div>
-                </CardHeader>
+              <Card className="overflow-hidden">
+                <SectionHeader
+                  icon={Building2}
+                  title="Performa 3 cabang aktif"
+                  description="Pencapaian target penjualan dan kesehatan operasional tiap gerai."
+                  actions={
+                    <Button asChild variant="outline" size="sm">
+                      <Link href="/branches">Kelola cabang</Link>
+                    </Button>
+                  }
+                />
 
-                <CardContent className="p-5 space-y-4">
+                <CardContent className="space-y-3 p-5 sm:p-6">
                   {branchList.map((branch) => (
                     <div
                       key={branch.id}
-                      className="p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-all space-y-3"
+                      className="rounded-xl border border-stone-200/80 p-4 transition-colors hover:border-stone-300 sm:p-5"
                     >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="text-sm font-bold text-slate-900">{branch.name}</h4>
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="truncate text-sm font-medium text-stone-900">
+                              {branch.name}
+                            </p>
                             {branch.isHeadquarters && (
-                              <Badge variant="enterprise">Kantor Pusat</Badge>
+                              <Badge variant="neutral">Kantor pusat</Badge>
                             )}
                           </div>
-                          <p className="text-xs text-slate-500">{branch.city}</p>
+                          <p className="mt-0.5 text-xs text-stone-500">{branch.city}</p>
                         </div>
 
-                        <div className="text-left sm:text-right">
-                          <span className="text-sm font-extrabold text-slate-900 font-mono">
+                        <div className="sm:text-right">
+                          <p className="text-sm font-semibold tabular-nums text-stone-900">
                             {formatRupiah(branch.todayRevenue)}
-                          </span>
-                          <span className="text-xs text-slate-400 block font-mono">
-                            Target: {formatRupiah(branch.dailyTarget)} ({branch.progress}%)
-                          </span>
+                          </p>
+                          <p className="mt-0.5 text-xs text-stone-400">
+                            {branch.progress}% dari target {formatRupiah(branch.dailyTarget)}
+                          </p>
                         </div>
                       </div>
 
-                      {/* Progress bar */}
-                      <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-stone-100">
                         <div
-                          className="bg-enterprise-600 h-2 rounded-full transition-all"
+                          className="h-full rounded-full bg-orange-400 transition-all"
                           style={{ width: `${branch.progress}%` }}
                         />
                       </div>
 
-                      <div className="flex items-center justify-between pt-1 text-xs text-slate-500">
-                        <span>Staff Kasir Aktif: {branch.activeStaff} orang</span>
-                        <span className="font-medium text-slate-700">
-                          Status Bahan: {branch.stockStatus}
-                        </span>
+                      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-stone-500">
+                        <span>{branch.activeStaff} kasir aktif</span>
+                        <span>{branch.stockStatus}</span>
                       </div>
                     </div>
                   ))}
@@ -922,206 +901,224 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* ========================================================================= */}
-          {/* RIGHT RAIL (4 COLUMNS - pola redesign/dashboard/refrence1 (3).png) */}
-          {/* ========================================================================= */}
-          <div className="lg:col-span-4 space-y-6">
-            {/* 1. Target Penjualan Hari Ini per Cabang */}
-            <Card id="tour-target-card">
-              <CardHeader className="border-b border-slate-100 pb-3.5">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-bold">Target Penjualan Hari Ini</CardTitle>
-                </div>
-              </CardHeader>
-
-              <CardContent className="p-5 space-y-4">
-                {branchList.map((b) => (
-                  <div key={b.id} className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-slate-800 truncate max-w-[160px]">
-                        {b.name.replace('Kopi Senja ', '')}
+          {/* ======================================================== */}
+          {/* RAIL KANAN */}
+          {/* ======================================================== */}
+          <div className="space-y-6 lg:sticky lg:top-20 lg:col-span-4 lg:self-start">
+            <Card id="tour-target-card" className="overflow-hidden">
+              <SectionHeader icon={Target} title="Target hari ini" />
+              <CardContent className="space-y-4 px-5 pb-5 pt-6 sm:px-6 sm:pb-6 sm:pt-6">
+                {branchList.map((branch) => (
+                  <div key={branch.id} className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-3 text-xs">
+                      <span className="truncate font-medium text-stone-700">
+                        {branch.name.replace('Kopi Senja ', '')}
                       </span>
-                      <span className="font-bold text-slate-900 font-mono">
-                        {b.progress}%
+                      <span className="shrink-0 font-medium tabular-nums text-stone-900">
+                        {branch.progress}%
                       </span>
                     </div>
 
-                    <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-stone-100">
                       <div
-                        className={`h-2 rounded-full transition-all ${
-                          b.progress >= 90
-                            ? 'bg-emerald-500'
-                            : b.progress >= 80
-                            ? 'bg-enterprise-600'
-                            : 'bg-amber-500'
-                        }`}
-                        style={{ width: `${b.progress}%` }}
+                        className="h-full rounded-full bg-orange-400 transition-all"
+                        style={{ width: `${branch.progress}%` }}
                       />
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
-                      <span>{formatRupiah(b.todayRevenue)}</span>
-                      <span>Target: {formatRupiah(b.dailyTarget)}</span>
+                    <div className="flex items-center justify-between text-[11px] tabular-nums text-stone-400">
+                      <span>{formatRupiah(branch.todayRevenue)}</span>
+                      <span>dari {formatRupiah(branch.dailyTarget)}</span>
                     </div>
                   </div>
                 ))}
               </CardContent>
             </Card>
 
-            {/* 2. Ringkasan Kapasitas & Status Akun */}
-            <Card id="tour-account-status">
-              <CardHeader className="border-b border-slate-100 pb-3.5">
-                <CardTitle className="text-sm font-bold">Status Akun & Sistem</CardTitle>
-              </CardHeader>
-
-              <CardContent className="p-5 space-y-3.5 text-xs">
-                <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
-                  <span className="text-slate-500">Cabang Aktif</span>
-                  <Badge variant="enterprise">3 / 5 Cabang</Badge>
-                </div>
-
-                <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
-                  <span className="text-slate-500">Keamanan Data</span>
-                  <span className="font-semibold text-slate-800 flex items-center gap-1">
-                    <Lock className="w-3.5 h-3.5 text-emerald-600" /> Terproteksi
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
-                  <span className="text-slate-500">Pencatatan Transaksi</span>
-                  <span className="font-semibold text-emerald-700 flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Otomatis & Klop
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Laporan Keuangan</span>
-                  <span className="font-mono text-slate-700">Standar Usaha</span>
-                </div>
+            <Card className="overflow-hidden">
+              <SectionHeader icon={ArrowRightLeft} title="Ringkasan mutasi" />
+              <CardContent className="p-5">
+                <dl className="divide-y divide-stone-100 text-sm">
+                  <div className="flex items-center justify-between py-2.5">
+                    <dt className="text-stone-500">Total unit</dt>
+                    <dd className="font-medium tabular-nums text-stone-900">
+                      {recommendationSummary.total_units_to_transfer} unit
+                    </dd>
+                  </div>
+                  <div className="flex items-center justify-between py-2.5">
+                    <dt className="text-stone-500">Potensi hemat</dt>
+                    <dd className="font-medium tabular-nums text-emerald-700">
+                      {formatRupiah(recommendationSummary.total_potential_net_benefit)}
+                    </dd>
+                  </div>
+                  <div className="flex items-center justify-between py-2.5">
+                    <dt className="text-stone-500">Mendesak</dt>
+                    <dd className="font-medium text-stone-900">
+                      {recommendationSummary.critical_count} saran
+                    </dd>
+                  </div>
+                </dl>
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="sm"
+                  className="mt-2 w-full justify-between px-0 text-stone-600 hover:bg-transparent"
+                >
+                  <Link href="/stock">
+                    <span>Buka inventaris</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
 
-            {/* 3. Panduan Cepat Skenario */}
-            <Card id="tour-quick-guide" className="bg-[#121316] text-white border-slate-800">
-              <CardHeader className="border-b border-slate-800/80 pb-3">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-brand-400" />
-                  <CardTitle className="text-sm font-bold text-white">Panduan Uji Coba</CardTitle>
-                </div>
-              </CardHeader>
+            <Card id="tour-account-status" className="overflow-hidden">
+              <SectionHeader icon={ShieldCheck} title="Status akun & sistem" />
+              <CardContent className="p-5">
+                <dl className="divide-y divide-stone-100 text-sm">
+                  <div className="flex items-center justify-between py-2.5">
+                    <dt className="text-stone-500">Cabang aktif</dt>
+                    <dd className="font-medium text-stone-900">3 dari 5</dd>
+                  </div>
+                  <div className="flex items-center justify-between py-2.5">
+                    <dt className="text-stone-500">Keamanan data</dt>
+                    <dd className="flex items-center gap-1.5 font-medium text-stone-900">
+                      <Lock className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
+                      Terproteksi
+                    </dd>
+                  </div>
+                  <div className="flex items-center justify-between py-2.5">
+                    <dt className="text-stone-500">Pencatatan transaksi</dt>
+                    <dd className="flex items-center gap-1.5 font-medium text-stone-900">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
+                      Otomatis
+                    </dd>
+                  </div>
+                  <div className="flex items-center justify-between py-2.5">
+                    <dt className="text-stone-500">Laporan keuangan</dt>
+                    <dd className="font-medium text-stone-900">Standar usaha</dd>
+                  </div>
+                </dl>
+              </CardContent>
+            </Card>
 
-              <CardContent className="p-5 space-y-3 text-xs text-slate-300">
-                <p className="leading-relaxed text-[11px] text-slate-300">
-                  Coba skenario interaktif untuk menguji transaksi kasir, pencatatan pengeluaran, dan mutasi stok.
+            <Card
+              id="tour-quick-guide"
+              className="overflow-hidden border-sage-100 bg-sage-50/50 shadow-none"
+            >
+              <CardContent className="space-y-3 px-5 pb-5 pt-7 sm:pt-7">
+                <div className="flex items-center gap-2 text-sage-700">
+                  <Sparkles className="h-4 w-4" aria-hidden="true" />
+                  <p className="text-sm font-medium">Panduan uji coba</p>
+                </div>
+                <p className="text-sm leading-relaxed text-stone-600">
+                  Jalankan skenario kasir, catat pengeluaran, dan pindahkan stok untuk melihat
+                  alur kerja Alur dari awal sampai akhir.
                 </p>
-
-                <div className="space-y-1.5 pt-1">
-                  <Link
-                    href="/demo-guide"
-                    className="w-full py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-brand-500/20"
-                  >
-                    <span>Buka Panduan Demo</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                <Button asChild variant="secondary" size="sm" className="w-full bg-white">
+                  <Link href="/demo-guide">
+                    <span>Buka panduan demo</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
-
-                  <Link
-                    href="/reports"
-                    className="w-full py-2 bg-slate-800/80 hover:bg-slate-800 text-slate-200 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 border border-slate-700"
-                  >
-                    <FileText className="w-3.5 h-3.5 text-brand-400" />
-                    <span>Lihat Contoh Laporan</span>
-                  </Link>
-                </div>
+                </Button>
+                <Link
+                  href="/reports"
+                  className="flex items-center justify-center gap-1.5 text-xs font-medium text-sage-700 hover:text-sage-800"
+                >
+                  <FileText className="h-3.5 w-3.5" />
+                  Lihat contoh laporan
+                </Link>
               </CardContent>
             </Card>
           </div>
         </div>
 
         {/* ======================================================== */}
-        {/* 6. RESOLUTION MODAL FOR ANOMALIES (Clean Restyle) */}
+        {/* DIALOG PEMERIKSAAN ANOMALI */}
         {/* ======================================================== */}
-        {selectedAnomaly && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
-              <div className="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ShieldAlert className="w-5 h-5 text-amber-600" />
-                  <h3 className="text-sm font-bold text-slate-900">Pemeriksaan Pengeluaran</h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedAnomaly(null)}
-                  className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+        <Dialog
+          open={!!selectedAnomaly}
+          onClose={() => {
+            setSelectedAnomaly(null);
+            setResolutionNote('');
+          }}
+          title="Pemeriksaan pengeluaran"
+          description={
+            selectedAnomaly?.branch_name
+              ? `Cabang ${selectedAnomaly.branch_name}`
+              : 'Seluruh cabang'
+          }
+          maxWidth="md"
+          footer={
+            <>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={resolving}
+                onClick={() => handleResolveAnomaly('DISMISSED')}
+              >
+                Abaikan
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                disabled={resolving}
+                onClick={() => handleResolveAnomaly('RESOLVED')}
+              >
+                {resolving ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Menyelesaikan...</span>
+                  </>
+                ) : (
+                  <>
+                    <Check className="h-3.5 w-3.5" />
+                    <span>Tandai selesai</span>
+                  </>
+                )}
+              </Button>
+            </>
+          }
+        >
+          {selectedAnomaly && (
+            <div className="space-y-4">
+              <div>
+                <p className="text-base font-medium leading-snug text-stone-900">
+                  {selectedAnomaly.title}
+                </p>
+                <p className="mt-1 text-sm leading-relaxed text-stone-600">
+                  {selectedAnomaly.description}
+                </p>
               </div>
 
-              <div className="p-5 space-y-4">
-                <div className="space-y-1">
-                  <div className="text-[11px] text-slate-500 uppercase tracking-wider font-bold">
-                    {selectedAnomaly.branch_name || 'Seluruh Cabang'}
-                  </div>
-                  <h4 className="text-base font-bold text-slate-900">{selectedAnomaly.title}</h4>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    {selectedAnomaly.description}
-                  </p>
-                </div>
-
-                <div className="p-3 bg-amber-50/60 rounded-lg border border-amber-200 space-y-1 text-xs">
-                  <div className="font-bold text-amber-900">Saran Tindakan:</div>
-                  <p className="text-amber-800 text-[11px] leading-relaxed">
+              {selectedAnomaly.suggested_action && (
+                <div className="rounded-lg border border-amber-100 bg-amber-50/60 p-3.5">
+                  <p className="text-xs font-medium text-amber-900">Saran tindakan</p>
+                  <p className="mt-1 text-sm leading-relaxed text-amber-800">
                     {selectedAnomaly.suggested_action}
                   </p>
                 </div>
+              )}
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-700">
-                    Catatan Pemilik Usaha (Opsional):
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={resolutionNote}
-                    onChange={(e) => setResolutionNote(e.target.value)}
-                    placeholder="Contoh: Sudah konfirmasi dengan kasir, terjadi lonjakan permintaan..."
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-enterprise-500"
-                  />
-                </div>
-
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    disabled={resolving}
-                    onClick={() => handleResolveAnomaly('DISMISSED')}
-                  >
-                    Abaikan
-                  </Button>
-
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    disabled={resolving}
-                    onClick={() => handleResolveAnomaly('RESOLVED')}
-                    className="bg-enterprise-600 hover:bg-enterprise-700 gap-1.5"
-                  >
-                    {resolving ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        <span>Menyelesaikan...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Check className="w-3.5 h-3.5" />
-                        <span>Tandai Selesai</span>
-                      </>
-                    )}
-                  </Button>
-                </div>
+              <div>
+                <label
+                  htmlFor="resolution-note"
+                  className="text-sm font-medium text-stone-700"
+                >
+                  Catatan Anda <span className="font-normal text-stone-400">(opsional)</span>
+                </label>
+                <textarea
+                  id="resolution-note"
+                  rows={3}
+                  value={resolutionNote}
+                  onChange={(e) => setResolutionNote(e.target.value)}
+                  placeholder="Contoh: sudah dikonfirmasi ke kasir, lonjakan karena ada pesanan katering."
+                  className="mt-1.5 w-full rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500/15"
+                />
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </Dialog>
       </div>
     </RoleGuard>
   );
