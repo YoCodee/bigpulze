@@ -2172,3 +2172,27 @@
   - `npm run test`      : **Lulus 100%** (14 file tes, 138 tes lolos)
 
 ---
+
+## Ganti Mesin TTS Briefing: Neural Edge TTS (31 Okt) — BELUM DI-COMMIT
+
+**Permintaan:** suara TTS briefing terlalu robotik; ganti ke yang natural & gratis. Pilihan owner: Edge TTS (Microsoft neural), voice `id-ID-ArdiNeural`.
+
+**Perubahan (working tree, tanpa commit):**
+- Dependency baru: `msedge-tts` (npm, tanpa key; install `--legacy-peer-deps` karena konflik peer vite lama di repo).
+- `POST /api/tts` — body `{ text }` (zod 1–2000 kar.), auth user + rate limit 20/menit (reuse `rate-limit.ts`), cache in-memory 100 entri (replay tanpa re-synthesis), output `audio/mpeg` (24kHz MP3). Voice via env `TTS_VOICE`.
+- `use-morning-briefing.ts` — mesin utama: per section `fetch /api/tts` → `HTMLAudioElement` (play/pause/resume/stop/replay & progress tetap). **Fallback sticky**: kegagalan endpoint/audio → Web Speech API (jalur lama) otomatis untuk sisa briefing. Interface hook & player tidak berubah. `supported` kini selalu true (HTMLAudio universal).
+- Verifikasi manual: sintesis langsung via node OK (MP3 valid 30KB, ±3,7 dtk termasuk handshake); typecheck/lint/test 153/153/build lulus; route `/api/tts` terdaftar.
+
+**Belum teruji:** klik Play di browser (alur penuh briefing + pause/resume + fallback). Env opsional: `TTS_VOICE` (default `id-ID-ArdiNeural`).
+
+---
+
+## Prefetch Audio Briefing (31 Okt) — BELUM DI-COMMIT
+
+**Permintaan:** saat membacakan section N, section berikutnya sudah di-generate agar tidak ada jeda antar-poin.
+
+**Perubahan (`use-morning-briefing.ts`):** begitu section mulai diputar, seluruh section berikutnya di-fetch paralel di latar belakang (`prefetchAhead`) dan disimpan sebagai blob URL (`prefetchedRef`). `playSection` memakai URL prefetch bila tersedia → transisi antar-poin tanpa jeda & status loading tidak muncul lagi; replay briefing jadi instan. `stop()` dan unmount mencabut semua blob URL (kebocoran memori dicegah). Kegagalan prefetch diabaikan — jalur pemutar ulang fetch dan jatuh ke fallback seperti biasa.
+
+**Verifikasi:** typecheck ✅ lint ✅ test 153/153 ✅ build ✅; `/api/briefing/morning` mengembalikan script multi-section. **Belum teruji:** dengarkan transisi antar-section di browser (perceptual — tak bisa diuji via curl).
+
+---

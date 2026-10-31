@@ -28,35 +28,42 @@ export interface UseMorningBriefingReturn {
   replay: () => void;
 }
 
+const NEURAL_VOICE_LABEL = 'Ardi (Neural)';
+
 export function useMorningBriefing(): UseMorningBriefingReturn {
   const [status, setStatus] = useState<BriefingStatus>('idle');
   const [script, setScript] = useState<BriefingScript | null>(null);
   const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(0);
   const [progress, setProgress] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [supported, setSupported] = useState<boolean>(true);
-  const [selectedVoiceName, setSelectedVoiceName] = useState<string | null>(null);
+  // Server-side neural TTS works in any modern browser (plain HTMLAudio);
+  // the Web Speech check no longer gates support. Kept for interface stability.
+  const [supported] = useState<boolean>(true);
+  const [selectedVoiceName, setSelectedVoiceName] = useState<string | null>(
+    NEURAL_VOICE_LABEL
+  );
 
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUrlRef = useRef<string | null>(null);
+  const prefetchedRef = useRef<Map<number, string>>(new Map());
   const synthRef = useRef<SpeechSynthesis | null>(null);
-  const currentUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const activeVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
   const sectionQueueRef = useRef<number>(0);
   const isPlayingRef = useRef<boolean>(false);
+  // Sticky engine: after the first neural-TTS failure we stay on the
+  // browser's Web Speech voice so the briefing never dies mid-way.
+  const neuralDisabledRef = useRef<boolean>(false);
 
-  // Check Web Speech API support & load Indonesian voices
+  // Load fallback (Web Speech) voices once.
   useEffect(() => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      setSupported(false);
-      setStatus('unsupported');
       return;
     }
-
     synthRef.current = window.speechSynthesis;
 
     const findIndonesianVoice = () => {
       if (!synthRef.current) return;
       const voices = synthRef.current.getVoices();
-      // Look for id-ID voice, or fallback to default
       const idVoice = voices.find(
         (v) =>
           v.lang.toLowerCase() === 'id-id' ||
@@ -65,104 +72,227 @@ export function useMorningBriefing(): UseMorningBriefingReturn {
       );
       if (idVoice) {
         activeVoiceRef.current = idVoice;
-        setSelectedVoiceName(idVoice.name);
-      } else if (voices.length > 0) {
+        if (neuralDisabledRef.current) setSelectedVoiceName(idVoice.name);
+      } else if (voices.length > 0 && neuralDisabledRef.current) {
         activeVoiceRef.current = voices[0];
         setSelectedVoiceName(voices[0].name);
       }
     };
 
     findIndonesianVoice();
-
     if (window.speechSynthesis.onvoiceschanged !== undefined) {
       window.speechSynthesis.onvoiceschanged = findIndonesianVoice;
     }
 
+    const prefetched = prefetchedRef.current;
     return () => {
-      if (synthRef.current) {
-        synthRef.current.cancel();
+      synthRef.current?.cancel();
+      if (audioUrlRef.current) {
+        URL.revokeObjectURL(audioUrlRef.current);
+        audioUrlRef.current = null;
       }
+      prefetched.forEach((url) => URL.revokeObjectURL(url));
+      prefetched.clear();
     };
   }, []);
 
-  // Speak a specific section by index
-  const speakSection = useCallback(
-    (index: number, briefingScript: BriefingScript) => {
-      if (!synthRef.current || !briefingScript.sections[index]) {
-        return;
-      }
+  const getAudio = useCallback((): HTMLAudioElement => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+    }
+    return audioRef.current;
+  }, []);
 
-      synthRef.current.cancel();
+  const cleanupAudio = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.removeAttribute('src');
+    }
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+    }
+  }, []);
 
-      const sec = briefingScript.sections[index];
-      const utterance = new SpeechSynthesisUtterance(sec.text);
+  /** Drops every prefetched section audio (stop/refresh of the session). */
+  const clearPrefetch = useCallback(() => {
+    prefetchedRef.current.forEach((url) => URL.revokeObjectURL(url));
+    prefetchedRef.current.clear();
+  }, []);
 
-      utterance.lang = 'id-ID';
-      utterance.rate = 0.96;
-      utterance.pitch = 1.0;
+  // Self-reference so sections can chain into the next one.
+  const playSectionRef = useRef<(index: number, briefingScript: BriefingScript) => Promise<void>>(
+    async () => {}
+  );
 
-      if (activeVoiceRef.current) {
-        utterance.voice = activeVoiceRef.current;
-      }
+  // Fallback engine: browser Web Speech (the old, more robotic voice).
+  const speakLegacy = useCallback((index: number, briefingScript: BriefingScript) => {
+    if (!synthRef.current || !briefingScript.sections[index]) {
+      return;
+    }
+    synthRef.current.cancel();
 
-      currentUtteranceRef.current = utterance;
-      setCurrentSectionIndex(index);
-      sectionQueueRef.current = index;
+    const sec = briefingScript.sections[index];
+    const utterance = new SpeechSynthesisUtterance(sec.text);
+    utterance.lang = 'id-ID';
+    utterance.rate = 0.96;
+    utterance.pitch = 1.0;
+    if (activeVoiceRef.current) {
+      utterance.voice = activeVoiceRef.current;
+    }
 
-      // Update progress
-      const totalSections = briefingScript.sections.length;
-      const progressPercent = Math.round(((index + 0.5) / totalSections) * 100);
-      setProgress(progressPercent);
+    setCurrentSectionIndex(index);
+    sectionQueueRef.current = index;
+    setProgress(Math.round(((index + 0.5) / briefingScript.sections.length) * 100));
 
-      utterance.onstart = () => {
-        setStatus('speaking');
-        isPlayingRef.current = true;
-      };
+    utterance.onstart = () => {
+      setStatus('speaking');
+      isPlayingRef.current = true;
+    };
 
-      utterance.onend = () => {
-        if (!isPlayingRef.current) return;
-
-        const nextIndex = index + 1;
-        if (nextIndex < briefingScript.sections.length) {
-          sectionQueueRef.current = nextIndex;
-          speakSection(nextIndex, briefingScript);
-        } else {
-          // Finished all sections
-          setStatus('done');
-          setProgress(100);
-          isPlayingRef.current = false;
-        }
-      };
-
-      utterance.onerror = (evt) => {
-        // 'interrupted' or 'canceled' are normal when user pauses or cancels
-        if (evt.error === 'interrupted' || evt.error === 'canceled') {
-          return;
-        }
-        console.error('Speech synthesis error:', evt);
-        setErrorMessage('Gagal memutar audio pengucapan.');
-        setStatus('error');
+    utterance.onend = () => {
+      if (!isPlayingRef.current) return;
+      const nextIndex = index + 1;
+      if (nextIndex < briefingScript.sections.length) {
+        sectionQueueRef.current = nextIndex;
+        void playSectionRef.current(nextIndex, briefingScript);
+      } else {
+        setStatus('done');
+        setProgress(100);
         isPlayingRef.current = false;
-      };
+      }
+    };
 
-      synthRef.current.speak(utterance);
+    utterance.onerror = (evt) => {
+      if (evt.error === 'interrupted' || evt.error === 'canceled') return;
+      console.error('Speech synthesis error:', evt);
+      setErrorMessage('Gagal memutar audio pengucapan.');
+      setStatus('error');
+      isPlayingRef.current = false;
+    };
+
+    synthRef.current.speak(utterance);
+  }, []);
+
+  // Pre-generate remaining sections in the background so section changes
+  // play instantly (server cache + blob URLs = zero perceived gap).
+  const prefetchAhead = useCallback(
+    (currentIndex: number, briefingScript: BriefingScript) => {
+      for (let i = currentIndex + 1; i < briefingScript.sections.length; i++) {
+        const target = i;
+        if (prefetchedRef.current.has(target)) continue;
+        void (async () => {
+          try {
+            const res = await fetch('/api/tts', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: briefingScript.sections[target].text }),
+            });
+            if (!res.ok) return; // playback path will retry + fall back
+            const blob = await res.blob();
+            prefetchedRef.current.set(target, URL.createObjectURL(blob));
+          } catch {
+            // Ignore: the playback path re-fetches and falls back if needed.
+          }
+        })();
+      }
     },
     []
   );
+
+  // Primary engine: neural TTS from /api/tts (Microsoft Edge voice).
+  const playSection = useCallback(
+    async (index: number, briefingScript: BriefingScript) => {
+      if (!briefingScript.sections[index]) {
+        return;
+      }
+      cleanupAudio();
+      setCurrentSectionIndex(index);
+      sectionQueueRef.current = index;
+      setProgress(Math.round(((index + 0.5) / briefingScript.sections.length) * 100));
+      isPlayingRef.current = true;
+
+      const sec = briefingScript.sections[index];
+
+      const startPlayback = async (url: string) => {
+        const audio = getAudio();
+        audio.src = url;
+        audio.onended = () => {
+          if (!isPlayingRef.current) return;
+          const nextIndex = index + 1;
+          if (nextIndex < briefingScript.sections.length) {
+            sectionQueueRef.current = nextIndex;
+            void playSectionRef.current(nextIndex, briefingScript);
+          } else {
+            setStatus('done');
+            setProgress(100);
+            isPlayingRef.current = false;
+          }
+        };
+        audio.onerror = () => {
+          neuralDisabledRef.current = true;
+          const legacyVoice = activeVoiceRef.current?.name || 'Suara Browser';
+          setSelectedVoiceName(legacyVoice);
+          speakLegacy(index, briefingScript);
+        };
+        await audio.play();
+        setStatus('speaking');
+        setSelectedVoiceName(NEURAL_VOICE_LABEL);
+        // While this section is being read, warm up the rest.
+        prefetchAhead(index, briefingScript);
+      };
+
+      if (!neuralDisabledRef.current) {
+        // Instant: this section was prefetched while an earlier one played.
+        const readyUrl = prefetchedRef.current.get(index);
+        if (readyUrl) {
+          void startPlayback(readyUrl);
+          return;
+        }
+
+        try {
+          setStatus('loading');
+          const res = await fetch('/api/tts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: sec.text }),
+          });
+          if (!res.ok) {
+            const json = await res.json().catch(() => null);
+            throw new Error(json?.error?.message || 'Gagal membuat suara.');
+          }
+          if (!isPlayingRef.current) return; // stopped while fetching
+
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          audioUrlRef.current = url;
+
+          await startPlayback(url);
+          return;
+        } catch (err) {
+          if (err instanceof DOMException && err.name === 'AbortError') return;
+          if (!isPlayingRef.current) return; // stopped while fetching
+          // Endpoint down / rate limited: stick to the browser voice.
+          console.error('Neural TTS failed, falling back to Web Speech:', err);
+          neuralDisabledRef.current = true;
+          const legacyVoice = activeVoiceRef.current?.name || 'Suara Browser';
+          setSelectedVoiceName(legacyVoice);
+        }
+      }
+
+      speakLegacy(index, briefingScript);
+    },
+    [cleanupAudio, getAudio, prefetchAhead, speakLegacy]
+  );
+  playSectionRef.current = playSection;
 
   // Play / Start briefing
   const play = useCallback(async () => {
     setErrorMessage(null);
 
-    // If unsupported, we still fetch script for readable text view
-    if (typeof window !== 'undefined' && !('speechSynthesis' in window)) {
-      setSupported(false);
-    }
-
     try {
       let currentScript = script;
 
-      // If we don't have script yet, fetch it
       if (!currentScript) {
         setStatus('loading');
         const res = await fetch('/api/briefing/morning');
@@ -176,58 +306,55 @@ export function useMorningBriefing(): UseMorningBriefingReturn {
         setScript(currentScript);
       }
 
-      if (!('speechSynthesis' in window) || !synthRef.current) {
-        setStatus('unsupported');
-        return;
-      }
-
       isPlayingRef.current = true;
-      speakSection(0, currentScript);
+      void playSectionRef.current(0, currentScript);
     } catch (err: unknown) {
       console.error('Briefing error:', err);
       setErrorMessage(err instanceof Error ? err.message : 'Terjadi kesalahan sistem.');
       setStatus('error');
       isPlayingRef.current = false;
     }
-  }, [script, speakSection]);
+  }, [script]);
 
   const pause = useCallback(() => {
-    if (synthRef.current && status === 'speaking') {
-      isPlayingRef.current = false;
-      synthRef.current.pause();
-      setStatus('paused');
-    }
+    if (status !== 'speaking') return;
+    isPlayingRef.current = false;
+    audioRef.current?.pause();
+    synthRef.current?.pause();
+    setStatus('paused');
   }, [status]);
 
   const resume = useCallback(() => {
-    if (synthRef.current && status === 'paused') {
-      isPlayingRef.current = true;
-      synthRef.current.resume();
-      setStatus('speaking');
+    if (status !== 'paused') return;
+    isPlayingRef.current = true;
+    if (audioRef.current && audioUrlRef.current) {
+      void audioRef.current.play();
+    } else {
+      synthRef.current?.resume();
     }
+    setStatus('speaking');
   }, [status]);
 
   const stop = useCallback(() => {
-    if (synthRef.current) {
-      isPlayingRef.current = false;
-      synthRef.current.cancel();
-    }
+    isPlayingRef.current = false;
+    cleanupAudio();
+    clearPrefetch();
+    synthRef.current?.cancel();
     setStatus('idle');
     setCurrentSectionIndex(0);
     setProgress(0);
-  }, []);
+  }, [cleanupAudio, clearPrefetch]);
 
   const replay = useCallback(() => {
     if (script) {
-      if (synthRef.current) {
-        synthRef.current.cancel();
-      }
+      cleanupAudio();
+      synthRef.current?.cancel();
       isPlayingRef.current = true;
-      speakSection(0, script);
+      void playSectionRef.current(0, script);
     } else {
-      play();
+      void play();
     }
-  }, [script, speakSection, play]);
+  }, [script, play, cleanupAudio]);
 
   const currentSectionId =
     script && script.sections[currentSectionIndex]
