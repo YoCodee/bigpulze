@@ -165,10 +165,19 @@ export default function DashboardPage() {
   const [showBriefingPlayer, setShowBriefingPlayer] = useState(false);
   const morningBriefing = useMorningBriefing();
 
+  // Migration onboarding: org with an empty catalog is likely pre-migration.
+  const [isEmptyOrg, setIsEmptyOrg] = useState(false);
+
   // Fetch Dashboard Intelligence
   const fetchDashboardData = useCallback(async () => {
     try {
       setRefreshing(true);
+
+      // Empty-catalog signal for the migration banner
+      const prodRes = await fetch('/api/products');
+      const prodJson = await prodRes.json();
+      setIsEmptyOrg(prodRes.ok && Array.isArray(prodJson.data) && prodJson.data.length === 0);
+
 
       // Fetch Anomalies
       const anomRes = await fetch('/api/anomalies?status=OPEN');
@@ -419,6 +428,23 @@ export default function DashboardPage() {
               setShowBriefingPlayer(false);
             }}
           />
+        )}
+
+        {/* Migration onboarding banner (only when the org has no products yet) */}
+        {isEmptyOrg && (
+          <Link
+            href="/import"
+            className="block rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 hover:border-brand-300 transition-colors"
+          >
+            <p className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-brand-600" />
+              Punya bisnis yang sudah berjalan?
+            </p>
+            <p className="text-[11px] text-slate-600 mt-0.5">
+              Migrasikan katalog produk + stok awal, riwayat penjualan, dan pengeluaran Anda sekali
+              unggah — lalu lanjutkan operasional di BizPulse.
+            </p>
+          </Link>
         )}
 
                 {/* ======================================================== */}
