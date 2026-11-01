@@ -2213,4 +2213,14 @@
 
 **Catatan:** wizard menggunakan RPC & import_jobs yang sudah ada — tanpa perubahan skema DB.
 
+### R13.1 — Perbaikan: import stok awal (PRODUCTS & EXPENSES) gagal 400 ✅
+
+**Gejala (dilaporkan pemilik):** unggah CSV stok awal lewat wizard migrasi menolak seluruh baris dengan `Data produk tidak valid: baris 0: Invalid input: expected number, received string` (berulang untuk tiap kolom angka).
+
+**Akar masalah:** `csv-parser.ts` menyimpan hasil normalisasi sebagai **string** (`String(parseMoney(...))` → `"12500"`) dan validasi per baris memakai `z.coerce.number()` sehingga lolos di klien. Namun `migration-wizard.tsx` hanya mengonversi ke `number` (via `Number(...)`) pada langkah **SALES** (`groupSalesTransactions`); untuk **PRODUCTS** dan **EXPENSES** payload dikirim apa adanya (`validRows.map(r => r.data)`), sehingga string angka itu tiba di server dan ditolak skema server `z.number()`.
+
+**Perbaikan (di batas kepercayaan):** `src/app/api/import/[type]/route.ts` — seluruh field numerik skema masuk memakai `z.coerce.number()` (`cost_price`, `selling_price`, `stock`, `min_stock_alert`, `quantity`, `unit_price`, `amount`). Validasi `.int()`/`.min()` tetap berlaku — angka negatif masih ditolak.
+
+**Verifikasi hidup (dev server, akun demo):** PRODUCTS dengan angka string `inserted:1` (sebelumnya 400); EXPENSES `amount:"12000"` → `created:1`; `cost_price:"-5"` tetap ditolak (`Too small: expected number to be >=0`). Artefak uji dibersihkan (produk uji & pengeluaran uji terhapus). typecheck/lint ✅ · 165 test lulus.
+
 ---

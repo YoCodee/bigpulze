@@ -19,23 +19,25 @@ export const dynamic = 'force-dynamic';
 
 const MAX_ROWS = 500;
 
+// Parser CSV/Excel klien menyimpan angka sebagai string (mis. "12500");
+// z.coerce.number mengubahnya di sini tanpa melewatkan validasi int/min.
 const productRowSchema = z
   .object({
     sku: z.string().trim().min(1).max(50),
     name: z.string().trim().min(2).max(150),
     category: z.string().trim().min(1).max(80),
-    cost_price: z.number().int().min(0),
-    selling_price: z.number().int().min(0),
-    stock: z.number().int().min(0).optional(),
-    min_stock_alert: z.number().int().min(0).optional(),
+    cost_price: z.coerce.number().int().min(0),
+    selling_price: z.coerce.number().int().min(0),
+    stock: z.coerce.number().int().min(0).optional(),
+    min_stock_alert: z.coerce.number().int().min(0).optional(),
   })
   .strict();
 
 const salesItemSchema = z
   .object({
     product_id: z.string().uuid(),
-    quantity: z.number().int().min(1),
-    unit_price: z.number().int().min(0).optional(),
+    quantity: z.coerce.number().int().min(1),
+    unit_price: z.coerce.number().int().min(0).optional(),
   })
   .strict();
 
@@ -61,7 +63,7 @@ const expenseRowSchema = z
       'Lainnya',
     ]),
     description: z.string().trim().min(1).max(500),
-    amount: z.number().int().min(1),
+    amount: z.coerce.number().int().min(1),
   })
   .strict();
 
