@@ -294,8 +294,45 @@ export function MigrationWizard() {
           </div>
 
           <div className="rounded-lg bg-slate-50 border border-slate-200 p-3 text-[11px] text-slate-600 leading-relaxed">
-            <p className="font-semibold text-slate-700 mb-0.5">Kolom template: {template.columns.join(', ')}</p>
-            <ul className="list-disc pl-4 space-y-0.5 mt-1">
+            <p className="font-semibold text-slate-700 mb-1.5">Kolom & nilai yang bisa diisi</p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="text-slate-500">
+                    <th className="pb-1 pr-3 font-semibold">Kolom</th>
+                    <th className="pb-1 pr-3 font-semibold">Isi</th>
+                    <th className="pb-1 font-semibold">Wajib</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {template.fieldGuide.map((entry) => (
+                    <tr key={entry.field} className="border-t border-slate-200 align-top">
+                      <td className="py-1.5 pr-3 font-mono text-slate-800 whitespace-nowrap">{entry.field}</td>
+                      <td className="py-1.5 pr-3">
+                        <span>{entry.hint}</span>
+                        {entry.allowed && (
+                          <span className="flex flex-wrap gap-1 mt-1">
+                            {entry.allowed.map((value) => (
+                              <Badge key={value} variant="outline">
+                                {value}
+                              </Badge>
+                            ))}
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-1.5">
+                        {entry.required ? (
+                          <Badge variant="brand">Wajib</Badge>
+                        ) : (
+                          <span className="text-slate-400">Opsional</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <ul className="list-disc pl-4 space-y-0.5 mt-2">
               <li>Header kolom boleh memakai istilah Anda (mis. &ldquo;Harga Jual&rdquo;, &ldquo;Stok&rdquo;) — dideteksi otomatis.</li>
               <li>Uang boleh memakai titik ribuan (&ldquo;Rp 12.500&rdquo;). Tanggal: 2026-01-31 atau 31/01/2026.</li>
               {dataType === 'PRODUCTS' && <li><strong>Stok awal</strong> hanya berlaku untuk produk baru; stok produk yang sudah ada tidak diubah (gunakan Opname Stok).</li>}

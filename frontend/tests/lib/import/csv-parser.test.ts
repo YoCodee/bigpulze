@@ -6,7 +6,8 @@ import {
   parseDateCell,
   parseMoney,
 } from '@/lib/import/csv-parser';
-import { mapHeader } from '@/lib/import/templates';
+import { mapHeader, MIGRATION_TEMPLATES, type MigrationDataType } from '@/lib/import/templates';
+import { EXPENSE_CATEGORIES } from '@/lib/validators/expenses';
 import { describe, expect, it } from 'vitest';
 
 describe('mapHeader', () => {
@@ -103,5 +104,30 @@ describe('buildErrorCsv', () => {
     const csv = buildErrorCsv(parsed.rows);
     expect(csv.split('\n')[0]).toContain('baris,kesalahan');
     expect(csv).toContain('Bad');
+  });
+});
+
+describe('fieldGuide (panduan kolom & nilai yang bisa diisi)', () => {
+  it('menutupi tepat semua kolom template untuk ketiga tipe data', () => {
+    (Object.keys(MIGRATION_TEMPLATES) as MigrationDataType[]).forEach((type) => {
+      const template = MIGRATION_TEMPLATES[type];
+      const guideFields = template.fieldGuide.map((entry) => entry.field).sort();
+      expect(guideFields).toEqual([...template.columns].sort());
+    });
+  });
+
+  it('menampilkan daftar nilai tetap untuk kategori & metode bayar', () => {
+    const category = MIGRATION_TEMPLATES.EXPENSES.fieldGuide.find((g) => g.field === 'category');
+    expect(category?.allowed).toEqual(EXPENSE_CATEGORIES);
+    const payment = MIGRATION_TEMPLATES.SALES.fieldGuide.find((g) => g.field === 'payment_method');
+    expect(payment?.allowed).toEqual(['CASH', 'QRIS']);
+  });
+
+  it('contoh baris template memakai kategori yang benar-benar diterima', () => {
+    const template = MIGRATION_TEMPLATES.EXPENSES;
+    const categoryIndex = template.fields.indexOf('category');
+    template.sampleRows.forEach((row) => {
+      expect(EXPENSE_CATEGORIES as readonly string[]).toContain(row[categoryIndex]);
+    });
   });
 });

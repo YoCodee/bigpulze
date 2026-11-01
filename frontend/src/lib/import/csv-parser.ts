@@ -9,17 +9,7 @@
 import Papa from 'papaparse';
 import { z } from 'zod';
 import { mapHeader, type MigrationDataType } from './templates';
-
-const EXPENSE_CATEGORIES = [
-  'Utilitas',
-  'Gaji',
-  'Sewa',
-  'Transportasi',
-  'Pemasaran',
-  'Perawatan',
-  'Perlengkapan Operasional',
-  'Lainnya',
-] as const;
+import { EXPENSE_CATEGORIES } from '@/lib/validators/expenses';
 
 export interface ParsedImportRow {
   line: number; // 1-based data line in the file (for error report)

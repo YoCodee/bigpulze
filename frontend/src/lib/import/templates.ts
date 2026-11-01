@@ -3,7 +3,20 @@
  * Column aliases cover common Indonesian headers found in owner spreadsheets.
  */
 
+import { EXPENSE_CATEGORIES } from '@/lib/validators/expenses';
+
 export type MigrationDataType = 'PRODUCTS' | 'SALES' | 'EXPENSES';
+
+/** One row of the in-app "columns & accepted values" guide. */
+export interface FieldGuideEntry {
+  /** Canonical field name (== template column). */
+  field: string;
+  /** What to put in the cell, in plain Indonesian. */
+  hint: string;
+  /** Exact allowed values when the field is a fixed list. */
+  allowed?: readonly string[];
+  required: boolean;
+}
 
 export interface TemplateSpec {
   type: MigrationDataType;
@@ -13,6 +26,8 @@ export interface TemplateSpec {
   fields: string[];
   sampleRows: string[][];
   needsBranch: boolean;
+  /** Per-column guide so the user knows what values are accepted. */
+  fieldGuide: FieldGuideEntry[];
 }
 
 export const MIGRATION_TEMPLATES: Record<MigrationDataType, TemplateSpec> = {
@@ -26,6 +41,15 @@ export const MIGRATION_TEMPLATES: Record<MigrationDataType, TemplateSpec> = {
       ['SN-001', 'Butter Croissant', 'Makanan', '5000', '15000', '8', '5'],
     ],
     needsBranch: true,
+    fieldGuide: [
+      { field: 'sku', hint: 'Teks unik di cabang, mis. KP-001', required: true },
+      { field: 'name', hint: 'Nama produk, mis. Es Kopi Susu Aren', required: true },
+      { field: 'category', hint: 'Teks bebas, mis. Minuman / Makanan / Non-Kopi', required: true },
+      { field: 'cost_price', hint: 'Harga modal rupiah, angka ≥ 0 (boleh "Rp 12.500")', required: true },
+      { field: 'selling_price', hint: 'Harga jual rupiah, angka ≥ 1', required: true },
+      { field: 'stock', hint: 'Stok awal, angka ≥ 0 — hanya diterapkan untuk produk baru', required: false },
+      { field: 'min_stock_alert', hint: 'Batas stok minimum, angka ≥ 0', required: false },
+    ],
   },
   SALES: {
     type: 'SALES',
@@ -37,6 +61,13 @@ export const MIGRATION_TEMPLATES: Record<MigrationDataType, TemplateSpec> = {
       ['2026-10-21', 'QRIS', 'MN-002', '3', '22000'],
     ],
     needsBranch: true,
+    fieldGuide: [
+      { field: 'transaction_date', hint: 'Tanggal transaksi: 2026-10-20 atau 20/10/2026', required: true },
+      { field: 'payment_method', hint: 'Metode bayar — tulis persis salah satu:', allowed: ['CASH', 'QRIS'], required: true },
+      { field: 'sku', hint: 'SKU yang sudah ada di katalog cabang yang dipilih', required: true },
+      { field: 'quantity', hint: 'Jumlah terjual, angka ≥ 1', required: true },
+      { field: 'unit_price', hint: 'Harga satuan rupiah, angka ≥ 0 — kosongkan untuk harga katalog', required: false },
+    ],
   },
   EXPENSES: {
     type: 'EXPENSES',
@@ -44,9 +75,15 @@ export const MIGRATION_TEMPLATES: Record<MigrationDataType, TemplateSpec> = {
     fields: ['expense_date', 'category', 'description', 'amount'],
     sampleRows: [
       ['2026-10-20', 'Utilitas', 'Listrik warung bulan Oktober', '350000'],
-      ['2026-10-21', 'Bahan Baku', 'Belanja susu & sirup', '780000'],
+      ['2026-10-21', 'Lainnya', 'Belanja susu & sirup', '780000'],
     ],
     needsBranch: true,
+    fieldGuide: [
+      { field: 'expense_date', hint: 'Tanggal pengeluaran: 2026-10-20 atau 20/10/2026', required: true },
+      { field: 'category', hint: 'Kategori biaya — tulis persis salah satu:', allowed: EXPENSE_CATEGORIES, required: true },
+      { field: 'description', hint: 'Keterangan biaya, mis. Listrik warung bulan Oktober', required: true },
+      { field: 'amount', hint: 'Nominal rupiah, angka ≥ 1 (boleh "Rp 12.500")', required: true },
+    ],
   },
 };
 

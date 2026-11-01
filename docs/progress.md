@@ -2224,3 +2224,17 @@
 **Verifikasi hidup (dev server, akun demo):** PRODUCTS dengan angka string `inserted:1` (sebelumnya 400); EXPENSES `amount:"12000"` → `created:1`; `cost_price:"-5"` tetap ditolak (`Too small: expected number to be >=0`). Artefak uji dibersihkan (produk uji & pengeluaran uji terhapus). typecheck/lint ✅ · 165 test lulus.
 
 ---
+
+### R13.2 — Panduan kolom & nilai yang bisa diisi di wizard impor ✅
+
+**Permintaan pemilik:** saat impor (terutama expenses) user perlu tahu kolom apa saja yang tersedia dan nilai apa saja yang boleh diinput — berlaku untuk ketiga tipe impor.
+
+**Dimodifikasi:**
+- `frontend/src/lib/import/templates.ts` — `TemplateSpec` mendapat `fieldGuide` per tipe (kolom, hint isi dalam bahasa sederhana, daftar nilai tetap bila ada, tanda Wajib/Opsional). IMPOR pengeluaran menampilkan 8 kategori resmi; penjualan menampilkan `CASH` / `QRIS`.
+- `frontend/src/components/import/migration-wizard.tsx` — langkah 1 kini menampilkan tabel **"Kolom & nilai yang bisa diisi"** (Kolom | Isi | Wajib), menggantikan baris daftar kolom polos.
+- **Perbaikan turunan:** contoh baris template expenses memakai kategori `Bahan Baku` yang tidak ada di enum — template resmi berisi contoh yang bakal ditolak server; diganti `Lainnya`.
+- Kategori disatukan ke satu sumber: `EXPENSE_CATEGORIES` di `src/lib/validators/expenses.ts` dipakai halaman pengeluaran, parser impor (hapus salinan privat), dan route impor (hapus literal ganda) — tak ada lagi risiko beda daftar antar-lapisan.
+
+**Test:** +3 invariant di `tests/lib/import/csv-parser.test.ts` (fieldGuide = kolom lengkap; daftar nilai tampil utk kategori & metode bayar; contoh baris template selalu memakai kategori valid).
+
+**Verifikasi hidup:** kategori panduan `Perawatan` → `created:1`; `Bahan Baku` ditolak dengan pesan yang menyebut seluruh opsi valid; artefak uji dibersihkan. typecheck/lint ✅ · **168 test lulus**.

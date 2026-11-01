@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { apiError, apiSuccess, handleApiError } from '@/lib/api-response';
 import { loadOwnerContext } from '@/server/assistant/owner-context';
+import { EXPENSE_CATEGORIES } from '@/lib/validators/expenses';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,16 +53,7 @@ const salesRowSchema = z
 const expenseRowSchema = z
   .object({
     expense_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    category: z.enum([
-      'Utilitas',
-      'Gaji',
-      'Sewa',
-      'Transportasi',
-      'Pemasaran',
-      'Perawatan',
-      'Perlengkapan Operasional',
-      'Lainnya',
-    ]),
+    category: z.enum(EXPENSE_CATEGORIES),
     description: z.string().trim().min(1).max(500),
     amount: z.coerce.number().int().min(1),
   })
