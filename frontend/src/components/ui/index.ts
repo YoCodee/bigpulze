@@ -12,3 +12,6 @@ export * from './section-header';
 export * from './dialog';
 export * from './dropdown-filter';
 export * from './blueprint-grid';
+export * from './alur-logo';
+export * from './alur-logo-paths';
+export * from './alur-splash-screen';

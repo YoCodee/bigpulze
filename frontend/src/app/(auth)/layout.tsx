@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { AlurBrand } from '@/components/ui/alur-logo';
 import { ArrowLeft, BarChart3, Boxes, Sparkles } from 'lucide-react';
 
 export default function AuthLayout({
@@ -15,21 +16,8 @@ export default function AuthLayout({
       <div className="lg:col-span-6 xl:col-span-5 flex flex-col justify-between min-h-screen p-6 sm:p-10 lg:p-14 bg-white relative">
         {/* Top bar untuk mobile / navigasi kembali */}
         <div className="flex items-center justify-between w-full max-w-md mx-auto mb-4">
-          <Link href="/" className="inline-flex items-center gap-2 group">
-            <div className="h-8 w-8 rounded-lg bg-[#F6821F] text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-4 h-4"
-              >
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-              </svg>
-            </div>
-            <span className="text-xl font-black text-slate-900 tracking-tight">Alur</span>
+          <Link href="/" className="inline-flex items-center group">
+            <AlurBrand size="md" />
           </Link>
 
           <Link

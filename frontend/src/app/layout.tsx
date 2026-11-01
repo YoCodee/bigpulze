@@ -6,6 +6,7 @@ import "@fontsource/plus-jakarta-sans/600.css";
 import "@fontsource/plus-jakarta-sans/700.css";
 import "@fontsource/plus-jakarta-sans/800.css";
 import "./globals.css";
+import { AppSplashProvider } from "@/components/ui/app-splash-provider";
 
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
@@ -17,6 +18,9 @@ export const metadata: Metadata = {
   title: "Alur — Platform Audit Multi-Cabang & Smart Voice POS UMKM",
   description:
     "Platform POS dan audit multi-cabang dengan input suara cerdas, auto-ledger laba rugi real-time, dan asisten keputusan 3 pertanyaan pagi berbasis deteksi anomali untuk UMKM.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export const viewport: Viewport = {
@@ -41,7 +45,9 @@ export default function RootLayout({
         />
       </head>
       <body className={`${geistMono.variable} font-sans antialiased`}>
-        {children}
+        <AppSplashProvider>
+          {children}
+        </AppSplashProvider>
       </body>
     </html>
   );

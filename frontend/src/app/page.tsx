@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { AlurBrand } from '@/components/ui/alur-logo';
 import {
   Sparkles,
   ArrowRight,
@@ -203,21 +204,8 @@ export default function HomePage() {
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-[1120px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Brand Logo */}
-          <Link href="/" className="flex items-center space-x-2.5 group">
-            <div className="h-8 w-8 rounded-lg bg-brand-500 text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-4 h-4"
-              >
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-              </svg>
-            </div>
-            <span className="text-xl font-extrabold tracking-tight text-slate-900">Alur</span>
+          <Link href="/" className="flex items-center group">
+            <AlurBrand size="md" />
           </Link>
 
           {/* Desktop Navigation Links (Clean & Ringkas) */}
@@ -275,7 +263,7 @@ export default function HomePage() {
               href="/demo-guide"
               className="hero-animate-item relative z-10 group inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs sm:text-sm font-medium text-white shadow-xs backdrop-blur-xs hover:bg-white/20 transition-all cursor-pointer"
             >
-              <span>GTNIC 2026 • Asisten Keputusan & Smart Voice POS UMKM</span>
+              <span>Asisten Keputusan & Smart Voice POS UMKM</span>
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-brand-600 font-bold text-xs group-hover:translate-x-0.5 transition-transform">
                 <ArrowRight className="h-3 w-3 stroke-[3]" />
               </span>
@@ -1000,26 +988,8 @@ export default function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10">
               {/* Brand Column (Span 4) */}
               <div className="lg:col-span-4 space-y-4">
-                <Link href="/" className="flex items-center space-x-2.5 group">
-                  <div className="h-8 w-8 rounded-lg bg-brand-500 text-white flex items-center justify-center shadow-md">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="w-4 h-4"
-                    >
-                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                    </svg>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xl font-extrabold tracking-tight text-slate-900">Alur</span>
-                    <span className="text-xs font-bold px-2 py-0.5 rounded bg-orange-50 text-brand-700 border border-orange-200 uppercase tracking-wider">
-                      GTNIC 2026
-                    </span>
-                  </div>
+                <Link href="/" className="inline-flex items-center group">
+                  <AlurBrand size="md" badge="" />
                 </Link>
 
                 <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed max-w-sm">
@@ -1127,11 +1097,9 @@ export default function HomePage() {
                 </ul>
               </div>
 
-              {/* Column 4: GTNIC 2026 (Span 2) */}
+            
               <div className="lg:col-span-2 space-y-3">
-                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                  GTNIC 2026
-                </h4>
+                
                 <ul className="space-y-2 text-xs">
                   <li>
                     <span className="text-slate-700">Garda Tech Competition</span>

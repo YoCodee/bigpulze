@@ -194,6 +194,19 @@ export default function DemoGuidePage() {
                 <ShoppingCart className="w-4 h-4" /> Buka Kasir POS
               </Button>
             </Link>
+            <Button
+              variant="secondary"
+              size="md"
+              type="button"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.dispatchEvent(new CustomEvent('alur:show-splash'));
+                }
+              }}
+              className="flex items-center gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20"
+            >
+              <Sparkles className="w-4 h-4 text-orange-400" /> Putar Splash Screen
+            </Button>
             <Link href="/expenses">
               <Button
                 variant="secondary"

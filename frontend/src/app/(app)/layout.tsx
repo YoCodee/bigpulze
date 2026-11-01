@@ -21,6 +21,7 @@ import {
   Compass,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AlurLogoIcon } from '@/components/ui/alur-logo';
 import { AIFloatingChat } from '@/components/assistant/ai-floating-chat';
 import { useDashboardTour } from '@/hooks/use-dashboard-tour';
 import { Toaster } from 'sonner';
@@ -232,23 +233,17 @@ export default function AppLayout({
           >
             <div className="flex min-w-0 items-center space-x-2.5">
               {/* Logo Alur Icon */}
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-500 text-white shadow-xs">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-4 w-4"
-                >
-                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                </svg>
+              <div className="shrink-0 transition-transform hover:scale-105">
+                <AlurLogoIcon size={32} />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-stone-900">
-                  {profile?.org_name || 'Alur POS'}
-                </p>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-sans text-sm font-extrabold tracking-tight text-stone-900">Alur</span>
+                  <span className="text-[10px] text-stone-300">•</span>
+                  <p className="truncate text-xs font-medium text-stone-600">
+                    {profile?.org_name || 'POS'}
+                  </p>
+                </div>
                 <p className="truncate text-xs text-stone-500">
                   {profile?.role === 'CASHIER' ? 'Kasir Cabang' : 'Owner Pusat'}
                 </p>
@@ -431,20 +426,10 @@ export default function AppLayout({
                 {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
               <div className="flex items-center space-x-1.5">
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-orange-500 text-white">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-3.5 w-3.5"
-                  >
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                  </svg>
+                <div className="shrink-0">
+                  <AlurLogoIcon size={24} />
                 </div>
-                <span className="text-sm font-semibold text-stone-900">Alur</span>
+                <span className="font-sans text-sm font-extrabold tracking-tight text-stone-900">Alur</span>
               </div>
             </div>
 
