@@ -2238,3 +2238,22 @@
 **Test:** +3 invariant di `tests/lib/import/csv-parser.test.ts` (fieldGuide = kolom lengkap; daftar nilai tampil utk kategori & metode bayar; contoh baris template selalu memakai kategori valid).
 
 **Verifikasi hidup:** kategori panduan `Perawatan` → `created:1`; `Bahan Baku` ditolak dengan pesan yang menyebut seluruh opsi valid; artefak uji dibersihkan. typecheck/lint ✅ · **168 test lulus**.
+
+---
+
+### R18 — Dashboard: seluruh angka & label hardcode diganti data database ✅
+
+**Permintaan pemilik:** angka/label hardcode di halaman dashboard (hasil redesign) diganti sesuai isi database.
+
+**Dimodifikasi (`frontend/src/app/(app)/dashboard/page.tsx`):**
+- **Fetch baru (paralel, 5 API):** `/api/reports/pnl?period=this_week` (tren 7 hari, margin kotor, arus kas), `/api/reports/pnl?period=yesterday` (laba kemarin + performa per cabang vs target harian), `/api/branches?all=true` (daftar cabang, lokasi, target, aktif/total).
+- **Grafik "Tren finansial 7 hari"** — deret fiktif 15–20 Okt diganti `daily_timeline` PnL; garis target = jumlah `daily_target` cabang aktif. "Rata-rata margin 74%" → `metrics.gross_margin_pct` (62,6% pada data demo).
+- **Kartu "Laba kemarin"** — "+Rp 2.730.000" fiktif → omzet/modal/laba kemarin nyata; tren "% dari target harian" = omzet kemarin vs total target harian cabang.
+- **Kartu "Uang kas di kasir" diganti "Arus kas 7 hari"** — tidak ada tabel saldo kas di skema; angka kas harian mustahil diturunkan dari DB. Diganti metrik nyata `cashflow` (masuk/keluar/net 7 hari) — lebih jujur dan menjawab kebutuhan yang sama (kesehatan kas).
+- **Daftar & tab cabang** — Thamrin/Dago/Gubeng (fiktif, beda kota dengan data demo) diganti cabang asli dari DB: nama, lokasi, omzet kemarin, capaian vs target harian, jumlah transaksi kemarin, status stok (diturunkan dari rekomendasi mutasi terbuka). Badge "Kantor pusat" & "N kasir aktif" dihapus — atribut fiktif yang tidak ada di tabel `branches`.
+- **Label dinamis:** "ringkasan **3** gerai", `count: 3` tab, "Performa **3** cabang aktif", "Cabang aktif **3 dari 5**" → semua dari jumlah cabang DB (aktif/total).
+- Sidebar "Target hari ini" → "Target harian per cabang" (isinya omzet **kemarin** vs target harian — judul disesuaikan agar sesuai data).
+
+**Verifikasi hidup:** seed ulang via `POST /api/demo/seed` (7,9 dtk, base seed sebelumnya 23 Okt sehingga 7 hari terakhir kosong); setelah seed: laba kemarin Rp 3.408.000 (omzet Rp 8.454.000, +12,7% target harian), performa cabang Malioboro 125% / Bantul 141% / Condongcatur 75%, tren 7 hari terisi, arus kas Rp 38.513.000, margin 62,6%. grep hardcode lama bersih. typecheck/lint ✅ · **168 test lulus**.
+
+**Catatan:** hari berjalan (1 Nov) tampil Rp 0 di grafik karena penjualan belum tercatat hari ini — bukan bug. Test otomatis tidak ditambah: perubahan murni wiring fetch→render di komponen klien; kebenaran angka diverifikasi lewat API PnL yang sudah teruji unit (`auto-ledger`).

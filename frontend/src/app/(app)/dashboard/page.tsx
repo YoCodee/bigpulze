@@ -15,7 +15,7 @@ import {
   Line,
 } from 'recharts';
 import { RoleGuard } from '@/components/role-guard';
-import { formatRupiah } from '@/lib/format';
+import { formatRupiah, formatPercent } from '@/lib/format';
 import { formatDateId } from '@/lib/date';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -91,57 +91,45 @@ interface TransferRecommendationItem {
   reason: string;
 }
 
-const sevenDaysTrend = [
-  { date: '15 Okt', omzet: 3450000, beban: 850000, laba: 1580000, ratio: 72 },
-  { date: '16 Okt', omzet: 3900000, beban: 920000, laba: 1830000, ratio: 78 },
-  { date: '17 Okt', omzet: 4200000, beban: 980000, laba: 1980000, ratio: 82 },
-  { date: '18 Okt', omzet: 4800000, beban: 1050000, laba: 2330000, ratio: 94 },
-  { date: '19 Okt', omzet: 5100000, beban: 1120000, laba: 2470000, ratio: 100 },
-  { date: '20 Okt', omzet: 3850000, beban: 890000, laba: 1840000, ratio: 76 },
-  { date: 'Hari ini', omzet: 3920000, beban: 910000, laba: 1870000, ratio: 77 },
-].map((day) => ({
-  ...day,
-  target: Math.round(day.omzet / (day.ratio / 100)),
-}));
+/** Bentuk minimal respons /api/reports/pnl yang dipakai dashboard. */
+interface DashboardPnl {
+  metrics: {
+    total_revenue: number;
+    total_cogs: number;
+    gross_margin_pct: number;
+    net_profit: number;
+    total_transactions: number;
+  };
+  cashflow: { cash_in: number; cash_out: number; net_cashflow: number };
+  branch_performance: Array<{
+    branch_id: string;
+    revenue: number;
+    tx_count: number;
+    target_achievement_pct: number;
+  }>;
+  daily_timeline: Array<{ date: string; revenue: number; net_profit: number }>;
+}
 
-const branchList = [
-  {
-    id: 'b-01',
-    name: 'Kopi Senja Thamrin (Pusat)',
-    city: 'Jakarta Pusat',
-    todayRevenue: 4200000,
-    dailyTarget: 5000000,
-    progress: 84,
-    activeStaff: 3,
-    anomalyCount: 0,
-    stockStatus: 'Aman (100%)',
-    isHeadquarters: true,
-  },
-  {
-    id: 'b-02',
-    name: 'Kopi Senja Dago',
-    city: 'Bandung',
-    todayRevenue: 3100000,
-    dailyTarget: 3500000,
-    progress: 88,
-    activeStaff: 2,
-    anomalyCount: 1,
-    stockStatus: 'Perlu mutasi (sirup)',
-    isHeadquarters: false,
-  },
-  {
-    id: 'b-03',
-    name: 'Kopi Senja Gubeng',
-    city: 'Surabaya',
-    todayRevenue: 2850000,
-    dailyTarget: 3000000,
-    progress: 95,
-    activeStaff: 2,
-    anomalyCount: 0,
-    stockStatus: 'Aman (96%)',
-    isHeadquarters: false,
-  },
-];
+interface BranchRow {
+  id: string;
+  name: string;
+  location: string;
+  daily_target: number;
+  is_active: boolean;
+}
+
+interface BranchDashboard {
+  id: string;
+  name: string;
+  city: string;
+  /** Omzet kemarin (PnL period=yesterday). */
+  revenue: number;
+  dailyTarget: number;
+  /** Pencapaian omzet kemarin terhadap target harian, persen. */
+  progress: number;
+  txCount: number;
+  stockStatus: string;
+}
 
 type SummaryCard = {
   label: string;
@@ -235,6 +223,12 @@ export default function DashboardPage() {
   const [isEmptyOrg, setIsEmptyOrg] = useState(false);
   const [greeting, setGreeting] = useState('Selamat pagi');
 
+  // Data keuangan & cabang dari database (bukan lagi angka contoh).
+  const [pnlWeek, setPnlWeek] = useState<DashboardPnl | null>(null);
+  const [pnlYesterday, setPnlYesterday] = useState<DashboardPnl | null>(null);
+  const [branches, setBranches] = useState<BranchRow[]>([]);
+  const [totalBranchCount, setTotalBranchCount] = useState(0);
+
   useEffect(() => {
     const hour = new Date().getHours();
     setGreeting(
@@ -253,13 +247,36 @@ export default function DashboardPage() {
       setIsEmptyOrg(prodRes.ok && Array.isArray(prodJson.data) && prodJson.data.length === 0);
 
 
-      // Fetch anomali & rekomendasi secara paralel agar tidak ada
-      // jeda di mana satu kartu sudah terisi dan kartu lain masih kosong.
-      const [anomRes, recRes] = await Promise.all([
+      // Fetch anomali, rekomendasi, laporan keuangan & cabang secara paralel
+      // agar tidak ada jeda di mana satu kartu sudah terisi dan kartu lain
+      // masih kosong. PnL "yesterday" untuk capaian target harian per cabang,
+      // "this_week" untuk tren 7 hari, margin, dan arus kas.
+      const [anomRes, recRes, pnlWeekRes, pnlYesterdayRes, branchRes] = await Promise.all([
         fetch('/api/anomalies?status=OPEN'),
         fetch('/api/stock/recommendations'),
+        fetch('/api/reports/pnl?period=this_week'),
+        fetch('/api/reports/pnl?period=yesterday'),
+        fetch('/api/branches?all=true'),
       ]);
-      const [anomJson, recJson] = await Promise.all([anomRes.json(), recRes.json()]);
+      const [anomJson, recJson, pnlWeekJson, pnlYesterdayJson, branchJson] = await Promise.all([
+        anomRes.json(),
+        recRes.json(),
+        pnlWeekRes.json(),
+        pnlYesterdayRes.json(),
+        branchRes.json(),
+      ]);
+
+      if (pnlWeekRes.ok && pnlWeekJson.data) {
+        setPnlWeek(pnlWeekJson.data);
+      }
+      if (pnlYesterdayRes.ok && pnlYesterdayJson.data) {
+        setPnlYesterday(pnlYesterdayJson.data);
+      }
+      if (branchRes.ok && Array.isArray(branchJson.data)) {
+        const rows: BranchRow[] = branchJson.data;
+        setBranches(rows);
+        setTotalBranchCount(rows.length);
+      }
 
       if (anomRes.ok && anomJson.data) {
         setAnomalies(anomJson.data.anomalies || []);
@@ -349,22 +366,67 @@ export default function DashboardPage() {
     }
   };
 
+  // Nilai turunan dari database: tren 7 hari & performa cabang kemarin.
+  const activeBranches = branches.filter((b) => b.is_active);
+  const dailyTargetTotal = activeBranches.reduce(
+    (sum, b) => sum + Number(b.daily_target || 0),
+    0
+  );
+  const sevenDaysTrend = (pnlWeek?.daily_timeline ?? []).map((day) => ({
+    date: formatDateId(day.date, 'd MMM'),
+    omzet: day.revenue,
+    target: dailyTargetTotal,
+  }));
+  const branchList: BranchDashboard[] = activeBranches.map((b) => {
+    const perf = pnlYesterday?.branch_performance.find((p) => p.branch_id === b.id);
+    const needsTransfer = recommendations.some((r) => r.to_branch_id === b.id);
+    return {
+      id: b.id,
+      name: b.name,
+      city: b.location,
+      revenue: perf?.revenue ?? 0,
+      dailyTarget: Number(b.daily_target || 0),
+      progress: perf?.target_achievement_pct ?? 0,
+      txCount: perf?.tx_count ?? 0,
+      stockStatus: needsTransfer ? 'Perlu mutasi stok' : 'Stok aman',
+    };
+  });
+  const yesterdayMetrics = pnlYesterday?.metrics ?? null;
+  const targetDeltaPct =
+    yesterdayMetrics && dailyTargetTotal > 0
+      ? ((yesterdayMetrics.total_revenue - dailyTargetTotal) / dailyTargetTotal) * 100
+      : null;
+  const cashflow = pnlWeek?.cashflow;
+
   const summaryCards: SummaryCard[] = [
     {
       label: 'Laba kemarin',
-      value: '+Rp 2.730.000',
-      hint: 'Omzet Rp 3.850.000 · modal Rp 1.120.000',
-      trend: { text: '+12,4% dari target harian', className: 'text-emerald-600' },
+      value: loading ? '—' : formatRupiah(yesterdayMetrics?.net_profit ?? 0),
+      hint: yesterdayMetrics
+        ? `Omzet ${formatRupiah(yesterdayMetrics.total_revenue)} · modal ${formatRupiah(yesterdayMetrics.total_cogs)}`
+        : 'Belum ada penjualan tercatat',
+      trend:
+        targetDeltaPct !== null
+          ? {
+              text: `${targetDeltaPct >= 0 ? '+' : ''}${formatPercent(targetDeltaPct)} dari target harian`,
+              className: targetDeltaPct >= 0 ? 'text-emerald-600' : 'text-rose-600',
+            }
+          : undefined,
       icon: TrendingUp,
-      tone: 'success',
+      tone:
+        (yesterdayMetrics?.net_profit ?? 0) >= 0
+          ? 'success'
+          : 'warning',
     },
     {
-      label: 'Uang kas di kasir',
-      value: 'Rp 2.140.000',
-      hint: 'Tidak ada selisih pencatatan',
-      trend: { text: 'Klop 100%', className: 'text-stone-500' },
+      label: 'Arus kas 7 hari',
+      value: loading ? '—' : formatRupiah(cashflow?.net_cashflow ?? 0),
+      hint: cashflow
+        ? `Masuk ${formatRupiah(cashflow.cash_in)} · keluar ${formatRupiah(cashflow.cash_out)}`
+        : 'Belum ada data transaksi',
+      trend: { text: 'Dari penjualan & pengeluaran tercatat', className: 'text-stone-500' },
       icon: Wallet,
-      tone: 'neutral',
+      tone: (cashflow?.net_cashflow ?? 0) >= 0 ? 'neutral' : 'warning',
     },
     {
       label: 'Perlu diperhatikan',
@@ -413,8 +475,9 @@ export default function DashboardPage() {
               {greeting}
             </h1>
             <p className="max-w-xl text-sm leading-relaxed text-stone-600">
-              Ini ringkasan 3 gerai Anda — apa yang terjadi kemarin, apa yang perlu
-              diperhatikan, dan apa yang bisa dilakukan sekarang.
+              {loading
+                ? 'Merangkum data gerai Anda…'
+                : `Ini ringkasan ${branchList.length} gerai Anda — apa yang terjadi kemarin, apa yang perlu diperhatikan, dan apa yang bisa dilakukan sekarang.`}
             </p>
           </div>
 
@@ -502,7 +565,7 @@ export default function DashboardPage() {
             onChange={(id) => setActiveTab(id as 'overview' | 'branches' | 'anomalies')}
             items={[
               { id: 'overview', label: '3 pertanyaan pagi', icon: Sparkles },
-              { id: 'branches', label: 'Performa cabang', icon: Building2, count: 3 },
+              { id: 'branches', label: 'Performa cabang', icon: Building2, count: branchList.length },
               { id: 'anomalies', label: 'Perlu dicek', icon: ShieldAlert, count: anomalySummary.total_open },
             ]}
           />
@@ -831,8 +894,10 @@ export default function DashboardPage() {
                         </span>
                       </div>
                       <p className="text-xs text-stone-500">
-                        Rata-rata margin{' '}
-                        <span className="font-medium text-emerald-700">74%</span>
+                        Rata-rata margin kotor{' '}
+                        <span className="font-medium text-emerald-700">
+                          {formatPercent(pnlWeek?.metrics.gross_margin_pct ?? 0)}
+                        </span>
                       </p>
                     </div>
                   </CardContent>
@@ -845,7 +910,7 @@ export default function DashboardPage() {
               <Card className="overflow-hidden">
                 <SectionHeader
                   icon={Building2}
-                  title="Performa 3 cabang aktif"
+                  title={`Performa ${branchList.length} cabang aktif`}
                   description="Pencapaian target penjualan dan kesehatan operasional tiap gerai."
                   actions={
                     <Button asChild variant="outline" size="sm">
@@ -862,23 +927,19 @@ export default function DashboardPage() {
                     >
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                         <div className="min-w-0">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <p className="truncate text-sm font-medium text-stone-900">
-                              {branch.name}
-                            </p>
-                            {branch.isHeadquarters && (
-                              <Badge variant="neutral">Kantor pusat</Badge>
-                            )}
-                          </div>
+                          <p className="truncate text-sm font-medium text-stone-900">
+                            {branch.name}
+                          </p>
                           <p className="mt-0.5 text-xs text-stone-500">{branch.city}</p>
                         </div>
 
                         <div className="sm:text-right">
                           <p className="text-sm font-semibold tabular-nums text-stone-900">
-                            {formatRupiah(branch.todayRevenue)}
+                            {formatRupiah(branch.revenue)}
                           </p>
                           <p className="mt-0.5 text-xs text-stone-400">
-                            {branch.progress}% dari target {formatRupiah(branch.dailyTarget)}
+                            {Math.round(branch.progress)}% dari target{' '}
+                            {formatRupiah(branch.dailyTarget)}
                           </p>
                         </div>
                       </div>
@@ -886,12 +947,12 @@ export default function DashboardPage() {
                       <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-stone-100">
                         <div
                           className="h-full rounded-full bg-orange-400 transition-all"
-                          style={{ width: `${branch.progress}%` }}
+                          style={{ width: `${Math.min(100, Math.round(branch.progress))}%` }}
                         />
                       </div>
 
                       <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-stone-500">
-                        <span>{branch.activeStaff} kasir aktif</span>
+                        <span>{branch.txCount} transaksi kemarin</span>
                         <span>{branch.stockStatus}</span>
                       </div>
                     </div>
@@ -906,28 +967,28 @@ export default function DashboardPage() {
           {/* ======================================================== */}
           <div className="space-y-6 lg:sticky lg:top-20 lg:col-span-4 lg:self-start">
             <Card id="tour-target-card" className="overflow-hidden">
-              <SectionHeader icon={Target} title="Target hari ini" />
+              <SectionHeader icon={Target} title="Target harian per cabang" />
               <CardContent className="space-y-4 px-5 pb-5 pt-6 sm:px-6 sm:pb-6 sm:pt-6">
                 {branchList.map((branch) => (
                   <div key={branch.id} className="space-y-1.5">
                     <div className="flex items-center justify-between gap-3 text-xs">
                       <span className="truncate font-medium text-stone-700">
-                        {branch.name.replace('Kopi Senja ', '')}
+                        {branch.name}
                       </span>
                       <span className="shrink-0 font-medium tabular-nums text-stone-900">
-                        {branch.progress}%
+                        {Math.round(branch.progress)}%
                       </span>
                     </div>
 
                     <div className="h-1.5 w-full overflow-hidden rounded-full bg-stone-100">
                       <div
                         className="h-full rounded-full bg-orange-400 transition-all"
-                        style={{ width: `${branch.progress}%` }}
+                        style={{ width: `${Math.min(100, Math.round(branch.progress))}%` }}
                       />
                     </div>
 
                     <div className="flex items-center justify-between text-[11px] tabular-nums text-stone-400">
-                      <span>{formatRupiah(branch.todayRevenue)}</span>
+                      <span>{formatRupiah(branch.revenue)}</span>
                       <span>dari {formatRupiah(branch.dailyTarget)}</span>
                     </div>
                   </div>
@@ -978,7 +1039,9 @@ export default function DashboardPage() {
                 <dl className="divide-y divide-stone-100 text-sm">
                   <div className="flex items-center justify-between py-2.5">
                     <dt className="text-stone-500">Cabang aktif</dt>
-                    <dd className="font-medium text-stone-900">3 dari 5</dd>
+                    <dd className="font-medium text-stone-900">
+                      {branchList.length} dari {totalBranchCount}
+                    </dd>
                   </div>
                   <div className="flex items-center justify-between py-2.5">
                     <dt className="text-stone-500">Keamanan data</dt>
